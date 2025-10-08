@@ -7,10 +7,9 @@ use Illuminate\Auth\MustVerifyEmail;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Models\Concerns\BelongsToOrganizationScope;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
@@ -20,7 +19,7 @@ use Filament\Panel;
 class User extends Authenticatable implements MustVerifyEmailContract, FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasRoles, HasUuids, Notifiable, BelongsToOrganizationScope, MustVerifyEmail, HasApiTokens;
+    use HasFactory, HasRoles, HasUuids, Notifiable, MustVerifyEmail, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -32,7 +31,17 @@ class User extends Authenticatable implements MustVerifyEmailContract, FilamentU
         'name',
         'email',
         'password',
-        'organization_id',
+        'google_id',
+        'google_calendar_token',
+        'google_calendar_refresh_token',
+        'google_calendar_sync_token',
+        'last_calendar_sync_at',
+        'calendar_sync_enabled',
+        'quiet_hours_start',
+        'quiet_hours_end',
+        'selfie_mode', // 'random' or 'scheduled'
+        'selfie_scheduled_time',
+        'adaptive_ui_enabled',
         'last_login_at',
         'created_at',
         'updated_at',
@@ -58,7 +67,11 @@ class User extends Authenticatable implements MustVerifyEmailContract, FilamentU
         return [
             'email_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
+            'last_calendar_sync_at' => 'datetime',
             'password' => 'hashed',
+            'calendar_sync_enabled' => 'boolean',
+            'adaptive_ui_enabled' => 'boolean',
+            'selfie_scheduled_time' => 'datetime:H:i',
         ];
     }
 
@@ -78,23 +91,79 @@ class User extends Authenticatable implements MustVerifyEmailContract, FilamentU
     }
 
     /**
-     * Get the settings associated with the user.
+     * Determine if the user can access the Filament admin panel.
      */
-    public function settings(): HasOne
-    {
-        return $this->hasOne(Setting::class);
-    }
-
     public function canAccessPanel(Panel $panel): bool
     {
-        return str_ends_with($this->email, '@cloudstudio.es') && $this->hasVerifiedEmail();
+        return $this->hasRole('admin') && $this->hasVerifiedEmail();
     }
 
     /**
-     * Get the organization that the user belongs to.
+     * Get the mood entries for the user.
      */
-    public function organization(): BelongsTo
+    public function moodEntries(): HasMany
     {
-        return $this->belongsTo(Organization::class);
+        return $this->hasMany(MoodEntry::class);
+    }
+
+    /**
+     * Get the calendar events for the user.
+     */
+    public function calendarEvents(): HasMany
+    {
+        return $this->hasMany(CalendarEvent::class);
+    }
+
+    /**
+     * Get the emotional selfies for the user.
+     */
+    public function emotionalSelfies(): HasMany
+    {
+        return $this->hasMany(EmotionalSelfie::class);
+    }
+
+    /**
+     * Get the groups the user belongs to.
+     */
+    public function groups(): BelongsToMany
+    {
+        return $this->belongsToMany(Group::class, 'group_user')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get users who have shared access to this user's data.
+     */
+    public function sharedWith(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'shared_access', 'owner_id', 'shared_with_user_id')
+            ->withPivot(['can_view_moods', 'can_view_notes', 'can_view_selfies'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get users whose data is shared with this user.
+     */
+    public function sharedFrom(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'shared_access', 'shared_with_user_id', 'owner_id')
+            ->withPivot(['can_view_moods', 'can_view_notes', 'can_view_selfies'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the user's subscription.
+     */
+    public function subscription(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    /**
+     * Get the user's mood prompts.
+     */
+    public function moodPrompts(): HasMany
+    {
+        return $this->hasMany(MoodPrompt::class);
     }
 }

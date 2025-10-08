@@ -12,7 +12,6 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Facades\Auth;
 
 class UserResource extends Resource
 {
@@ -20,65 +19,78 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationGroup = 'Administration';
+    protected static ?string $navigationGroup = 'User Management';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Tabs::make('User Information')
-                    ->tabs([
-                        Forms\Components\Tabs\Tab::make('Profile')
-                            ->icon('heroicon-m-user')
-                            ->schema([
-                                Forms\Components\TextInput::make('name')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->live(onBlur: true),
-                                Forms\Components\TextInput::make('email')
-                                    ->email()
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->unique(ignoreRecord: true)
-                                    ->live(onBlur: true),
-                            ])->columns(2),
+                Forms\Components\Section::make('Basic Information')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true),
+                        Forms\Components\TextInput::make('password')
+                            ->password()
+                            ->required(fn (string $context): bool => $context === 'create')
+                            ->dehydrated(fn ($state) => filled($state))
+                            ->minLength(8)
+                            ->maxLength(255),
+                        Forms\Components\Select::make('roles')
+                            ->relationship('roles', 'name')
+                            ->preload()
+                            ->searchable()
+                            ->label('Role'),
+                    ])->columns(2),
 
-                        Forms\Components\Tabs\Tab::make('Roles')
-                            ->icon('heroicon-m-shield-check')
-                            ->schema([
-                                Forms\Components\Select::make('roles')
-                                    ->relationship('roles', 'name', function ($query) {
-                                        return $query->where('guard_name', 'web');
-                                    })
-                                    ->multiple()
-                                    ->searchable()
-                                    ->preload()
-                                    ->placeholder('Select roles')
-                                    ->columnSpanFull(),
-                            ]),
+                Forms\Components\Section::make('Google Calendar Integration')
+                    ->schema([
+                        Forms\Components\TextInput::make('google_id')
+                            ->label('Google ID')
+                            ->disabled()
+                            ->dehydrated(false),
+                        Forms\Components\Toggle::make('calendar_sync_enabled')
+                            ->label('Calendar Sync Enabled')
+                            ->default(false),
+                        Forms\Components\TimePicker::make('quiet_hours_start')
+                            ->label('Quiet Hours Start')
+                            ->seconds(false),
+                        Forms\Components\TimePicker::make('quiet_hours_end')
+                            ->label('Quiet Hours End')
+                            ->seconds(false),
+                    ])->columns(2)->collapsed(),
 
-                        Forms\Components\Tabs\Tab::make('Security')
-                            ->icon('heroicon-m-key')
-                            ->schema([
-                                Forms\Components\TextInput::make('password')
-                                    ->password()
-                                    ->required(fn(string $context): bool => $context === 'create')
-                                    ->minLength(8)
-                                    ->confirmed()
-                                    ->live(onBlur: true)
-                                    ->dehydrateStateUsing(fn($state) => filled($state) ? bcrypt($state) : null)
-                                    ->dehydrated(fn($state) => filled($state)),
-                                Forms\Components\TextInput::make('password_confirmation')
-                                    ->password()
-                                    ->required(fn(string $context): bool => $context === 'create')
-                                    ->minLength(8)
-                                    ->live(onBlur: true)
-                                    ->dehydrated(false),
-                            ])->columns(2),
-                    ])
-                    ->columnSpanFull(),
+                Forms\Components\Section::make('Emotional Selfie Settings')
+                    ->schema([
+                        Forms\Components\Select::make('selfie_mode')
+                            ->label('Selfie Prompt Mode')
+                            ->options([
+                                'random' => 'Random',
+                                'scheduled' => 'Scheduled',
+                            ])
+                            ->default('random')
+                            ->required()
+                            ->reactive(),
+                        Forms\Components\TimePicker::make('selfie_scheduled_time')
+                            ->label('Scheduled Time')
+                            ->seconds(false)
+                            ->visible(fn ($get) => $get('selfie_mode') === 'scheduled'),
+                    ])->columns(2)->collapsed(),
+
+                Forms\Components\Section::make('Preferences')
+                    ->schema([
+                        Forms\Components\Toggle::make('adaptive_ui_enabled')
+                            ->label('Adaptive UI Colors')
+                            ->default(true)
+                            ->helperText('UI colors adapt to current emotional state'),
+                    ])->collapsed(),
             ]);
     }
 
@@ -87,62 +99,66 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('User')
                     ->searchable()
-                    ->sortable()
-                    ->weight('medium')
-                    ->color('primary')
-                    ->formatStateUsing(function ($record) {
-                        return $record->name;
-                    })
-                    ->description(function ($record) {
-                        return $record->initials();
-                    }),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
-                    ->copyable()
-                    ->icon('heroicon-m-at-symbol'),
-                Tables\Columns\TextColumn::make('roles.name')
-                    ->label('Roles')
-                    ->badge()
-                    ->color('success')
-                    ->separator(', '),
-                Tables\Columns\TextColumn::make('organization.name')
-                    ->label('Organization')
-                    ->searchable()
                     ->sortable()
+                    ->copyable(),
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Role')
                     ->badge()
-                    ->color('gray')
-                    ->placeholder('No Organization'),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Registered')
+                    ->colors([
+                        'success' => 'admin',
+                        'gray' => 'user',
+                    ]),
+                Tables\Columns\IconColumn::make('email_verified_at')
+                    ->label('Verified')
+                    ->boolean()
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('calendar_sync_enabled')
+                    ->label('Calendar')
+                    ->boolean()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('moodEntries_count')
+                    ->counts('moodEntries')
+                    ->label('Mood Entries')
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('groups_count')
+                    ->counts('groups')
+                    ->label('Groups')
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('last_login_at')
                     ->dateTime()
                     ->sortable()
-                    ->since(),
+                    ->since()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('roles')
+                Tables\Filters\SelectFilter::make('role')
                     ->relationship('roles', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->multiple(),
+                    ->label('Role'),
+                Tables\Filters\TernaryFilter::make('email_verified_at')
+                    ->label('Verified')
+                    ->nullable(),
+                Tables\Filters\TernaryFilter::make('calendar_sync_enabled')
+                    ->label('Calendar Sync'),
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make()->slideOver(),
-                    Tables\Actions\DeleteAction::make(),
-                ])
-                    ->icon('heroicon-m-ellipsis-vertical')
-                    ->size('sm')
-                    ->color('gray'),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])
-            ->defaultSort('created_at', 'desc');
+            ]);
     }
 
     public static function getRelations(): array
@@ -152,23 +168,13 @@ class UserResource extends Resource
         ];
     }
 
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        // Automatically assign the current user's organization
-        $currentUser = Auth::user();
-        $data['organization_id'] = $currentUser ? $currentUser->organization_id : null;
-
-        // Set email as verified so user can login immediately
-        $data['email_verified_at'] = now();
-
-        return $data;
-    }
-
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListUsers::route('/'),
+            'create' => Pages\CreateUser::route('/create'),
             'view' => Pages\ViewUser::route('/{record}'),
+            'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
 }

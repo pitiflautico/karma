@@ -28,22 +28,21 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'primary' => Color::Green,
+                'primary' => Color::Purple,
             ])
-            ->brandName('VerifacTu')
+            ->brandName('Karma')
             ->brandLogo(asset('images/logo.svg'))
             ->brandLogoHeight('1.5rem')
             ->favicon(asset('images/favicon.png'))
             ->navigationGroups([
                 'Administration',
-                'Client Management',
-                'Finance',
+                'User Management',
+                'Mood Tracking',
+                'Groups',
+                'Subscriptions',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([
-                \App\Filament\Pages\GeneralDashboard::class,
-            ])
             ->default()
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([])
