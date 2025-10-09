@@ -152,6 +152,46 @@
             </div>
         </div>
 
+        <!-- Pending Mood Prompts -->
+        @if(count($pendingPrompts) > 0)
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Events Waiting for Your Feedback</h3>
+                    <a href="{{ route('mood.prompts') }}" class="text-sm text-purple-600 hover:text-purple-700">View all</a>
+                </div>
+                <div class="space-y-3">
+                    @foreach($pendingPrompts as $prompt)
+                        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-1">
+                                        <svg class="h-5 w-5 text-amber-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <h4 class="font-semibold text-gray-900">{{ $prompt->event_title }}</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-2">{{ $prompt->prompt_text }}</p>
+                                    <div class="flex items-center text-xs text-gray-500">
+                                        <span>{{ \Carbon\Carbon::parse($prompt->event_end_time)->format('D, M j • g:i A') }}</span>
+                                        <span class="mx-2">•</span>
+                                        <span class="text-amber-600">{{ \Carbon\Carbon::parse($prompt->event_end_time)->diffForHumans() }}</span>
+                                    </div>
+                                </div>
+                                <div class="ml-4 flex gap-2">
+                                    <button wire:click="skipPrompt('{{ $prompt->id }}')" class="inline-flex items-center px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium rounded-md transition">
+                                        Skip
+                                    </button>
+                                    <button wire:click="openPrompt('{{ $prompt->id }}')" class="inline-flex items-center px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-md transition">
+                                        Rate
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         <!-- Next Event Widget -->
         @if($user->calendar_sync_enabled && $nextEvent)
             <div class="mb-6">
@@ -277,4 +317,69 @@
 
     <!-- Mood Entry Form Modal -->
     <livewire:mood-entry-form />
+
+    <!-- Mood Rating Modal for Past Events -->
+    @if($showModal && $selectedPrompt)
+        <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <!-- Background overlay -->
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" wire:click="closeModal"></div>
+
+                <!-- Modal panel -->
+                <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    <div class="absolute top-0 right-0 pt-4 pr-4">
+                        <button wire:click="closeModal" type="button" class="bg-white rounded-md text-gray-400 hover:text-gray-500">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="sm:flex sm:items-start mb-4">
+                        <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-2">
+                                How did you feel?
+                            </h3>
+                            <div class="bg-purple-50 border border-purple-200 rounded p-3 mb-4">
+                                <p class="text-sm font-medium text-purple-900">{{ $selectedPrompt->event_title }}</p>
+                                <p class="text-xs text-purple-700 mt-1">{{ \Carbon\Carbon::parse($selectedPrompt->event_start_time)->format('D, M j, Y • g:i A') }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Mood Score (1-10)
+                        </label>
+                        <input type="range" wire:model.live="moodScore" min="1" max="10" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-xs text-gray-600 mt-1">
+                            <span>😢 Very Low</span>
+                            <span class="font-bold text-lg text-purple-600">{{ $moodScore }}</span>
+                            <span>😊 Very High</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Tell us more (optional)
+                        </label>
+                        <textarea wire:model="note" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500" placeholder="How did this event affect your mood? What were your thoughts and feelings?"></textarea>
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="text-xs text-gray-400">Maximum 1000 characters</span>
+                            <span class="text-xs text-gray-400">{{ strlen($note ?? '') }}/1000</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex gap-3">
+                        <button wire:click="submitMood" class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg shadow-md transition">
+                            Save Mood
+                        </button>
+                        <button wire:click="closeModal" class="inline-flex justify-center items-center px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg shadow-md transition">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>

@@ -24,7 +24,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/calendar', Calendar::class)->name('calendar');
     Route::get('/calendar-events', CalendarEvents::class)->name('calendar.events');
+    Route::get('/calendar-settings', \App\Livewire\CalendarSettings::class)->name('calendar.settings');
     Route::get('/mood-prompts', MoodPrompts::class)->name('mood.prompts');
+    Route::get('/mood-history', \App\Livewire\MoodHistory::class)->name('mood.history');
     Route::post('/logout', [GoogleAuthController::class, 'logout'])->name('logout');
 });
 

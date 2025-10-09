@@ -15,8 +15,30 @@
                             <div class="sm:flex sm:items-start">
                                 <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
                                     <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                                        Log Your Mood
+                                        {{ $editMode ? 'Edit Mood Entry' : 'Log Your Mood' }}
                                     </h3>
+
+                                    @if($calendarEvent)
+                                        <div class="mt-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                            <div class="flex items-start">
+                                                <svg class="h-5 w-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                </svg>
+                                                <div class="ml-3 flex-1">
+                                                    <p class="text-sm font-medium text-blue-900">
+                                                        {{ $calendarEvent->title }}
+                                                    </p>
+                                                    <p class="text-xs text-blue-700 mt-1">
+                                                        {{ $calendarEvent->start_time->format('M d, Y • g:i A') }}
+                                                        @if($calendarEvent->location)
+                                                            • {{ $calendarEvent->location }}
+                                                        @endif
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
                                     <div class="mt-4">
                                         <!-- Mood Score Slider -->
                                         <div class="mb-6">
@@ -40,6 +62,23 @@
                                                 <span class="text-3xl font-bold text-purple-600">{{ $moodScore }}</span>
                                                 <span class="text-gray-600">/10</span>
                                             </div>
+
+                                            @php
+                                                $category = $this->getMoodCategory();
+                                                $badgeColors = [
+                                                    'red' => 'bg-red-100 text-red-800',
+                                                    'yellow' => 'bg-yellow-100 text-yellow-800',
+                                                    'green' => 'bg-green-100 text-green-800',
+                                                    'blue' => 'bg-blue-100 text-blue-800',
+                                                ];
+                                            @endphp
+
+                                            <div class="text-center mt-2">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $badgeColors[$category['color']] }}">
+                                                    {{ $category['label'] }} Mood
+                                                </span>
+                                            </div>
+
                                             @error('moodScore')
                                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                                             @enderror
@@ -73,8 +112,10 @@
                                                 placeholder="Example: Had a productive meeting with my team where we solved a complex problem. Felt accomplished after completing a difficult task ahead of schedule. However, I'm a bit stressed about upcoming deadlines next week..."
                                             ></textarea>
                                             <div class="flex justify-between items-center mt-1">
-                                                <span class="text-xs text-gray-400">Maximum 1000 characters</span>
-                                                <span class="text-xs text-gray-400">{{ strlen($note ?? '') }}/1000</span>
+                                                <span class="text-xs text-gray-400">Maximum 500 characters</span>
+                                                <span class="text-xs text-gray-400 {{ strlen($note ?? '') > 500 ? 'text-red-500 font-medium' : '' }}">
+                                                    {{ strlen($note ?? '') }}/500
+                                                </span>
                                             </div>
                                             @error('note')
                                                 <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -91,7 +132,7 @@
                                 type="submit"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm"
                             >
-                                Save Mood Entry
+                                {{ $editMode ? 'Update Mood' : 'Save Mood Entry' }}
                             </button>
                             <button
                                 type="button"
