@@ -43,6 +43,7 @@ class User extends Authenticatable implements MustVerifyEmailContract, FilamentU
         'selfie_scheduled_time',
         'adaptive_ui_enabled',
         'last_login_at',
+        'settings',
         'created_at',
         'updated_at',
     ];
@@ -72,6 +73,7 @@ class User extends Authenticatable implements MustVerifyEmailContract, FilamentU
             'calendar_sync_enabled' => 'boolean',
             'adaptive_ui_enabled' => 'boolean',
             'selfie_scheduled_time' => 'datetime:H:i',
+            'settings' => 'array',
         ];
     }
 

@@ -7,9 +7,18 @@ use App\Livewire\CalendarEvents;
 use App\Livewire\Dashboard;
 use App\Livewire\Home;
 use App\Livewire\MoodPrompts;
+use App\Livewire\Reports;
+use App\Livewire\SharingSettings;
+use App\Livewire\SharedWithMe;
+use App\Livewire\AcceptInvite;
+use App\Livewire\AIInsights;
+use App\Livewire\Settings;
 
 // Public pages
 Route::get('/', Home::class)->name('home');
+
+// Sharing invite acceptance (public route)
+Route::get('/accept-invite/{token}', AcceptInvite::class)->name('sharing.accept-invite');
 
 // Google OAuth routes
 Route::prefix('auth/google')->group(function () {
@@ -27,6 +36,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/calendar-settings', \App\Livewire\CalendarSettings::class)->name('calendar.settings');
     Route::get('/mood-prompts', MoodPrompts::class)->name('mood.prompts');
     Route::get('/mood-history', \App\Livewire\MoodHistory::class)->name('mood.history');
+    Route::get('/reports', Reports::class)->name('reports');
+    Route::get('/ai-insights', AIInsights::class)->name('ai.insights');
+    Route::get('/sharing-settings', SharingSettings::class)->name('sharing.settings');
+    Route::get('/shared-with-me', SharedWithMe::class)->name('shared.with.me');
+    Route::get('/settings', Settings::class)->name('settings');
     Route::post('/logout', [GoogleAuthController::class, 'logout'])->name('logout');
 });
 
