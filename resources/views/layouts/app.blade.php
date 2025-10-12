@@ -109,13 +109,20 @@
             // Auto-detect authentication state on page load
             document.addEventListener('DOMContentLoaded', function() {
                 console.log('=== NATIVE APP INTEGRATION DEBUG ===');
+                console.log('[DEBUG] Page loaded at:', new Date().toISOString());
+                console.log('[DEBUG] Current URL:', window.location.href);
                 console.log('[DEBUG] NativeAppBridge available:', typeof window.NativeAppBridge !== 'undefined');
                 console.log('[DEBUG] Is running in native app:', window.NativeAppBridge?.isRunningInNativeApp() || false);
                 console.log('[DEBUG] User authenticated:', {{ auth()->check() ? 'true' : 'false' }});
 
                 @auth
                 console.log('[DEBUG] User ID:', '{{ auth()->id() }}');
+                console.log('[DEBUG] Session Debug Info:', '{{ session('native_app_debug', 'Not set') }}');
+                console.log('[DEBUG] Has native_app_login flag:', {{ session('native_app_login') ? 'true' : 'false' }});
                 console.log('[DEBUG] Has native_app_token in session:', {{ session('native_app_token') ? 'true' : 'false' }});
+                @if(session('native_app_token'))
+                console.log('[DEBUG] Token length:', {{ strlen(session('native_app_token')) }});
+                @endif
                 @endauth
 
                 // Check if we just logged in via Google OAuth

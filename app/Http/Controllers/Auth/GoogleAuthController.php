@@ -97,19 +97,34 @@ class GoogleAuthController extends Controller
 
             // Create API token for native app integration
             \Log::info('Creating API token for native app...');
-            $token = $user->createToken('native-app-token')->accessToken;
-            \Log::info('Token created:', ['token_preview' => substr($token, 0, 20) . '...']);
 
-            // Store in session (not flash) so it persists
-            session()->put('native_app_login', true);
-            session()->put('native_app_token', $token);
-            session()->save(); // Force save to ensure it persists
+            try {
+                $token = $user->createToken('native-app-token')->accessToken;
+                \Log::info('Token created successfully:', ['token_preview' => substr($token, 0, 20) . '...']);
+            } catch (\Exception $e) {
+                \Log::error('Failed to create token:', ['error' => $e->getMessage()]);
+                // Continue without token - don't break the login
+                $token = null;
+            }
 
-            \Log::info('Token stored in session');
-            \Log::info('Session contents:', [
-                'native_app_login' => session('native_app_login'),
-                'has_token' => !empty(session('native_app_token')),
-            ]);
+            if ($token) {
+                // Store in session (not flash) so it persists
+                session()->put('native_app_login', true);
+                session()->put('native_app_token', $token);
+                session()->put('native_app_debug', 'Token set at ' . now()->toDateTimeString());
+                session()->save(); // Force save to ensure it persists
+
+                \Log::info('Token stored in session');
+                \Log::info('Session ID:', ['session_id' => session()->getId()]);
+                \Log::info('Session contents:', [
+                    'native_app_login' => session('native_app_login'),
+                    'has_token' => !empty(session('native_app_token')),
+                    'token_length' => strlen(session('native_app_token')),
+                    'debug_info' => session('native_app_debug'),
+                ]);
+            } else {
+                \Log::warning('No token created, skipping session storage');
+            }
 
             \Log::info('Redirecting to dashboard');
             return redirect()->intended('/dashboard');
