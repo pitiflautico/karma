@@ -9,31 +9,34 @@ cd /ruta/de/tu/proyecto
 # 2. Actualizar código
 git pull origin main
 
-# 3. Instalar/actualizar dependencias
+# 3. Generar claves de Passport (IMPORTANTE - solo primera vez o si no existen)
+php artisan passport:keys
+
+# 4. Instalar/actualizar dependencias
 composer install --no-dev --optimize-autoloader
 
-# 4. Publicar assets de Livewire (IMPORTANTE)
+# 5. Publicar assets de Livewire (IMPORTANTE)
 php artisan livewire:publish --force
 
-# 5. Limpiar cachés
+# 6. Limpiar cachés
 php artisan config:clear
 php artisan cache:clear
 php artisan view:clear
 php artisan route:clear
 
-# 6. Regenerar cachés optimizados
+# 7. Regenerar cachés optimizados
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# 7. Migrar base de datos (si hay cambios)
+# 8. Migrar base de datos (si hay cambios)
 php artisan migrate --force
 
-# 8. Verificar permisos
+# 9. Verificar permisos
 chmod -R 775 storage bootstrap/cache
 chown -R www-data:www-data storage bootstrap/cache
 
-# 9. Reiniciar servicios
+# 10. Reiniciar servicios
 sudo systemctl restart php8.2-fpm  # Ajusta la versión de PHP
 sudo systemctl restart nginx       # o apache2
 ```
