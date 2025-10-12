@@ -179,6 +179,13 @@ Route::get('/debug/session-info', function () {
         'user_email' => auth()->user()?->email ?? 'Not logged in',
     ];
 
+    $nativeAppSession = [
+        'native_app_login' => session('native_app_login', false),
+        'has_native_app_token' => !empty(session('native_app_token')),
+        'native_app_debug' => session('native_app_debug', 'Not set'),
+        'token_length' => session('native_app_token') ? strlen(session('native_app_token')) : 0,
+    ];
+
     $envInfo = [
         'app_env' => config('app.env'),
         'app_url' => config('app.url'),
@@ -193,6 +200,7 @@ Route::get('/debug/session-info', function () {
     return response()->json([
         'session_config' => $sessionConfig,
         'auth_info' => $authInfo,
+        'native_app_session' => $nativeAppSession,
         'env_info' => $envInfo,
         'google_oauth' => $googleOAuth,
         'server_info' => [

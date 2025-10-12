@@ -12,31 +12,38 @@ git pull origin main
 # 3. Generar claves de Passport (IMPORTANTE - solo primera vez o si no existen)
 php artisan passport:keys
 
-# 4. Instalar/actualizar dependencias
+# 4. Migrar tablas de Passport (IMPORTANTE - solo primera vez)
+php artisan migrate --path=vendor/laravel/passport/database/migrations
+
+# 5. Crear cliente de Passport (IMPORTANTE - solo primera vez)
+php artisan passport:client --personal --name="Karma Native App"
+# Presiona Enter cuando pregunte por el user provider (usa 'users')
+
+# 6. Instalar/actualizar dependencias
 composer install --no-dev --optimize-autoloader
 
-# 5. Publicar assets de Livewire (IMPORTANTE)
+# 7. Publicar assets de Livewire (IMPORTANTE)
 php artisan livewire:publish --force
 
-# 6. Limpiar cachés
+# 8. Limpiar cachés
 php artisan config:clear
 php artisan cache:clear
 php artisan view:clear
 php artisan route:clear
 
-# 7. Regenerar cachés optimizados
+# 9. Regenerar cachés optimizados
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# 8. Migrar base de datos (si hay cambios)
+# 10. Migrar base de datos (si hay cambios)
 php artisan migrate --force
 
-# 9. Verificar permisos
+# 11. Verificar permisos
 chmod -R 775 storage bootstrap/cache
 chown -R www-data:www-data storage bootstrap/cache
 
-# 10. Reiniciar servicios
+# 12. Reiniciar servicios
 sudo systemctl restart php8.2-fpm  # Ajusta la versión de PHP
 sudo systemctl restart nginx       # o apache2
 ```
