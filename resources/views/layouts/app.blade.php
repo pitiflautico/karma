@@ -5,6 +5,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
+        @auth
+        <!-- User authentication data for native app -->
+        <meta name="user-id" content="{{ auth()->id() }}">
+        @if(session('native_app_token'))
+        <meta name="user-token" content="{{ session('native_app_token') }}">
+        @endif
+        @endauth
+
         <title>{{ config('app.name', 'Karma') }}</title>
 
         <!-- Fonts -->
@@ -16,6 +24,9 @@
 
         <!-- Livewire Styles -->
         @livewireStyles
+
+        <!-- Native App Bridge Script -->
+        <script src="{{ asset('js/app/nativeApp.js') }}"></script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
@@ -92,6 +103,33 @@
 
         <!-- Livewire Scripts -->
         @livewireScripts
+
+        <!-- Native App Integration Scripts -->
+        <script>
+            // Auto-detect authentication state on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                // Check if we just logged in via Google OAuth
+                @if(session('native_app_login') && session('native_app_token'))
+                if (window.NativeAppBridge && window.NativeAppBridge.isRunningInNativeApp()) {
+                    console.log('[App] Fresh login detected, notifying native app');
+                    window.NativeAppBridge.notifyLoginSuccess(
+                        '{{ auth()->id() }}',
+                        '{{ session('native_app_token') }}'
+                    );
+                }
+                @endif
+
+                // Intercept logout form submission to notify native app
+                var logoutForm = document.querySelector('form[action="{{ route('logout') }}"]');
+                if (logoutForm && window.NativeAppBridge) {
+                    logoutForm.addEventListener('submit', function(e) {
+                        console.log('[App] Logout form submitted, notifying native app');
+                        window.NativeAppBridge.notifyLogout();
+                        // Let the form submission continue
+                    });
+                }
+            });
+        </script>
 
         <!-- Additional Scripts -->
         @stack('scripts')

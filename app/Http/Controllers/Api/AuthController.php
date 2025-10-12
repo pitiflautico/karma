@@ -35,6 +35,7 @@ class AuthController extends Controller
             'success' => true,
             'data' => [
                 'user' => $user,
+                'user_id' => $user->id, // Explicitly include user_id for easy access
                 'token' => $token,
                 'token_type' => 'Bearer',
             ]
