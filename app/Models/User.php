@@ -44,6 +44,10 @@ class User extends Authenticatable implements MustVerifyEmailContract, FilamentU
         'adaptive_ui_enabled',
         'last_login_at',
         'settings',
+        'push_token',
+        'push_platform',
+        'push_enabled',
+        'push_registered_at',
         'created_at',
         'updated_at',
     ];
@@ -72,6 +76,8 @@ class User extends Authenticatable implements MustVerifyEmailContract, FilamentU
             'password' => 'hashed',
             'calendar_sync_enabled' => 'boolean',
             'adaptive_ui_enabled' => 'boolean',
+            'push_enabled' => 'boolean',
+            'push_registered_at' => 'datetime',
             'selfie_scheduled_time' => 'datetime:H:i',
             'settings' => 'array',
         ];

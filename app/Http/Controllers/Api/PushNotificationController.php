@@ -73,9 +73,12 @@ class PushNotificationController extends Controller
                 'push_registered_at' => now(),
             ]);
 
+            // Refresh the model to get updated values
+            $user->refresh();
+
             \Log::info('Push token registered', [
                 'user_id' => $user->id,
-                'platform' => $request->platform,
+                'platform' => $user->push_platform,
                 'token_preview' => substr($request->pushToken, 0, 20) . '...'
             ]);
 
@@ -83,7 +86,7 @@ class PushNotificationController extends Controller
                 'success' => true,
                 'message' => 'Push token registered successfully',
                 'data' => [
-                    'pushEnabled' => true,
+                    'pushEnabled' => $user->push_enabled,
                     'platform' => $user->push_platform,
                     'registeredAt' => $user->push_registered_at,
                 ]
