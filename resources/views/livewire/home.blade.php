@@ -8,7 +8,7 @@
                         Welcome to Karma
                     </h1>
                     <p class="text-xl text-gray-600 mb-8">
-                        Track your emotions, understand your patterns, and improve your well-being. 1
+                        Track your emotions, understand your patterns, and improve your well-being.
                     </p>
 
                     @guest
