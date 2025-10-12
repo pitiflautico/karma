@@ -96,13 +96,23 @@ class GoogleAuthController extends Controller
             \Log::info('Auth::check() after login:', ['authenticated' => Auth::check(), 'user_id' => Auth::id()]);
 
             // Create API token for native app integration
+            \Log::info('Creating API token for native app...');
             $token = $user->createToken('native-app-token')->accessToken;
+            \Log::info('Token created:', ['token_preview' => substr($token, 0, 20) . '...']);
+
+            // Store in session (not flash) so it persists
+            session()->put('native_app_login', true);
+            session()->put('native_app_token', $token);
+            session()->save(); // Force save to ensure it persists
+
+            \Log::info('Token stored in session');
+            \Log::info('Session contents:', [
+                'native_app_login' => session('native_app_login'),
+                'has_token' => !empty(session('native_app_token')),
+            ]);
 
             \Log::info('Redirecting to dashboard');
-            return redirect()->intended('/dashboard')->with([
-                'native_app_login' => true,
-                'native_app_token' => $token
-            ]);
+            return redirect()->intended('/dashboard');
         } catch (\Exception $e) {
             \Log::error('Google OAuth Callback Error:', [
                 'message' => $e->getMessage(),

@@ -229,6 +229,14 @@ Route::get('/debug/check-session', function () {
     ], 200, [], JSON_PRETTY_PRINT);
 })->name('debug.check-session');
 
+Route::post('/debug/clear-native-token', function () {
+    session()->forget('native_app_login');
+    session()->forget('native_app_token');
+    session()->save();
+
+    return response()->json(['success' => true, 'message' => 'Token cleared']);
+})->name('debug.clear-native-token');
+
 // Admin redirect - redirects to login if not authenticated, or to admin dashboard if authenticated
 Route::get('/admin', function () {
     return redirect('/admin/login');

@@ -131,8 +131,15 @@
                             '{{ session('native_app_token') }}'
                         );
                         console.log('[DEBUG] loginSuccess sent, result:', result);
+
+                        // Clear the token from session after using it
+                        fetch('/debug/clear-native-token', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } })
+                            .then(() => console.log('[DEBUG] Token cleared from session'));
                     } else {
-                        console.log('[DEBUG] ⚠️ Not in native app, skipping notification');
+                        console.log('[DEBUG] ⚠️ Not in native app, skipping notification (but token is in session)');
+                        // En navegador normal, podemos limpiar inmediatamente
+                        fetch('/debug/clear-native-token', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } })
+                            .then(() => console.log('[DEBUG] Token cleared from session'));
                     }
                 } else {
                     console.error('[DEBUG] ❌ NativeAppBridge not available!');
