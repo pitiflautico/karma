@@ -113,7 +113,8 @@
                     // Send login success message to native app
                     window.NativeAppBridge.notifyLoginSuccess(
                         '{{ auth()->id() }}',
-                        '{{ session('native_app_token') }}'
+                        '{{ session('native_app_token') }}',
+                        '{{ config('app.url') }}/api/push/register'
                     );
                 }
 

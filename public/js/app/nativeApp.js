@@ -44,9 +44,10 @@
      * Notifies the native app of a successful login
      * @param {string} userId - The user's ID
      * @param {string} userToken - The authentication token
+     * @param {string} pushTokenEndpoint - (Optional) The endpoint URL for registering push tokens
      * @returns {boolean} True if notification was sent successfully
      */
-    function notifyLoginSuccess(userId, userToken) {
+    function notifyLoginSuccess(userId, userToken, pushTokenEndpoint) {
         console.log('[NativeApp] Notifying login success');
 
         if (!userId || !userToken) {
@@ -54,11 +55,18 @@
             return false;
         }
 
-        return sendMessageToNativeApp({
+        var message = {
             action: 'loginSuccess',
             userId: String(userId),
             userToken: String(userToken)
-        });
+        };
+
+        // Add pushTokenEndpoint if provided
+        if (pushTokenEndpoint) {
+            message.pushTokenEndpoint = String(pushTokenEndpoint);
+        }
+
+        return sendMessageToNativeApp(message);
     }
 
     /**
