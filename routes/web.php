@@ -237,6 +237,144 @@ Route::post('/debug/clear-native-token', function () {
     return response()->json(['success' => true, 'message' => 'Token cleared']);
 })->name('debug.clear-native-token');
 
+// Test manual del envío de mensaje a native app
+Route::get('/debug/test-native-message', function () {
+    if (!config('app.debug') && request('key') !== 'debug123') {
+        abort(404);
+    }
+
+    return <<<'HTML'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Native App Messages</title>
+    <script src="/js/app/nativeApp.js"></script>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 800px; margin: 0 auto; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; cursor: pointer; }
+        .success { background: #4CAF50; color: white; border: none; }
+        .warning { background: #ff9800; color: white; border: none; }
+        .info { background: #2196F3; color: white; border: none; }
+        .console { background: #000; color: #0f0; padding: 15px; margin: 20px 0; font-family: monospace; min-height: 200px; max-height: 400px; overflow-y: auto; }
+        .log-entry { margin: 5px 0; }
+        .error { color: #f44336; }
+        .success-log { color: #4CAF50; }
+        .info-log { color: #2196F3; }
+        h1 { color: #333; }
+        .section { background: #f5f5f5; padding: 15px; margin: 15px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Mensajes Native App</h1>
+
+    <div class="section">
+        <h2>Estado:</h2>
+        <div id="status"></div>
+    </div>
+
+    <div class="section">
+        <h2>Acciones:</h2>
+        <button class="success" onclick="testLogin()">🔑 Test Login Message</button>
+        <button class="warning" onclick="testLogout()">👋 Test Logout Message</button>
+        <button class="info" onclick="clearConsole()">🧹 Clear Console</button>
+    </div>
+
+    <h2>📱 Consola:</h2>
+    <div class="console" id="console"></div>
+
+    <div class="section">
+        <h2>📖 Instrucciones:</h2>
+        <ol>
+            <li>Si ves "Running in React Native WebView" → Los mensajes se enviarán realmente</li>
+            <li>Si ves "Running in regular browser" → Los mensajes se simularán (para debug)</li>
+            <li>Haz clic en los botones para enviar mensajes de prueba</li>
+            <li>Revisa la consola del navegador (F12) para ver los logs detallados</li>
+        </ol>
+    </div>
+
+    <script>
+        const consoleEl = document.getElementById('console');
+        const statusEl = document.getElementById('status');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = 'log-entry ' + type + '-log';
+            entry.textContent = `[${timestamp}] ${message}`;
+            consoleEl.appendChild(entry);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStatus() {
+            const isNative = window.NativeAppBridge?.isRunningInNativeApp() || false;
+            const hasUserId = '{{ auth()->id() }}' !== '';
+
+            statusEl.innerHTML = `
+                <p><strong>NativeAppBridge:</strong> ${window.NativeAppBridge ? '✅ Disponible' : '❌ No disponible'}</p>
+                <p><strong>Entorno:</strong> ${isNative ? '📱 React Native WebView' : '🌐 Navegador Normal'}</p>
+                <p><strong>Usuario:</strong> ${hasUserId ? '✅ Logueado (ID: {{ auth()->id() }})' : '❌ No logueado'}</p>
+            `;
+
+            if (isNative) {
+                log('✅ RUNNING IN REACT NATIVE WEBVIEW - Messages will be sent!', 'success');
+            } else {
+                log('ℹ️ Running in regular browser - Messages will be logged only', 'info');
+            }
+        }
+
+        function testLogin() {
+            log('🔑 Testing LOGIN message...', 'info');
+
+            const userId = '{{ auth()->id() }}' || 'test-user-123';
+            const userToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZGVtbyIsImlhdCI6MTY5OTk5OTk5OX0.demo-token';
+
+            if (!window.NativeAppBridge) {
+                log('❌ ERROR: NativeAppBridge not available!', 'error');
+                return;
+            }
+
+            const result = window.NativeAppBridge.notifyLoginSuccess(userId, userToken);
+
+            if (result) {
+                log('✅ Login message sent successfully!', 'success');
+                log(`   userId: ${userId}`, 'success');
+                log(`   token: ${userToken.substring(0, 30)}...`, 'success');
+            } else {
+                log('⚠️ Login message NOT sent (not in WebView)', 'warning');
+            }
+        }
+
+        function testLogout() {
+            log('👋 Testing LOGOUT message...', 'info');
+
+            if (!window.NativeAppBridge) {
+                log('❌ ERROR: NativeAppBridge not available!', 'error');
+                return;
+            }
+
+            const result = window.NativeAppBridge.notifyLogout();
+
+            if (result) {
+                log('✅ Logout message sent successfully!', 'success');
+            } else {
+                log('⚠️ Logout message NOT sent (not in WebView)', 'warning');
+            }
+        }
+
+        function clearConsole() {
+            consoleEl.innerHTML = '';
+            log('Console cleared', 'info');
+        }
+
+        // Initialize
+        updateStatus();
+    </script>
+</body>
+</html>
+HTML;
+})->name('debug.test-native-message');
+
 // Admin redirect - redirects to login if not authenticated, or to admin dashboard if authenticated
 Route::get('/admin', function () {
     return redirect('/admin/login');
