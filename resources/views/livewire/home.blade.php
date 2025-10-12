@@ -56,50 +56,5 @@
                 </div>
             </div>
         </div>
-
-        <!-- Debug Tools (only in development) -->
-        @if(config('app.debug'))
-        <div class="mt-12 bg-yellow-50 border-2 border-yellow-400 rounded-lg p-6">
-            <h3 class="text-xl font-bold text-gray-900 mb-4">🔧 Herramientas de Desarrollo</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <a href="/debug/test-native-message" class="block p-4 bg-white hover:bg-gray-50 rounded-lg border border-gray-300 transition">
-                    <div class="flex items-center">
-                        <span class="text-2xl mr-3">📱</span>
-                        <div>
-                            <h4 class="font-semibold text-gray-900">Test Native App Messages</h4>
-                            <p class="text-sm text-gray-600">Probar envío de mensajes a React Native</p>
-                        </div>
-                    </div>
-                </a>
-                <a href="/debug/simulate-webview" class="block p-4 bg-white hover:bg-gray-50 rounded-lg border border-gray-300 transition">
-                    <div class="flex items-center">
-                        <span class="text-2xl mr-3">🔍</span>
-                        <div>
-                            <h4 class="font-semibold text-gray-900">WebView Simulator</h4>
-                            <p class="text-sm text-gray-600">Simular WebView de React Native</p>
-                        </div>
-                    </div>
-                </a>
-                <a href="/debug/session-info?key=debug123" class="block p-4 bg-white hover:bg-gray-50 rounded-lg border border-gray-300 transition">
-                    <div class="flex items-center">
-                        <span class="text-2xl mr-3">⚙️</span>
-                        <div>
-                            <h4 class="font-semibold text-gray-900">Session Info</h4>
-                            <p class="text-sm text-gray-600">Ver configuración de sesión</p>
-                        </div>
-                    </div>
-                </a>
-                <a href="/debug/test-session?key=debug123" class="block p-4 bg-white hover:bg-gray-50 rounded-lg border border-gray-300 transition">
-                    <div class="flex items-center">
-                        <span class="text-2xl mr-3">🧪</span>
-                        <div>
-                            <h4 class="font-semibold text-gray-900">Test Session</h4>
-                            <p class="text-sm text-gray-600">Probar persistencia de sesión</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
-        @endif
     </div>
 </div>
