@@ -108,26 +108,57 @@
         <script>
             // Auto-detect authentication state on page load
             document.addEventListener('DOMContentLoaded', function() {
+                console.log('=== NATIVE APP INTEGRATION DEBUG ===');
+                console.log('[DEBUG] NativeAppBridge available:', typeof window.NativeAppBridge !== 'undefined');
+                console.log('[DEBUG] Is running in native app:', window.NativeAppBridge?.isRunningInNativeApp() || false);
+                console.log('[DEBUG] User authenticated:', {{ auth()->check() ? 'true' : 'false' }});
+
+                @auth
+                console.log('[DEBUG] User ID:', '{{ auth()->id() }}');
+                console.log('[DEBUG] Has native_app_token in session:', {{ session('native_app_token') ? 'true' : 'false' }});
+                @endauth
+
                 // Check if we just logged in via Google OAuth
                 @if(session('native_app_login') && session('native_app_token'))
-                if (window.NativeAppBridge && window.NativeAppBridge.isRunningInNativeApp()) {
-                    console.log('[App] Fresh login detected, notifying native app');
-                    window.NativeAppBridge.notifyLoginSuccess(
-                        '{{ auth()->id() }}',
-                        '{{ session('native_app_token') }}'
-                    );
+                console.log('[DEBUG] 🔑 Fresh login detected!');
+                console.log('[DEBUG] Token:', '{{ substr(session('native_app_token'), 0, 20) }}...');
+
+                if (window.NativeAppBridge) {
+                    if (window.NativeAppBridge.isRunningInNativeApp()) {
+                        console.log('[DEBUG] ✅ Sending loginSuccess to native app');
+                        var result = window.NativeAppBridge.notifyLoginSuccess(
+                            '{{ auth()->id() }}',
+                            '{{ session('native_app_token') }}'
+                        );
+                        console.log('[DEBUG] loginSuccess sent, result:', result);
+                    } else {
+                        console.log('[DEBUG] ⚠️ Not in native app, skipping notification');
+                    }
+                } else {
+                    console.error('[DEBUG] ❌ NativeAppBridge not available!');
                 }
+                @else
+                console.log('[DEBUG] ℹ️ No fresh login (no session token)');
                 @endif
 
                 // Intercept logout form submission to notify native app
                 var logoutForm = document.querySelector('form[action="{{ route('logout') }}"]');
+                console.log('[DEBUG] Logout form found:', logoutForm !== null);
+
                 if (logoutForm && window.NativeAppBridge) {
                     logoutForm.addEventListener('submit', function(e) {
-                        console.log('[App] Logout form submitted, notifying native app');
-                        window.NativeAppBridge.notifyLogout();
-                        // Let the form submission continue
+                        console.log('[DEBUG] 👋 Logout button clicked!');
+                        if (window.NativeAppBridge.isRunningInNativeApp()) {
+                            console.log('[DEBUG] ✅ Sending logout to native app');
+                            var result = window.NativeAppBridge.notifyLogout();
+                            console.log('[DEBUG] Logout sent, result:', result);
+                        } else {
+                            console.log('[DEBUG] ⚠️ Not in native app, skipping logout notification');
+                        }
                     });
                 }
+
+                console.log('=== END DEBUG ===');
             });
         </script>
 

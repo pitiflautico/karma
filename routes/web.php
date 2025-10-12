@@ -45,6 +45,118 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Debug routes - REMOVE IN PRODUCTION AFTER TESTING
+
+// Simular WebView de React Native en local
+Route::get('/debug/simulate-webview', function () {
+    if (!config('app.debug') && request('key') !== 'debug123') {
+        abort(404);
+    }
+
+    return <<<'HTML'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simulador WebView React Native</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .webview { border: 2px solid #333; height: 600px; margin: 20px 0; }
+        .console { background: #000; color: #0f0; padding: 10px; font-family: monospace; height: 300px; overflow-y: auto; }
+        .console-entry { margin: 5px 0; }
+        h1 { color: #333; }
+        .info { background: #e3f2fd; padding: 10px; margin: 10px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Simulador de WebView React Native</h1>
+
+        <div class="info">
+            <strong>Instrucciones:</strong>
+            <ol>
+                <li>El iframe simula un WebView de React Native</li>
+                <li>Haz login con Google en el iframe</li>
+                <li>Los mensajes aparecerán en la consola abajo</li>
+                <li>También haz logout para probar</li>
+            </ol>
+        </div>
+
+        <iframe
+            id="webview"
+            class="webview"
+            src="http://localhost:8000"
+            style="width: 100%;"
+        ></iframe>
+
+        <h2>📱 Consola de Mensajes (simula React Native)</h2>
+        <div class="console" id="console">
+            <div class="console-entry">Esperando mensajes del WebView...</div>
+        </div>
+    </div>
+
+    <script>
+        // Simular window.ReactNativeWebView.postMessage
+        const consoleEl = document.getElementById('console');
+
+        window.addEventListener('message', function(event) {
+            try {
+                const message = JSON.parse(event.data);
+                const timestamp = new Date().toLocaleTimeString();
+
+                let emoji = '📩';
+                let color = '#0f0';
+
+                if (message.action === 'loginSuccess') {
+                    emoji = '✅';
+                    color = '#0f0';
+                } else if (message.action === 'logout') {
+                    emoji = '👋';
+                    color = '#ff0';
+                }
+
+                const entry = document.createElement('div');
+                entry.className = 'console-entry';
+                entry.style.color = color;
+                entry.innerHTML = `
+                    [${timestamp}] ${emoji} <strong>${message.action}</strong>
+                    <br>
+                    ${JSON.stringify(message, null, 2).replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')}
+                `;
+
+                consoleEl.appendChild(entry);
+                consoleEl.scrollTop = consoleEl.scrollHeight;
+            } catch (e) {
+                // Ignorar mensajes que no son JSON
+            }
+        });
+
+        // Inyectar window.ReactNativeWebView en el iframe
+        const iframe = document.getElementById('webview');
+        iframe.onload = function() {
+            try {
+                iframe.contentWindow.ReactNativeWebView = {
+                    postMessage: function(data) {
+                        console.log('📤 postMessage llamado:', data);
+                        // Enviar el mensaje de vuelta a esta ventana
+                        window.postMessage(data, '*');
+                    }
+                };
+
+                const entry = document.createElement('div');
+                entry.className = 'console-entry';
+                entry.style.color = '#0ff';
+                entry.innerHTML = '[INFO] ReactNativeWebView inyectado en iframe ✓';
+                consoleEl.appendChild(entry);
+            } catch (e) {
+                console.error('Error inyectando ReactNativeWebView:', e);
+            }
+        };
+    </script>
+</body>
+</html>
+HTML;
+})->name('debug.simulate-webview');
+
 Route::get('/debug/session-info', function () {
     // Solo accesible si APP_DEBUG=true o con parámetro secreto
     if (!config('app.debug') && request('key') !== 'debug123') {
