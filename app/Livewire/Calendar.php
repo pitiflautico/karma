@@ -17,6 +17,7 @@ class Calendar extends Component
     public $selectedDate = null;
     public $selectedDateMoods = [];
     public $selectedDateEvents = [];
+    public $selectedDateSelfie = null;
 
     public function mount()
     {
@@ -58,6 +59,12 @@ class Calendar extends Component
             ->whereDate('end_time', '>=', $selectedDate)
             ->orderBy('start_time')
             ->get();
+
+        // Get selfie for selected date
+        $this->selectedDateSelfie = MoodEntry::where('user_id', Auth::id())
+            ->whereNotNull('selfie_photo_path')
+            ->whereDate('selfie_taken_at', $selectedDate)
+            ->first();
     }
 
     #[On('moodEntrySaved')]
@@ -91,6 +98,19 @@ class Calendar extends Component
                 return Carbon::parse($mood->created_at)->format('Y-m-d');
             });
 
+        // Get all selfie dates for this month
+        $selfieDates = MoodEntry::where('user_id', Auth::id())
+            ->whereNotNull('selfie_photo_path')
+            ->whereYear('selfie_taken_at', $this->currentYear)
+            ->whereMonth('selfie_taken_at', $this->currentMonth)
+            ->get()
+            ->pluck('selfie_taken_at')
+            ->map(function($date) {
+                return Carbon::parse($date)->format('Y-m-d');
+            })
+            ->unique()
+            ->toArray();
+
         // Add days of the month
         for ($day = 1; $day <= $daysInMonth; $day++) {
             $date = Carbon::create($this->currentYear, $this->currentMonth, $day);
@@ -105,6 +125,7 @@ class Calendar extends Component
                 'isToday' => $date->isToday(),
                 'moodCount' => $dayMoods->count(),
                 'avgMood' => $avgMood,
+                'hasSelfie' => in_array($dateKey, $selfieDates),
             ];
         }
     }

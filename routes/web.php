@@ -13,6 +13,7 @@ use App\Livewire\SharedWithMe;
 use App\Livewire\AcceptInvite;
 use App\Livewire\AIInsights;
 use App\Livewire\Settings;
+use App\Livewire\Selfies;
 
 // Public pages
 Route::get('/', Home::class)->name('home');
@@ -43,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/ai-insights', AIInsights::class)->name('ai.insights');
     Route::get('/sharing-settings', SharingSettings::class)->name('sharing.settings');
     Route::get('/shared-with-me', SharedWithMe::class)->name('shared.with.me');
+    Route::get('/selfies', Selfies::class)->name('selfies');
     Route::get('/settings', Settings::class)->name('settings');
     Route::post('/logout', [GoogleAuthController::class, 'logout'])->name('logout');
 });

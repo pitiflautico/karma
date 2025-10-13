@@ -64,6 +64,9 @@
                                 <a href="{{ route('shared.with.me') }}" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('shared.with.me') ? 'bg-gray-100' : '' }}">
                                     Shared
                                 </a>
+                                <a href="{{ route('selfies') }}" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('selfies') ? 'bg-gray-100' : '' }}">
+                                    Selfies
+                                </a>
                                 <a href="{{ route('mood.prompts') }}" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('mood.prompts') ? 'bg-gray-100' : '' }} relative">
                                     Mood Check-ins
                                     @php

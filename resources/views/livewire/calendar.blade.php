@@ -75,8 +75,15 @@
                                         {{ $dayData['isToday'] ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:bg-gray-50' }}
                                         {{ $selectedDate === $dayData['date'] ? 'ring-2 ring-purple-500' : '' }}"
                                 >
-                                    <div class="text-sm {{ $dayData['isToday'] ? 'font-bold text-purple-600' : 'text-gray-700' }}">
-                                        {{ $dayData['day'] }}
+                                    <div class="flex items-center justify-center gap-0.5">
+                                        <div class="text-sm {{ $dayData['isToday'] ? 'font-bold text-purple-600' : 'text-gray-700' }}">
+                                            {{ $dayData['day'] }}
+                                        </div>
+                                        @if($dayData['hasSelfie'])
+                                            <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                                            </svg>
+                                        @endif
                                     </div>
 
                                     @if($dayData['moodCount'] > 0)
@@ -101,7 +108,7 @@
                     <!-- Legend -->
                     <div class="mt-4 pt-4 border-t border-gray-200">
                         <p class="text-xs text-gray-600 mb-2">Mood Legend:</p>
-                        <div class="flex gap-4 text-xs">
+                        <div class="flex gap-4 text-xs flex-wrap">
                             <div class="flex items-center gap-1">
                                 <div class="w-3 h-3 rounded bg-red-400"></div>
                                 <span>Low (1-3)</span>
@@ -118,6 +125,12 @@
                                 <div class="w-3 h-3 rounded bg-blue-400"></div>
                                 <span>Great (8-10)</span>
                             </div>
+                            <div class="flex items-center gap-1">
+                                <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>Selfie</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -130,6 +143,28 @@
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">
                             {{ \Carbon\Carbon::parse($selectedDate)->format('F j, Y') }}
                         </h3>
+
+                        <!-- Selfie -->
+                        @if($selectedDateSelfie)
+                            <div class="mb-6">
+                                <h4 class="text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+                                    <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span>Selfie</span>
+                                </h4>
+                                <div class="rounded-lg overflow-hidden border border-gray-200">
+                                    <img
+                                        src="{{ Storage::disk('public')->url($selectedDateSelfie->selfie_photo_path) }}"
+                                        alt="Selfie"
+                                        class="w-full h-auto"
+                                    >
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2">
+                                    Taken at {{ \Carbon\Carbon::parse($selectedDateSelfie->selfie_taken_at)->format('h:i A') }}
+                                </p>
+                            </div>
+                        @endif
 
                         <!-- Mood Entries -->
                         <div class="mb-6">
