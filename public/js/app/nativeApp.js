@@ -15,7 +15,10 @@
      * @returns {boolean} True if running in React Native WebView, false otherwise
      */
     function isRunningInNativeApp() {
-        return typeof window !== 'undefined' && typeof window.ReactNativeWebView !== 'undefined';
+        return typeof window !== 'undefined' && (
+            typeof window.ReactNativeWebView !== 'undefined' ||
+            window.__RUNNING_IN_NATIVE_APP__ === true
+        );
     }
 
     /**

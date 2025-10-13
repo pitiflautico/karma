@@ -1,0 +1,21 @@
+=== CAMBIO PARA SERVIDOR DE PRODUCCIÓN ===
+
+1. Conectar al servidor (SSH o panel de control)
+
+2. Editar el archivo .env
+
+3. CAMBIAR esta línea:
+   SESSION_SAME_SITE=lax
+
+   POR esta:
+   SESSION_SAME_SITE=none
+
+4. Limpiar cache de configuración:
+   php artisan config:cache
+
+5. Probar login desde el iPhone físico
+
+=== FIN ===
+
+NOTA: Solo es cambiar "lax" por "none" en esa línea.
+Todo lo demás (SESSION_SECURE_COOKIE=true y SESSION_DOMAIN=.feelith.com) ya está correcto.

@@ -124,22 +124,45 @@
         <!-- Native App Integration Scripts -->
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                console.log('[APP.BLADE] DOMContentLoaded fired');
+                console.log('[APP.BLADE] window.NativeAppBridge exists:', !!window.NativeAppBridge);
+
                 // Check if we just logged in via Google OAuth
                 @if(session('native_app_login') && session('native_app_token'))
-                if (window.NativeAppBridge && window.NativeAppBridge.isRunningInNativeApp()) {
-                    // Send login success message to native app
-                    window.NativeAppBridge.notifyLoginSuccess(
-                        '{{ auth()->id() }}',
-                        '{{ session('native_app_token') }}',
-                        '{{ config('app.url') }}/api/push/register'
-                    );
+                console.log('[APP.BLADE] ✅ Session has native_app_login and token');
+                console.log('[APP.BLADE] User ID:', '{{ auth()->id() }}');
+                console.log('[APP.BLADE] Token length:', '{{ strlen(session('native_app_token')) }}');
+
+                if (window.NativeAppBridge) {
+                    console.log('[APP.BLADE] ✅ NativeAppBridge exists');
+                    console.log('[APP.BLADE] isRunningInNativeApp:', window.NativeAppBridge.isRunningInNativeApp());
+
+                    if (window.NativeAppBridge.isRunningInNativeApp()) {
+                        console.log('[APP.BLADE] ✅ Running in native app, calling notifyLoginSuccess...');
+
+                        // Send login success message to native app
+                        window.NativeAppBridge.notifyLoginSuccess(
+                            '{{ auth()->id() }}',
+                            '{{ session('native_app_token') }}',
+                            '{{ config('app.url') }}/api/push/register'
+                        );
+
+                        console.log('[APP.BLADE] ✅ notifyLoginSuccess called');
+                    } else {
+                        console.log('[APP.BLADE] ❌ NOT running in native app');
+                    }
+                } else {
+                    console.log('[APP.BLADE] ❌ NativeAppBridge does not exist');
                 }
 
                 // Clear the token from session after using it
+                console.log('[APP.BLADE] Clearing native token from session...');
                 fetch('{{ route('clear-native-token') }}', {
                     method: 'POST',
                     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-                });
+                }).then(() => console.log('[APP.BLADE] Token cleared'));
+                @else
+                console.log('[APP.BLADE] ❌ NO native_app_login or token in session');
                 @endif
 
                 // Intercept logout form submission to notify native app
