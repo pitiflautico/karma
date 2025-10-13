@@ -31,6 +31,7 @@ Route::prefix('auth/google')->group(function () {
 // Protected user routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
+    Route::get('/mood/new', Dashboard::class)->name('mood.new');
     Route::get('/calendar', Calendar::class)->name('calendar');
     Route::get('/calendar-events', CalendarEvents::class)->name('calendar.events');
     Route::get('/calendar-settings', \App\Livewire\CalendarSettings::class)->name('calendar.settings');

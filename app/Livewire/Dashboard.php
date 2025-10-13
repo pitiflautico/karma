@@ -15,6 +15,15 @@ class Dashboard extends Component
     public $note = '';
     public $showModal = false;
 
+    public function mount()
+    {
+        // Check if we should open the mood entry modal automatically
+        // This happens when accessing /mood/new route
+        if (request()->route()->getName() === 'mood.new') {
+            $this->dispatch('openMoodEntryModal');
+        }
+    }
+
     #[On('moodEntrySaved')]
     public function refreshData()
     {
