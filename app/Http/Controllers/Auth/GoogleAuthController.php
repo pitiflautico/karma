@@ -122,6 +122,15 @@ class GoogleAuthController extends Controller
                     'token_length' => strlen(session('native_app_token')),
                     'debug_info' => session('native_app_debug'),
                 ]);
+
+                // ALSO pass token via query param for WebView (session may not persist)
+                \Log::info('Redirecting to dashboard with token in URL (for WebView)');
+                return redirect()->intended('/dashboard')->with([
+                    'native_app_auth' => [
+                        'user_id' => $user->id,
+                        'token' => $token,
+                    ]
+                ]);
             } else {
                 \Log::warning('No token created, skipping session storage');
             }

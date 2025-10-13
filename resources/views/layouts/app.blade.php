@@ -128,10 +128,22 @@
                 console.log('[APP.BLADE] window.NativeAppBridge exists:', !!window.NativeAppBridge);
 
                 // Check if we just logged in via Google OAuth
-                @if(session('native_app_login') && session('native_app_token'))
-                console.log('[APP.BLADE] ✅ Session has native_app_login and token');
-                console.log('[APP.BLADE] User ID:', '{{ auth()->id() }}');
-                console.log('[APP.BLADE] Token length:', '{{ strlen(session('native_app_token')) }}');
+                @if((session('native_app_login') && session('native_app_token')) || session('native_app_auth'))
+                @php
+                    // Try both regular session and flash session
+                    if (session('native_app_auth')) {
+                        $userId = session('native_app_auth')['user_id'];
+                        $userToken = session('native_app_auth')['token'];
+                        $source = 'flash session';
+                    } else {
+                        $userId = auth()->id();
+                        $userToken = session('native_app_token');
+                        $source = 'regular session';
+                    }
+                @endphp
+                console.log('[APP.BLADE] ✅ Session has auth data (from {{ $source }})');
+                console.log('[APP.BLADE] User ID:', '{{ $userId }}');
+                console.log('[APP.BLADE] Token length:', '{{ strlen($userToken) }}');
 
                 if (window.NativeAppBridge) {
                     console.log('[APP.BLADE] ✅ NativeAppBridge exists');
@@ -142,8 +154,8 @@
 
                         // Send login success message to native app
                         window.NativeAppBridge.notifyLoginSuccess(
-                            '{{ auth()->id() }}',
-                            '{{ session('native_app_token') }}',
+                            '{{ $userId }}',
+                            '{{ $userToken }}',
                             '{{ config('app.url') }}/api/push/register'
                         );
 
