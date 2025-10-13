@@ -16,6 +16,8 @@ use App\Livewire\Settings;
 
 // Public pages
 Route::get('/', Home::class)->name('home');
+Route::get('/terms', \App\Livewire\Terms::class)->name('terms');
+Route::get('/privacy', \App\Livewire\Privacy::class)->name('privacy');
 
 // Sharing invite acceptance (public route)
 Route::get('/accept-invite/{token}', AcceptInvite::class)->name('sharing.accept-invite');

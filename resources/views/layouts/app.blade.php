@@ -99,6 +99,23 @@
             <main>
                 {{ $slot }}
             </main>
+
+            <!-- Footer -->
+            <footer class="bg-white border-t border-gray-200 mt-auto">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-center space-x-6 text-sm text-gray-500">
+                        <a href="{{ route('terms') }}" class="hover:text-gray-900">
+                            Terms of Service
+                        </a>
+                        <span>•</span>
+                        <a href="{{ route('privacy') }}" class="hover:text-gray-900">
+                            Privacy Policy
+                        </a>
+                        <span>•</span>
+                        <span>© {{ date('Y') }} Feelith</span>
+                    </div>
+                </div>
+            </footer>
         </div>
 
         <!-- Livewire Scripts -->
