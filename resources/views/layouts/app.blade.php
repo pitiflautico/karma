@@ -126,7 +126,9 @@
             document.addEventListener('DOMContentLoaded', function() {
                 console.log('[APP.BLADE] DOMContentLoaded fired');
                 console.log('[APP.BLADE] window.NativeAppBridge exists:', !!window.NativeAppBridge);
-                console.log('[APP.BLADE] Current URL:', window.location.href);
+                console.log('[APP.BLADE] Full URL:', window.location.href);
+                console.log('[APP.BLADE] Search params:', window.location.search);
+                console.log('[APP.BLADE] Pathname:', window.location.pathname);
 
                 // Try to get auth data from URL query parameter (for WebView)
                 var urlParams = new URLSearchParams(window.location.search);
