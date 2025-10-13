@@ -126,56 +126,82 @@
             document.addEventListener('DOMContentLoaded', function() {
                 console.log('[APP.BLADE] DOMContentLoaded fired');
                 console.log('[APP.BLADE] window.NativeAppBridge exists:', !!window.NativeAppBridge);
+                console.log('[APP.BLADE] Current URL:', window.location.href);
 
-                // Check if we just logged in via Google OAuth
-                @if((session('native_app_login') && session('native_app_token')) || session('native_app_auth'))
-                @php
-                    // Try both regular session and flash session
-                    if (session('native_app_auth')) {
-                        $userId = session('native_app_auth')['user_id'];
-                        $userToken = session('native_app_auth')['token'];
-                        $source = 'flash session';
-                    } else {
-                        $userId = auth()->id();
-                        $userToken = session('native_app_token');
-                        $source = 'regular session';
+                // Try to get auth data from URL query parameter (for WebView)
+                var urlParams = new URLSearchParams(window.location.search);
+                var nativeAuthParam = urlParams.get('native_auth');
+                var authData = null;
+                var authSource = null;
+
+                if (nativeAuthParam) {
+                    try {
+                        console.log('[APP.BLADE] Found native_auth in URL');
+                        var decoded = atob(nativeAuthParam);
+                        authData = JSON.parse(decoded);
+                        authSource = 'URL parameter';
+                        console.log('[APP.BLADE] ✅ Auth data decoded from URL');
+                        console.log('[APP.BLADE] User ID:', authData.user_id);
+                        console.log('[APP.BLADE] Token length:', authData.token.length);
+                        console.log('[APP.BLADE] Timestamp:', authData.timestamp);
+
+                        // Clean URL (remove the parameter)
+                        var cleanUrl = window.location.pathname;
+                        window.history.replaceState({}, document.title, cleanUrl);
+                        console.log('[APP.BLADE] URL cleaned');
+                    } catch (e) {
+                        console.error('[APP.BLADE] Error decoding auth data:', e);
                     }
-                @endphp
-                console.log('[APP.BLADE] ✅ Session has auth data (from {{ $source }})');
-                console.log('[APP.BLADE] User ID:', '{{ $userId }}');
-                console.log('[APP.BLADE] Token length:', '{{ strlen($userToken) }}');
-
-                if (window.NativeAppBridge) {
-                    console.log('[APP.BLADE] ✅ NativeAppBridge exists');
-                    console.log('[APP.BLADE] isRunningInNativeApp:', window.NativeAppBridge.isRunningInNativeApp());
-
-                    if (window.NativeAppBridge.isRunningInNativeApp()) {
-                        console.log('[APP.BLADE] ✅ Running in native app, calling notifyLoginSuccess...');
-
-                        // Send login success message to native app
-                        window.NativeAppBridge.notifyLoginSuccess(
-                            '{{ $userId }}',
-                            '{{ $userToken }}',
-                            '{{ config('app.url') }}/api/push/register'
-                        );
-
-                        console.log('[APP.BLADE] ✅ notifyLoginSuccess called');
-                    } else {
-                        console.log('[APP.BLADE] ❌ NOT running in native app');
-                    }
-                } else {
-                    console.log('[APP.BLADE] ❌ NativeAppBridge does not exist');
                 }
 
-                // Clear the token from session after using it
-                console.log('[APP.BLADE] Clearing native token from session...');
-                fetch('{{ route('clear-native-token') }}', {
-                    method: 'POST',
-                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-                }).then(() => console.log('[APP.BLADE] Token cleared'));
-                @else
-                console.log('[APP.BLADE] ❌ NO native_app_login or token in session');
+                // Fallback to session data (for web browsers and simulator)
+                @if(session('native_app_login') && session('native_app_token'))
+                if (!authData) {
+                    console.log('[APP.BLADE] Using session data as fallback');
+                    authData = {
+                        user_id: '{{ auth()->id() }}',
+                        token: '{{ session('native_app_token') }}',
+                    };
+                    authSource = 'session';
+                }
                 @endif
+
+                if (authData) {
+                    console.log('[APP.BLADE] ✅ Auth data available from ' + authSource);
+
+                    if (window.NativeAppBridge) {
+                        console.log('[APP.BLADE] ✅ NativeAppBridge exists');
+                        console.log('[APP.BLADE] isRunningInNativeApp:', window.NativeAppBridge.isRunningInNativeApp());
+
+                        if (window.NativeAppBridge.isRunningInNativeApp()) {
+                            console.log('[APP.BLADE] ✅ Running in native app, calling notifyLoginSuccess...');
+
+                            // Send login success message to native app
+                            window.NativeAppBridge.notifyLoginSuccess(
+                                authData.user_id.toString(),
+                                authData.token,
+                                '{{ config('app.url') }}/api/push/register'
+                            );
+
+                            console.log('[APP.BLADE] ✅ notifyLoginSuccess called');
+                        } else {
+                            console.log('[APP.BLADE] ❌ NOT running in native app');
+                        }
+                    } else {
+                        console.log('[APP.BLADE] ❌ NativeAppBridge does not exist');
+                    }
+
+                    // Clear the token from session after using it
+                    if (authSource === 'session') {
+                        console.log('[APP.BLADE] Clearing native token from session...');
+                        fetch('{{ route('clear-native-token') }}', {
+                            method: 'POST',
+                            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                        }).then(() => console.log('[APP.BLADE] Token cleared'));
+                    }
+                } else {
+                    console.log('[APP.BLADE] ❌ NO auth data available (not from URL or session)');
+                }
 
                 // Intercept logout form submission to notify native app
                 var logoutForm = document.querySelector('form[action="{{ route('logout') }}"]');

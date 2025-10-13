@@ -108,29 +108,21 @@ class GoogleAuthController extends Controller
             }
 
             if ($token) {
-                // Store in session (not flash) so it persists
+                // Store in session for web browsers
                 session()->put('native_app_login', true);
                 session()->put('native_app_token', $token);
-                session()->put('native_app_debug', 'Token set at ' . now()->toDateTimeString());
-                session()->save(); // Force save to ensure it persists
+                session()->save();
 
                 \Log::info('Token stored in session');
-                \Log::info('Session ID:', ['session_id' => session()->getId()]);
-                \Log::info('Session contents:', [
-                    'native_app_login' => session('native_app_login'),
-                    'has_token' => !empty(session('native_app_token')),
-                    'token_length' => strlen(session('native_app_token')),
-                    'debug_info' => session('native_app_debug'),
-                ]);
 
-                // ALSO pass token via query param for WebView (session may not persist)
-                \Log::info('Redirecting to dashboard with token in URL (for WebView)');
-                return redirect()->intended('/dashboard')->with([
-                    'native_app_auth' => [
-                        'user_id' => $user->id,
-                        'token' => $token,
-                    ]
-                ]);
+                // For WebView: Pass token in URL fragment (more secure than query param)
+                // Fragment is not sent to server and can only be read by JavaScript
+                \Log::info('Redirecting with token in URL fragment for WebView');
+                return redirect()->intended('/dashboard?native_auth=' . base64_encode(json_encode([
+                    'user_id' => $user->id,
+                    'token' => $token,
+                    'timestamp' => time(),
+                ])));
             } else {
                 \Log::warning('No token created, skipping session storage');
             }
