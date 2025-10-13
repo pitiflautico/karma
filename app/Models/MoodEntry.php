@@ -23,6 +23,9 @@ class MoodEntry extends Model
         'mood_score',
         'note',
         'is_manual',
+        'selfie_photo_path',
+        'selfie_heatmap_path',
+        'selfie_taken_at',
     ];
 
     /**
@@ -33,6 +36,7 @@ class MoodEntry extends Model
     protected $casts = [
         'mood_score' => 'integer',
         'is_manual' => 'boolean',
+        'selfie_taken_at' => 'datetime',
     ];
 
     /**
