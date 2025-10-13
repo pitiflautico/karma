@@ -124,12 +124,6 @@
         <!-- Native App Integration Scripts -->
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                console.log('[APP.BLADE] DOMContentLoaded fired');
-                console.log('[APP.BLADE] window.NativeAppBridge exists:', !!window.NativeAppBridge);
-                console.log('[APP.BLADE] Full URL:', window.location.href);
-                console.log('[APP.BLADE] Search params:', window.location.search);
-                console.log('[APP.BLADE] Pathname:', window.location.pathname);
-
                 // Try to get auth data from URL query parameter (for WebView)
                 var urlParams = new URLSearchParams(window.location.search);
                 var nativeAuthParam = urlParams.get('native_auth');
@@ -138,71 +132,46 @@
 
                 if (nativeAuthParam) {
                     try {
-                        console.log('[APP.BLADE] Found native_auth in URL');
                         var decoded = atob(nativeAuthParam);
                         authData = JSON.parse(decoded);
                         authSource = 'URL parameter';
-                        console.log('[APP.BLADE] ✅ Auth data decoded from URL');
-                        console.log('[APP.BLADE] User ID:', authData.user_id);
-                        console.log('[APP.BLADE] Token length:', authData.token.length);
-                        console.log('[APP.BLADE] Timestamp:', authData.timestamp);
+                        console.log('[NativeApp] 🟢 Auth data received via URL');
 
                         // Clean URL (remove the parameter)
                         var cleanUrl = window.location.pathname;
                         window.history.replaceState({}, document.title, cleanUrl);
-                        console.log('[APP.BLADE] URL cleaned');
                     } catch (e) {
-                        console.error('[APP.BLADE] Error decoding auth data:', e);
+                        console.error('[NativeApp] ❌ Error decoding auth data:', e);
                     }
                 }
 
                 // Fallback to session data (for web browsers and simulator)
                 @if(session('native_app_login') && session('native_app_token'))
                 if (!authData) {
-                    console.log('[APP.BLADE] Using session data as fallback');
                     authData = {
                         user_id: '{{ auth()->id() }}',
                         token: '{{ session('native_app_token') }}',
                     };
                     authSource = 'session';
+                    console.log('[NativeApp] 🟢 Auth data received via session');
                 }
                 @endif
 
-                if (authData) {
-                    console.log('[APP.BLADE] ✅ Auth data available from ' + authSource);
-
-                    if (window.NativeAppBridge) {
-                        console.log('[APP.BLADE] ✅ NativeAppBridge exists');
-                        console.log('[APP.BLADE] isRunningInNativeApp:', window.NativeAppBridge.isRunningInNativeApp());
-
-                        if (window.NativeAppBridge.isRunningInNativeApp()) {
-                            console.log('[APP.BLADE] ✅ Running in native app, calling notifyLoginSuccess...');
-
-                            // Send login success message to native app
-                            window.NativeAppBridge.notifyLoginSuccess(
-                                authData.user_id.toString(),
-                                authData.token,
-                                '{{ config('app.url') }}/api/push/register'
-                            );
-
-                            console.log('[APP.BLADE] ✅ notifyLoginSuccess called');
-                        } else {
-                            console.log('[APP.BLADE] ❌ NOT running in native app');
-                        }
-                    } else {
-                        console.log('[APP.BLADE] ❌ NativeAppBridge does not exist');
-                    }
+                if (authData && window.NativeAppBridge && window.NativeAppBridge.isRunningInNativeApp()) {
+                    // Send login success message to native app
+                    window.NativeAppBridge.notifyLoginSuccess(
+                        authData.user_id.toString(),
+                        authData.token,
+                        '{{ config('app.url') }}/api/push/register'
+                    );
 
                     // Clear the token from session after using it
                     if (authSource === 'session') {
-                        console.log('[APP.BLADE] Clearing native token from session...');
                         fetch('{{ route('clear-native-token') }}', {
                             method: 'POST',
                             headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-                        }).then(() => console.log('[APP.BLADE] Token cleared'));
+                        });
                     }
-                } else {
-                    console.log('[APP.BLADE] ❌ NO auth data available (not from URL or session)');
                 }
 
                 // Intercept logout form submission to notify native app
