@@ -17,6 +17,7 @@ class PushNotificationController extends Controller
             'userId' => 'required|string',
             'pushToken' => 'nullable|string',
             'hasPermission' => 'nullable|boolean',
+            'remove' => 'nullable|boolean',
             'platform' => 'required|in:ios,android',
         ]);
 
@@ -44,6 +45,26 @@ class PushNotificationController extends Controller
                 'success' => false,
                 'message' => 'User ID mismatch'
             ], 403);
+        }
+
+        // Handle push token removal (logout)
+        if ($request->has('remove') && $request->remove === true) {
+            $user->update([
+                'push_token' => null,
+                'push_platform' => null,
+                'push_enabled' => false,
+                'push_registered_at' => null,
+            ]);
+
+            \Log::info('Push token unregistered', [
+                'user_id' => $user->id,
+                'platform' => $request->platform,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Push token unregistered successfully',
+            ]);
         }
 
         // Check if user denied permission
