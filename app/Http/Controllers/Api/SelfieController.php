@@ -67,7 +67,7 @@ class SelfieController extends Controller
             // Store in storage/app/public/selfies/
             Storage::disk('public')->put($path, $imageData);
 
-            // If mood_entry_id provided, attach to mood entry
+            // If mood_entry_id provided, attach to existing mood entry
             if ($request->input('mood_entry_id')) {
                 $moodEntry = MoodEntry::where('id', $request->input('mood_entry_id'))
                     ->where('user_id', auth()->id())
@@ -79,6 +79,14 @@ class SelfieController extends Controller
                         'selfie_taken_at' => now(),
                     ]);
                 }
+            } else {
+                // Create a new mood entry for this selfie
+                $moodEntry = MoodEntry::create([
+                    'user_id' => auth()->id(),
+                    'mood_score' => 5, // Default neutral mood
+                    'selfie_photo_path' => $path,
+                    'selfie_taken_at' => now(),
+                ]);
             }
 
             return response()->json([
