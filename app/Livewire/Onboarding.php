@@ -97,6 +97,17 @@ class Onboarding extends Component
     }
 
     /**
+     * Skip current step (for optional steps)
+     */
+    public function skipStep()
+    {
+        // Only allow skipping optional steps (6: weight, 7: height)
+        if (in_array($this->currentStep, [6, 7])) {
+            $this->currentStep++;
+        }
+    }
+
+    /**
      * Validate current step
      */
     private function validateCurrentStep()

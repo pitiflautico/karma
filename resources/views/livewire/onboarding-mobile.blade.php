@@ -14,6 +14,15 @@
 
             <!-- 3-Stage Progress Bar (Always visible) - Respecting Dynamic Island -->
             <div class="pt-16 px-6">
+                <!-- Skip button (only on steps 1-7) -->
+                @if($currentStep >= 1 && $currentStep <= 7)
+                    <div class="absolute top-16 right-6 z-20">
+                        <button wire:click="skipStep" class="text-gray-600 text-base font-medium hover:text-gray-800">
+                            Skip
+                        </button>
+                    </div>
+                @endif
+
                 <div class="flex items-center justify-center gap-2">
                     <!-- Welcome Stage -->
                     <div class="flex items-center">
@@ -149,13 +158,66 @@
                             @elseif($currentStep === 3)
                                 <!-- STEP 3: BIRTH DATE -->
                                 <div class="text-center mb-8">
-                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">¿Cuándo naciste?</h2>
-                                    <p class="text-gray-600 text-base">Esto nos ayuda a personalizar tu experiencia</p>
+                                    <h2 class="text-gray-900 text-3xl font-semibold mb-12">¿Cuándo naciste?</h2>
                                 </div>
-                                <input
-                                    type="date"
-                                    wire:model="birthDate"
-                                    class="w-full px-6 py-4 rounded-full text-lg text-center border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-[#7C4DFF]">
+
+                                <!-- iOS-style Date Picker -->
+                                <div class="relative mb-8" x-data="datePicker()">
+                                    <div class="relative flex justify-center gap-4 mb-8">
+                                        <!-- Selection indicator (green border) - positioned behind -->
+                                        <div class="absolute left-1/2 top-20 -translate-x-1/2 w-72 h-12 border-2 border-[#8BC34A] rounded-full pointer-events-none z-10"></div>
+
+                                        <!-- Month Picker -->
+                                        <div class="flex-1 max-w-[100px] h-48 overflow-y-scroll snap-y snap-mandatory scrollbar-hide relative z-20"
+                                             @scroll="updateMonth($event)"
+                                             x-ref="monthScroll">
+                                            <div class="h-20"></div>
+                                            <template x-for="(month, index) in months" :key="index">
+                                                <div class="h-12 flex items-center justify-center snap-center text-lg"
+                                                     :class="selectedMonth === index ? 'text-[#8BC34A] font-semibold' : 'text-gray-400'"
+                                                     x-text="month"></div>
+                                            </template>
+                                            <div class="h-20"></div>
+                                        </div>
+
+                                        <!-- Day Picker -->
+                                        <div class="flex-1 max-w-[80px] h-48 overflow-y-scroll snap-y snap-mandatory scrollbar-hide relative z-20"
+                                             @scroll="updateDay($event)"
+                                             x-ref="dayScroll">
+                                            <div class="h-20"></div>
+                                            <template x-for="day in days" :key="day">
+                                                <div class="h-12 flex items-center justify-center snap-center text-lg"
+                                                     :class="selectedDay === day ? 'text-[#8BC34A] font-semibold' : 'text-gray-400'"
+                                                     x-text="String(day).padStart(2, '0')"></div>
+                                            </template>
+                                            <div class="h-20"></div>
+                                        </div>
+
+                                        <!-- Year Picker -->
+                                        <div class="flex-1 max-w-[100px] h-48 overflow-y-scroll snap-y snap-mandatory scrollbar-hide relative z-20"
+                                             @scroll="updateYear($event)"
+                                             x-ref="yearScroll">
+                                            <div class="h-20"></div>
+                                            <template x-for="year in years" :key="year">
+                                                <div class="h-12 flex items-center justify-center snap-center text-lg"
+                                                     :class="selectedYear === year ? 'text-[#8BC34A] font-semibold' : 'text-gray-400'"
+                                                     x-text="year"></div>
+                                            </template>
+                                            <div class="h-20"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Age display -->
+                                    <div class="flex items-center justify-center gap-2 text-gray-600 mt-8">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        <span x-text="'Tengo ' + age + ' años'"></span>
+                                    </div>
+
+                                    <!-- Hidden input for Livewire -->
+                                    <input type="hidden" wire:model="birthDate" x-model="formattedDate">
+                                </div>
 
                             @elseif($currentStep === 4)
                                 <!-- STEP 4: GENDER -->
@@ -261,5 +323,100 @@
         input[type="date"]::-webkit-calendar-picker-indicator {
             cursor: pointer;
         }
+
+        /* Hide scrollbar but keep functionality */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
+
+    <script>
+        function datePicker() {
+            return {
+                months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                days: Array.from({ length: 31 }, (_, i) => i + 1),
+                years: Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i),
+                selectedMonth: 8, // September
+                selectedDay: 8,
+                selectedYear: 2001,
+                age: 23,
+                formattedDate: '',
+
+                init() {
+                    this.$nextTick(() => {
+                        // Scroll to default values
+                        this.scrollToMonth(this.selectedMonth);
+                        this.scrollToDay(this.selectedDay);
+                        this.scrollToYear(this.selectedYear);
+                        this.calculateAge();
+                        this.updateFormattedDate();
+                    });
+                },
+
+                scrollToMonth(index) {
+                    const scrollElement = this.$refs.monthScroll;
+                    scrollElement.scrollTop = index * 48; // 48px per item (h-12)
+                },
+
+                scrollToDay(day) {
+                    const scrollElement = this.$refs.dayScroll;
+                    scrollElement.scrollTop = (day - 1) * 48;
+                },
+
+                scrollToYear(year) {
+                    const scrollElement = this.$refs.yearScroll;
+                    const yearIndex = this.years.indexOf(year);
+                    scrollElement.scrollTop = yearIndex * 48;
+                },
+
+                updateMonth(event) {
+                    const scrollTop = event.target.scrollTop;
+                    const index = Math.round(scrollTop / 48);
+                    this.selectedMonth = Math.max(0, Math.min(11, index));
+                    this.calculateAge();
+                    this.updateFormattedDate();
+                },
+
+                updateDay(event) {
+                    const scrollTop = event.target.scrollTop;
+                    const index = Math.round(scrollTop / 48);
+                    this.selectedDay = Math.max(1, Math.min(31, index + 1));
+                    this.calculateAge();
+                    this.updateFormattedDate();
+                },
+
+                updateYear(event) {
+                    const scrollTop = event.target.scrollTop;
+                    const index = Math.round(scrollTop / 48);
+                    this.selectedYear = this.years[Math.max(0, Math.min(this.years.length - 1, index))];
+                    this.calculateAge();
+                    this.updateFormattedDate();
+                },
+
+                calculateAge() {
+                    const today = new Date();
+                    const birthDate = new Date(this.selectedYear, this.selectedMonth, this.selectedDay);
+                    let age = today.getFullYear() - birthDate.getFullYear();
+                    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                        age--;
+                    }
+
+                    this.age = age;
+                },
+
+                updateFormattedDate() {
+                    // Format: YYYY-MM-DD
+                    const month = String(this.selectedMonth + 1).padStart(2, '0');
+                    const day = String(this.selectedDay).padStart(2, '0');
+                    this.formattedDate = `${this.selectedYear}-${month}-${day}`;
+                }
+            }
+        }
+    </script>
 </div>
