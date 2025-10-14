@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\MoodEntry;
+use App\Services\HeatmapService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -69,6 +70,17 @@ class SelfieController extends Controller
 
             \Log::info('Selfie stored in storage', ['path' => $path, 'user_id' => auth()->id()]);
 
+            // Generate heatmap
+            $heatmapPath = null;
+            try {
+                $heatmapService = new HeatmapService();
+                $heatmapPath = $heatmapService->generateThermalHeatmap($path);
+                \Log::info('Heatmap generated', ['heatmap_path' => $heatmapPath]);
+            } catch (\Exception $e) {
+                \Log::error('Failed to generate heatmap', ['error' => $e->getMessage()]);
+                // Continue without heatmap if it fails
+            }
+
             // If mood_entry_id provided, attach to existing mood entry
             if ($request->input('mood_entry_id')) {
                 $moodEntry = MoodEntry::where('id', $request->input('mood_entry_id'))
@@ -78,6 +90,7 @@ class SelfieController extends Controller
                 if ($moodEntry) {
                     $moodEntry->update([
                         'selfie_photo_path' => $path,
+                        'selfie_heatmap_path' => $heatmapPath,
                         'selfie_taken_at' => now(),
                     ]);
                     \Log::info('Selfie attached to existing mood entry', ['mood_entry_id' => $moodEntry->id]);
@@ -89,6 +102,7 @@ class SelfieController extends Controller
                     'user_id' => auth()->id(),
                     'mood_score' => 5, // Default neutral mood
                     'selfie_photo_path' => $path,
+                    'selfie_heatmap_path' => $heatmapPath,
                     'selfie_taken_at' => now(),
                 ]);
                 \Log::info('New mood entry created', ['mood_entry_id' => $moodEntry->id]);
