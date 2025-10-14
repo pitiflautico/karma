@@ -28,7 +28,9 @@
                         </div>
 
                         <!-- iOS-style Date Picker -->
-                        <div class="relative mb-8" x-data="{
+                        <div class="relative mb-8"
+                            wire:ignore
+                            x-data="{
                             months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
                             days: Array.from({ length: 31 }, (_, i) => i + 1),
                             years: Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i),
@@ -134,8 +136,8 @@
                                 const day = String(this.selectedDay).padStart(2, '0');
                                 this.formattedDate = `${this.selectedYear}-${month}-${day}`;
 
-                                // Direct sync with Livewire
-                                $wire.set('birthDate', this.formattedDate);
+                                // Sync with Livewire
+                                window.Livewire.find(this.$el.closest('[wire\\:id]').getAttribute('wire:id')).set('birthDate', this.formattedDate);
                             }
                         }" x-init="init()">
 

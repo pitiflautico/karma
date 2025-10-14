@@ -50,9 +50,9 @@ Route::middleware(['auth'])->prefix('onboarding')->name('onboarding.')->group(fu
     Route::get('/step-3', \App\Livewire\Onboarding\Step3::class)->name('step3');
     Route::get('/step-4', \App\Livewire\Onboarding\Step4::class)->name('step4');
     Route::get('/step-5', \App\Livewire\Onboarding\Step5::class)->name('step5');
-    // Route::get('/step-6', \App\Livewire\Onboarding\Step6::class)->name('step6');
-    // Route::get('/step-7', \App\Livewire\Onboarding\Step7::class)->name('step7');
-    // Route::get('/complete', \App\Livewire\Onboarding\Complete::class)->name('complete');
+    Route::get('/step-6', \App\Livewire\Onboarding\Step6::class)->name('step6');
+    Route::get('/step-7', \App\Livewire\Onboarding\Step7::class)->name('step7');
+    Route::get('/complete', \App\Livewire\Onboarding\Complete::class)->name('complete');
 });
 
 // Protected user routes (require onboarding completion)
