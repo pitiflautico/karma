@@ -1,3 +1,4 @@
+<div>
 <div class="relative min-h-screen w-full overflow-hidden">
     <!-- Background Video -->
     <video
@@ -198,3 +199,4 @@
 <style>
     [x-cloak] { display: none !important; }
 </style>
+</div>
