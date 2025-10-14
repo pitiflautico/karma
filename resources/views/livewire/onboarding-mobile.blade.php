@@ -183,33 +183,33 @@
 
         </div>
     </div>
+
+    <style>
+        /* Custom range slider styling */
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Date input styling for iOS */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+    </style>
 </div>
-
-<style>
-    /* Custom range slider styling */
-    input[type="range"]::-webkit-slider-thumb {
-        appearance: none;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background: white;
-        cursor: pointer;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    }
-
-    input[type="range"]::-moz-range-thumb {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background: white;
-        cursor: pointer;
-        border: none;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    }
-
-    /* Date input styling for iOS */
-    input[type="date"]::-webkit-calendar-picker-indicator {
-        filter: invert(1);
-        cursor: pointer;
-    }
-</style>
