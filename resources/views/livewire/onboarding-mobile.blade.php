@@ -18,11 +18,52 @@
         <!-- Content -->
         <div class="relative z-10 flex flex-col h-full overflow-y-auto">
 
+            <!-- 3-Stage Progress Bar (Always visible) -->
+            <div class="pt-8 px-6">
+                <div class="flex items-center justify-center gap-2">
+                    <!-- Welcome Stage -->
+                    <div class="flex items-center">
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center {{ $currentStep === 0 ? 'bg-white text-purple-600' : 'bg-white/30 text-white' }} font-semibold text-sm transition-all">
+                                1
+                            </div>
+                            <span class="text-white text-xs mt-1">Welcome</span>
+                        </div>
+                    </div>
+
+                    <!-- Connector Line -->
+                    <div class="w-12 h-0.5 {{ $currentStep >= 1 ? 'bg-white' : 'bg-white/30' }} transition-all"></div>
+
+                    <!-- Info Persona Stage -->
+                    <div class="flex items-center">
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center {{ $currentStep >= 1 && $currentStep <= 7 ? 'bg-white text-purple-600' : 'bg-white/30 text-white' }} font-semibold text-sm transition-all">
+                                2
+                            </div>
+                            <span class="text-white text-xs mt-1">Info persona</span>
+                        </div>
+                    </div>
+
+                    <!-- Connector Line -->
+                    <div class="w-12 h-0.5 {{ $currentStep === 8 ? 'bg-white' : 'bg-white/30' }} transition-all"></div>
+
+                    <!-- Empezar Stage -->
+                    <div class="flex items-center">
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center {{ $currentStep === 8 ? 'bg-white text-purple-600' : 'bg-white/30 text-white' }} font-semibold text-sm transition-all">
+                                3
+                            </div>
+                            <span class="text-white text-xs mt-1">Empezar</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             @if($currentStep === 0)
                 <!-- INTRO SCREEN -->
                 <div class="flex-1 flex items-center justify-center px-6">
                     <div class="text-center">
-                        <h1 class="text-white text-6xl font-serif mb-8">Feelith</h1>
+                        <img src="{{ asset('images/iso_feel.png') }}" alt="Feelith" class="w-32 h-32 mx-auto mb-8">
                         <p class="text-white text-xl mb-12">Welcome! We need to get to know you a bit better.</p>
                         <button
                             wire:click="nextStep"
@@ -49,8 +90,8 @@
             @else
                 <!-- STEP WIZARD -->
                 <div class="flex-1 flex flex-col">
-                    <!-- Progress Bar -->
-                    <div class="pt-8 px-6">
+                    <!-- 7-Step Progress Bar (Only during Info persona stage) -->
+                    <div class="pt-6 px-6">
                         <div class="flex items-center justify-between mb-4">
                             <button wire:click="previousStep" class="text-white text-2xl">←</button>
                             <span class="text-white text-sm font-medium">Step {{ $currentStep }} of 7</span>
