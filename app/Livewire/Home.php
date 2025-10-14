@@ -9,6 +9,9 @@ use Livewire\Component;
 
 class Home extends Component
 {
+    // View state
+    public $showSignUp = false;
+
     // Login properties
     public $email = '';
     public $password = '';
@@ -17,6 +20,26 @@ class Home extends Component
     public $name = '';
     public $registerEmail = '';
     public $registerPassword = '';
+    public $registerPasswordConfirmation = '';
+    public $passwordStrength = 0;
+
+    /**
+     * Initialize component and check if user is already logged in
+     */
+    public function mount()
+    {
+        \Log::info('[Home] mount() called');
+        \Log::info('[Home] Auth::check() = ' . (Auth::check() ? 'true' : 'false'));
+
+        // If user is already logged in, redirect to dashboard
+        if (Auth::check()) {
+            \Log::info('[Home] User is logged in, redirecting to dashboard');
+            \Log::info('[Home] User ID: ' . Auth::id());
+            $this->redirectRoute('dashboard');
+        } else {
+            \Log::info('[Home] User is NOT logged in, showing login page');
+        }
+    }
 
     /**
      * Handle email/password login
@@ -37,7 +60,7 @@ class Home extends Component
             return redirect()->intended('/dashboard');
         }
 
-        session()->flash('error', 'Invalid credentials');
+        session()->flash('error', 'Incorrect email or password!');
     }
 
     /**
@@ -46,23 +69,29 @@ class Home extends Component
     public function register()
     {
         $this->validate([
-            'name' => 'required|string|max:255',
             'registerEmail' => 'required|email|unique:users,email',
-            'registerPassword' => 'required|min:6',
+            'registerPassword' => 'required|min:8|confirmed',
+            'registerPasswordConfirmation' => 'required',
         ], [
             'registerEmail.required' => 'The email field is required.',
             'registerEmail.email' => 'Please enter a valid email address.',
             'registerEmail.unique' => 'This email is already registered.',
             'registerPassword.required' => 'The password field is required.',
-            'registerPassword.min' => 'Password must be at least 6 characters.',
+            'registerPassword.min' => 'Password must be at least 8 characters.',
+            'registerPassword.confirmed' => 'Passwords do not match.',
         ]);
 
-        // Create user
+        // Create user with a default name (email prefix)
         $user = User::create([
-            'name' => $this->name,
+            'name' => explode('@', $this->registerEmail)[0],
             'email' => $this->registerEmail,
             'password' => Hash::make($this->registerPassword),
         ]);
+
+        // Assign user role
+        if (!$user->hasAnyRole(['admin', 'user'])) {
+            $user->assignRole('user');
+        }
 
         // Log the user in
         Auth::login($user);
@@ -72,6 +101,46 @@ class Home extends Component
         session()->flash('native_app_login', true);
 
         return redirect()->intended('/dashboard');
+    }
+
+    /**
+     * Toggle to sign up view
+     */
+    public function showSignUp()
+    {
+        $this->showSignUp = true;
+    }
+
+    /**
+     * Toggle to login view
+     */
+    public function showLogin()
+    {
+        $this->showSignUp = false;
+    }
+
+    /**
+     * Calculate password strength (called when password changes)
+     */
+    public function updatedRegisterPassword($value)
+    {
+        $this->passwordStrength = $this->calculatePasswordStrength($value);
+    }
+
+    /**
+     * Calculate password strength (0-4)
+     */
+    private function calculatePasswordStrength($password)
+    {
+        $strength = 0;
+
+        if (strlen($password) >= 8) $strength++;
+        if (strlen($password) >= 12) $strength++;
+        if (preg_match('/[a-z]/', $password) && preg_match('/[A-Z]/', $password)) $strength++;
+        if (preg_match('/[0-9]/', $password)) $strength++;
+        if (preg_match('/[^a-zA-Z0-9]/', $password)) $strength++;
+
+        return min($strength, 4);
     }
 
     /**
@@ -106,11 +175,6 @@ class Home extends Component
 
     public function render()
     {
-        // If user is already logged in, redirect to dashboard
-        if (Auth::check()) {
-            return redirect('/dashboard');
-        }
-
         // Detect if mobile device and render appropriate view
         if ($this->isMobileDevice()) {
             return view('livewire.home-mobile')

@@ -16,10 +16,12 @@ class GoogleAuthController extends Controller
     public function redirect(): RedirectResponse
     {
         return Socialite::driver('google')
+            ->stateless()
             ->scopes([
                 'https://www.googleapis.com/auth/calendar.readonly',
                 'https://www.googleapis.com/auth/calendar.events.readonly'
             ])
+            ->with(['prompt' => 'select_account'])
             ->redirect();
     }
 
@@ -29,6 +31,7 @@ class GoogleAuthController extends Controller
     public function syncCalendar(): RedirectResponse
     {
         return Socialite::driver('google')
+            ->stateless()
             ->scopes([
                 'https://www.googleapis.com/auth/calendar.readonly',
                 'https://www.googleapis.com/auth/calendar.events.readonly'
@@ -44,8 +47,14 @@ class GoogleAuthController extends Controller
     {
         try {
             \Log::info('=== Google OAuth Callback Started ===');
+            \Log::info('Request parameters:', [
+                'has_code' => request()->has('code'),
+                'has_state' => request()->has('state'),
+                'has_error' => request()->has('error'),
+                'error' => request()->get('error'),
+            ]);
 
-            $googleUser = Socialite::driver('google')->user();
+            $googleUser = Socialite::driver('google')->stateless()->user();
             \Log::info('Google User received:', [
                 'email' => $googleUser->getEmail(),
                 'name' => $googleUser->getName(),

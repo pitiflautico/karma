@@ -16,6 +16,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/user', [AuthController::class, 'user']);
     Route::post('/auth/refresh', [AuthController::class, 'refresh']);
+    Route::post('/auth/establish-session', [AuthController::class, 'establishSession']);
 
     // Push notification routes
     Route::post('/push/register', [PushNotificationController::class, 'register']);

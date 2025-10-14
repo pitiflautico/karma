@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\Api\AuthController;
 use App\Livewire\Calendar;
 use App\Livewire\CalendarEvents;
 use App\Livewire\Dashboard;
@@ -23,12 +24,18 @@ Route::get('/privacy', \App\Livewire\Privacy::class)->name('privacy');
 // Sharing invite acceptance (public route)
 Route::get('/accept-invite/{token}', AcceptInvite::class)->name('sharing.accept-invite');
 
-// Google OAuth routes
-Route::prefix('auth/google')->group(function () {
-    Route::get('redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google');
-    Route::get('callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
-    Route::get('sync-calendar', [GoogleAuthController::class, 'syncCalendar'])->name('auth.google.sync');
-    Route::post('disconnect-calendar', [GoogleAuthController::class, 'disconnectCalendar'])->middleware('auth')->name('auth.google.disconnect');
+// Auth routes
+Route::prefix('auth')->group(function () {
+    // Mobile app session establishment
+    Route::get('session', [AuthController::class, 'sessionFromToken'])->name('auth.session');
+
+    // Google OAuth routes
+    Route::prefix('google')->group(function () {
+        Route::get('redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google');
+        Route::get('callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+        Route::get('sync-calendar', [GoogleAuthController::class, 'syncCalendar'])->name('auth.google.sync');
+        Route::post('disconnect-calendar', [GoogleAuthController::class, 'disconnectCalendar'])->middleware('auth')->name('auth.google.disconnect');
+    });
 });
 
 // Protected user routes

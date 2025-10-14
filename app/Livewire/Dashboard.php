@@ -76,6 +76,36 @@ class Dashboard extends Component
         session()->flash('success', 'Prompt skipped.');
     }
 
+    /**
+     * Detect if the request is from a mobile device or native app
+     */
+    private function isMobileDevice()
+    {
+        // Check if there's a session variable indicating mobile/native app
+        if (session()->has('is_mobile_app') || session()->has('native_app_login')) {
+            return true;
+        }
+
+        // Check for mobile query parameter (can be set by native app on first load)
+        if (request()->has('mobile') && request()->input('mobile') == '1') {
+            session()->put('is_mobile_app', true);
+            return true;
+        }
+
+        // Check user agent for mobile devices
+        $userAgent = request()->header('User-Agent');
+        if ($userAgent) {
+            $mobileKeywords = ['Mobile', 'Android', 'iPhone', 'iPad', 'iPod', 'BlackBerry', 'Windows Phone'];
+            foreach ($mobileKeywords as $keyword) {
+                if (stripos($userAgent, $keyword) !== false) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function render()
     {
         $user = Auth::user();
@@ -106,6 +136,17 @@ class Dashboard extends Component
             ->orderBy('event_end_time', 'desc')
             ->take(3)
             ->get();
+
+        // Detect if mobile device and render appropriate view/layout
+        if ($this->isMobileDevice()) {
+            return view('livewire.dashboard-mobile', [
+                'user' => $user,
+                'recentMoods' => $recentMoods,
+                'averageMood' => $averageMood,
+                'nextEvent' => $nextEvent,
+                'pendingPrompts' => $pendingPrompts,
+            ])->layout('layouts.app-mobile');
+        }
 
         return view('livewire.dashboard', [
             'user' => $user,

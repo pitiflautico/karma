@@ -103,6 +103,17 @@
                         });
                     }
                 }
+
+                // Intercept logout form submission to notify native app
+                var logoutForm = document.querySelector('form[action="{{ route('logout') }}"]');
+                if (logoutForm && window.NativeAppBridge) {
+                    logoutForm.addEventListener('submit', function(e) {
+                        if (window.NativeAppBridge.isRunningInNativeApp()) {
+                            console.log('[NativeApp] 🔴 Logout detected, notifying native app...');
+                            window.NativeAppBridge.notifyLogout();
+                        }
+                    });
+                }
             });
         </script>
 
