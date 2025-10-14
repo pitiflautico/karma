@@ -63,7 +63,7 @@
                 <!-- INTRO SCREEN -->
                 <div class="flex-1 flex items-center justify-center px-6">
                     <div class="text-center">
-                        <img src="{{ asset('images/iso_feel.png') }}" alt="Feelith" class="w-32 h-32 mx-auto mb-8">
+                        <img src="{{ asset('images/iso_feel.png') }}" alt="Feelith" class="w-32 h-32 mx-auto mb-8 brightness-0 invert">
                         <p class="text-white text-xl mb-12">Welcome! We need to get to know you a bit better.</p>
                         <button
                             wire:click="nextStep"
