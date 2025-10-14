@@ -18,14 +18,14 @@ class Onboarding extends Component
     // Step 2: Help reasons (multiple choice)
     public $helpReasons = [];
     public $availableReasons = [
-        'Manage stress and anxiety',
-        'Improve sleep quality',
-        'Track my emotional patterns',
-        'Increase self-awareness',
-        'Build better habits',
-        'Understand my triggers',
-        'Improve relationships',
-        'Mental health support',
+        'Manejar estrés y ansiedad',
+        'Mejorar la calidad del sueño',
+        'Rastrear mis patrones emocionales',
+        'Aumentar mi autoconciencia',
+        'Construir mejores hábitos',
+        'Entender mis desencadenantes',
+        'Mejorar mis relaciones',
+        'Apoyo en salud mental',
     ];
 
     // Step 3: Birth date
@@ -115,8 +115,8 @@ class Onboarding extends Component
                 $this->validate([
                     'helpReasons' => 'required|array|min:1',
                 ], [
-                    'helpReasons.required' => 'Please select at least one option.',
-                    'helpReasons.min' => 'Please select at least one option.',
+                    'helpReasons.required' => 'Por favor selecciona al menos una opción.',
+                    'helpReasons.min' => 'Por favor selecciona al menos una opción.',
                 ]);
                 break;
 
