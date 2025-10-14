@@ -28,7 +28,7 @@
     <div class="relative z-10 flex flex-col min-h-screen">
         <!-- Logo/Title -->
         <div class="flex-1 flex items-center justify-center">
-            <h1 class="text-white text-5xl font-serif">Kharma®</h1>
+            <h1 class="text-white text-5xl font-serif">Feelith</h1>
         </div>
 
         <!-- Bottom Rounded White Section -->
@@ -127,6 +127,7 @@
                         <p class="text-center text-gray-700 text-base mb-6">
                             Don't have an account?
                             <button
+                                type="button"
                                 wire:click="showSignUp"
                                 class="text-purple-600 hover:text-purple-700 font-semibold">
                                 Sign Up
@@ -249,6 +250,7 @@
                         <p class="text-center text-gray-700 text-base mb-6">
                             I already have
                             <button
+                                type="button"
                                 wire:click="showLogin"
                                 class="text-purple-600 hover:text-purple-700 font-semibold">
                                 an account.

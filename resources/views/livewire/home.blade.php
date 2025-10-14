@@ -19,7 +19,7 @@
         <!-- Logo Section -->
         <div class="flex-1 flex items-center justify-center">
             <h1 class="text-5xl md:text-6xl font-serif text-white tracking-wide">
-                Kharma<sup class="text-2xl">®</sup>
+                Feelith
             </h1>
         </div>
 
