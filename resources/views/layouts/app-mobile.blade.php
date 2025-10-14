@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         @auth
@@ -39,6 +39,32 @@
             body {
                 -ms-overflow-style: none;
                 scrollbar-width: none;
+                margin: 0;
+                padding: 0;
+                overflow-x: hidden;
+            }
+
+            /* iOS Safe Area Support - Extend background to edges */
+            @supports (padding: env(safe-area-inset-top)) {
+                body {
+                    /* Remove default padding, let individual components handle safe areas */
+                    padding: 0;
+                }
+            }
+
+            /* Full screen support for iOS */
+            html, body {
+                width: 100%;
+                height: 100%;
+                position: fixed;
+                overflow: hidden;
+            }
+
+            main {
+                width: 100%;
+                height: 100%;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
             }
         </style>
     </head>

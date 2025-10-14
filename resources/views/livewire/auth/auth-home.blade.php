@@ -1,4 +1,4 @@
-<div class="relative min-h-screen w-full overflow-hidden">
+<div class="fixed inset-0 w-full h-full overflow-hidden">
     <!-- Background Video Loop -->
     <video
         autoplay
@@ -13,7 +13,7 @@
     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30"></div>
 
     <!-- Content -->
-    <div class="relative z-10 flex flex-col min-h-screen">
+    <div class="relative z-10 flex flex-col h-full">
         <!-- Logo/Title - Centered -->
         <div class="flex-1 flex items-center justify-center">
             <h1 class="text-white text-6xl font-serif">Feelith</h1>

@@ -339,6 +339,94 @@ class="shadow-2xl"   <!-- Muy fuerte -->
 
 ---
 
+## Pantalla Completa en iOS (Dynamic Island / Notch)
+
+### Viewport Meta Tag
+
+El layout mobile **DEBE** incluir `viewport-fit=cover` para ocupar el 100% de la pantalla en iPhone:
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+```
+
+**Ubicación:** `resources/views/layouts/app-mobile.blade.php:5`
+
+### CSS Global para Full Screen
+
+```css
+/* Full screen support for iOS */
+html, body {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* iOS Safe Area Support - Extend background to edges */
+@supports (padding: env(safe-area-inset-top)) {
+    body {
+        padding: 0;
+    }
+}
+```
+
+**Ubicación:** `resources/views/layouts/app-mobile.blade.php:34-68`
+
+### Patrón de Vista Full Screen
+
+Para vistas que deben ocupar toda la pantalla (como auth screens):
+
+```blade
+<div class="fixed inset-0 w-full h-full overflow-hidden">
+    <!-- Background (video, gradient, etc.) -->
+    <video class="absolute inset-0 w-full h-full object-cover">
+        ...
+    </video>
+
+    <!-- Overlay si es necesario -->
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/30"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 flex flex-col h-full">
+        <!-- Content goes here -->
+    </div>
+</div>
+```
+
+**Características clave:**
+- Usar `fixed inset-0` en lugar de `min-h-screen` para el contenedor principal
+- Usar `h-full` en lugar de `min-h-screen` para contenido interno
+- El background se extiende hasta los bordes (incluye Dynamic Island)
+- El contenido respeta safe areas automáticamente
+
+**Ejemplos:**
+- `resources/views/livewire/auth/auth-home.blade.php:1`
+- `resources/views/livewire/home-mobile.blade.php:20`
+
+### Variables de Safe Area de iOS
+
+Para casos donde necesites respetar el safe area manualmente:
+
+```css
+padding-top: env(safe-area-inset-top);
+padding-bottom: env(safe-area-inset-bottom);
+padding-left: env(safe-area-inset-left);
+padding-right: env(safe-area-inset-right);
+```
+
+**Nota:** En general, no es necesario usar estas variables explícitamente ya que el layout global las maneja automáticamente.
+
+---
+
 ## Alpine.js
 
 **Incluido en ambos layouts.**

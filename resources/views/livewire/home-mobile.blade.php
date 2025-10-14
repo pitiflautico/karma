@@ -17,7 +17,7 @@
     />
 @endif
 
-<div class="relative min-h-screen w-full overflow-hidden">
+<div class="fixed inset-0 w-full h-full overflow-hidden">
     <!-- Background Gradient -->
     <div class="absolute inset-0 bg-gradient-to-br from-blue-400 via-purple-400 to-blue-600"></div>
 
@@ -25,7 +25,7 @@
     <div class="absolute inset-0" style="background: radial-gradient(circle at center top, rgba(255, 192, 203, 0.6) 0%, rgba(138, 196, 255, 0.4) 30%, transparent 60%);"></div>
 
     <!-- Content -->
-    <div class="relative z-10 flex flex-col min-h-screen">
+    <div class="relative z-10 flex flex-col h-full overflow-y-auto">
         <!-- Logo/Title -->
         <div class="flex-1 flex items-center justify-center">
             <h1 class="text-white text-5xl font-serif">Feelith</h1>
