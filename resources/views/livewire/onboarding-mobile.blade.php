@@ -87,12 +87,12 @@
                 <!-- WELCOME SCREEN -->
                 <div class="flex-1 flex items-center justify-center px-6">
                     <div class="text-center max-w-sm">
-                        <h1 class="text-gray-900 text-4xl font-semibold mb-4">Welcome, {{ $name }}!</h1>
-                        <p class="text-gray-600 text-lg mb-12">You're all set. Let's start your journey to better emotional wellness.</p>
+                        <h1 class="text-gray-900 text-4xl font-semibold mb-4">¡Bienvenido, {{ $name }}!</h1>
+                        <p class="text-gray-600 text-lg mb-12">Ya está todo listo. Comencemos tu viaje hacia un mejor bienestar emocional.</p>
                         <button
                             wire:click="finishOnboarding"
                             class="w-full bg-[#7C4DFF] text-white font-semibold py-4 px-8 rounded-full text-lg shadow-lg hover:bg-[#6A3DE8] transition-all">
-                            Go to Dashboard
+                            Ir al Dashboard
                         </button>
                     </div>
                 </div>
@@ -119,20 +119,20 @@
                             @if($currentStep === 1)
                                 <!-- STEP 1: NAME -->
                                 <div class="text-center mb-8">
-                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">What's your name?</h2>
-                                    <p class="text-gray-600 text-base">We'd love to know what to call you.</p>
+                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">¿Cómo te llamas?</h2>
+                                    <p class="text-gray-600 text-base">Nos encantaría saber cómo llamarte.</p>
                                 </div>
                                 <input
                                     type="text"
                                     wire:model="name"
-                                    placeholder="Enter your name..."
+                                    placeholder="Escribe tu nombre..."
                                     class="w-full px-6 py-4 rounded-full text-lg text-center border-2 border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#7C4DFF]">
 
                             @elseif($currentStep === 2)
                                 <!-- STEP 2: HELP REASONS -->
                                 <div class="text-center mb-8">
-                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">How can we help you?</h2>
-                                    <p class="text-gray-600 text-base">Select all that apply</p>
+                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">¿En qué podemos ayudarte?</h2>
+                                    <p class="text-gray-600 text-base">Selecciona todas las que apliquen</p>
                                 </div>
                                 <div class="space-y-3">
                                     @foreach($availableReasons as $reason)
@@ -149,8 +149,8 @@
                             @elseif($currentStep === 3)
                                 <!-- STEP 3: BIRTH DATE -->
                                 <div class="text-center mb-8">
-                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">When were you born?</h2>
-                                    <p class="text-gray-600 text-base">This helps us personalize your experience</p>
+                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">¿Cuándo naciste?</h2>
+                                    <p class="text-gray-600 text-base">Esto nos ayuda a personalizar tu experiencia</p>
                                 </div>
                                 <input
                                     type="date"
@@ -160,11 +160,11 @@
                             @elseif($currentStep === 4)
                                 <!-- STEP 4: GENDER -->
                                 <div class="text-center mb-8">
-                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">What's your gender?</h2>
-                                    <p class="text-gray-600 text-base">This helps us provide better insights</p>
+                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">¿Cuál es tu género?</h2>
+                                    <p class="text-gray-600 text-base">Esto nos ayuda a brindarte mejores insights</p>
                                 </div>
                                 <div class="space-y-3">
-                                    @foreach(['male' => 'Male', 'female' => 'Female', 'other' => 'Other', 'prefer_not_to_say' => 'Prefer not to say'] as $value => $label)
+                                    @foreach(['male' => 'Masculino', 'female' => 'Femenino', 'other' => 'Otro', 'prefer_not_to_say' => 'Prefiero no decir'] as $value => $label)
                                         <button
                                             type="button"
                                             wire:click="$set('gender', '{{ $value }}')"
@@ -178,8 +178,8 @@
                             @elseif($currentStep === 5)
                                 <!-- STEP 5: INITIAL MOOD -->
                                 <div class="text-center mb-8">
-                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">How are you feeling right now?</h2>
-                                    <p class="text-gray-600 text-base">Rate your mood from 1 (lowest) to 10 (highest)</p>
+                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">¿Cómo te sientes ahora?</h2>
+                                    <p class="text-gray-600 text-base">Califica tu estado de ánimo del 1 (más bajo) al 10 (más alto)</p>
                                 </div>
                                 <div class="text-center mb-6">
                                     <span class="text-gray-900 text-6xl font-bold">{{ $initialMood }}</span>
@@ -194,26 +194,26 @@
                             @elseif($currentStep === 6)
                                 <!-- STEP 6: WEIGHT (OPTIONAL) -->
                                 <div class="text-center mb-8">
-                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">What's your weight?</h2>
-                                    <p class="text-gray-600 text-base">Optional - helps track health patterns (in kg)</p>
+                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">¿Cuál es tu peso?</h2>
+                                    <p class="text-gray-600 text-base">Opcional - ayuda a rastrear patrones de salud (en kg)</p>
                                 </div>
                                 <input
                                     type="number"
                                     wire:model="weight"
-                                    placeholder="Enter weight in kg..."
+                                    placeholder="Ingresa tu peso en kg..."
                                     step="0.1"
                                     class="w-full px-6 py-4 rounded-full text-lg text-center border-2 border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#7C4DFF]">
 
                             @elseif($currentStep === 7)
                                 <!-- STEP 7: HEIGHT (OPTIONAL) -->
                                 <div class="text-center mb-8">
-                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">What's your height?</h2>
-                                    <p class="text-gray-600 text-base">Optional - helps track health patterns (in cm)</p>
+                                    <h2 class="text-gray-900 text-3xl font-semibold mb-4">¿Cuál es tu altura?</h2>
+                                    <p class="text-gray-600 text-base">Opcional - ayuda a rastrear patrones de salud (en cm)</p>
                                 </div>
                                 <input
                                     type="number"
                                     wire:model="height"
-                                    placeholder="Enter height in cm..."
+                                    placeholder="Ingresa tu altura en cm..."
                                     step="0.1"
                                     class="w-full px-6 py-4 rounded-full text-lg text-center border-2 border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#7C4DFF]">
                             @endif
@@ -226,7 +226,7 @@
                         <button
                             wire:click="{{ $currentStep === 7 ? 'completeOnboarding' : 'nextStep' }}"
                             class="w-full bg-[#7C4DFF] text-white font-semibold py-4 px-6 rounded-full text-lg shadow-lg hover:bg-[#6A3DE8] transition-all">
-                            {{ $currentStep === 7 ? 'Complete' : 'Next' }}
+                            {{ $currentStep === 7 ? 'Completar' : 'Siguiente' }}
                         </button>
                     </div>
                 </div>
