@@ -30,7 +30,7 @@
                         <!-- iOS-style Height Picker -->
                         <div class="relative mb-8" x-data="{
                             heights: [],
-                            selectedHeight: {{ $height }},
+                            selectedHeight: {{ $height ?? 170 }},
                             unit: '{{ $unit }}',
                             minHeight: 100,
                             maxHeight: 250,
