@@ -48,6 +48,12 @@ class User extends Authenticatable implements MustVerifyEmailContract, FilamentU
         'push_platform',
         'push_enabled',
         'push_registered_at',
+        'onboarding_completed',
+        'birth_date',
+        'gender',
+        'weight',
+        'height',
+        'help_reason',
         'created_at',
         'updated_at',
     ];
@@ -80,6 +86,9 @@ class User extends Authenticatable implements MustVerifyEmailContract, FilamentU
             'push_registered_at' => 'datetime',
             'selfie_scheduled_time' => 'datetime:H:i',
             'settings' => 'array',
+            'onboarding_completed' => 'boolean',
+            'birth_date' => 'date',
+            'help_reason' => 'array',
         ];
     }
 

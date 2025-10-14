@@ -39,8 +39,13 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-// Protected user routes
+// Onboarding route (auth required but no onboarding check)
 Route::middleware(['auth'])->group(function () {
+    Route::get('/onboarding', \App\Livewire\Onboarding::class)->name('onboarding');
+});
+
+// Protected user routes (require onboarding completion)
+Route::middleware(['auth', 'onboarding.completed'])->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/mood/new', \App\Livewire\MoodCreate::class)->name('mood.new');
     Route::get('/calendar', Calendar::class)->name('calendar');

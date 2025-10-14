@@ -64,6 +64,11 @@ class Home extends Component
                 // Notify native app if running in WebView
                 session()->flash('native_app_login', true);
 
+                // Redirect to onboarding if not completed, otherwise dashboard
+                if (!Auth::user()->onboarding_completed) {
+                    return redirect()->route('onboarding');
+                }
+
                 return redirect()->intended('/dashboard');
             }
 
@@ -115,7 +120,8 @@ class Home extends Component
             // Notify native app if running in WebView
             session()->flash('native_app_login', true);
 
-            return redirect()->intended('/dashboard');
+            // New users always need to complete onboarding
+            return redirect()->route('onboarding');
         } catch (ValidationException $e) {
             // Get the first validation error message
             $errors = $e->validator->errors()->all();
