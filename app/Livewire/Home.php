@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
 class Home extends Component
@@ -46,21 +47,34 @@ class Home extends Component
      */
     public function login()
     {
-        $this->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:6',
-        ]);
+        try {
+            $this->validate([
+                'email' => 'required|email',
+                'password' => 'required|min:6',
+            ], [
+                'email.required' => 'The email field is required.',
+                'email.email' => 'Please enter a valid email address.',
+                'password.required' => 'The password field is required.',
+                'password.min' => 'Password must be at least 6 characters.',
+            ]);
 
-        if (Auth::attempt(['email' => $this->email, 'password' => $this->password])) {
-            session()->regenerate();
+            if (Auth::attempt(['email' => $this->email, 'password' => $this->password])) {
+                session()->regenerate();
 
-            // Notify native app if running in WebView
-            session()->flash('native_app_login', true);
+                // Notify native app if running in WebView
+                session()->flash('native_app_login', true);
 
-            return redirect()->intended('/dashboard');
+                return redirect()->intended('/dashboard');
+            }
+
+            session()->flash('error', 'Incorrect email or password!');
+        } catch (ValidationException $e) {
+            // Get the first validation error message
+            $errors = $e->validator->errors()->all();
+            if (!empty($errors)) {
+                session()->flash('error', $errors[0]);
+            }
         }
-
-        session()->flash('error', 'Incorrect email or password!');
     }
 
     /**
@@ -68,39 +82,47 @@ class Home extends Component
      */
     public function register()
     {
-        $this->validate([
-            'registerEmail' => 'required|email|unique:users,email',
-            'registerPassword' => 'required|min:8|confirmed',
-            'registerPasswordConfirmation' => 'required',
-        ], [
-            'registerEmail.required' => 'The email field is required.',
-            'registerEmail.email' => 'Please enter a valid email address.',
-            'registerEmail.unique' => 'This email is already registered.',
-            'registerPassword.required' => 'The password field is required.',
-            'registerPassword.min' => 'Password must be at least 8 characters.',
-            'registerPassword.confirmed' => 'Passwords do not match.',
-        ]);
+        try {
+            $this->validate([
+                'registerEmail' => 'required|email|unique:users,email',
+                'registerPassword' => 'required|min:8|confirmed',
+                'registerPasswordConfirmation' => 'required',
+            ], [
+                'registerEmail.required' => 'The email field is required.',
+                'registerEmail.email' => 'Please enter a valid email address.',
+                'registerEmail.unique' => 'This email is already registered.',
+                'registerPassword.required' => 'The password field is required.',
+                'registerPassword.min' => 'Password must be at least 8 characters.',
+                'registerPassword.confirmed' => 'Passwords do not match.',
+            ]);
 
-        // Create user with a default name (email prefix)
-        $user = User::create([
-            'name' => explode('@', $this->registerEmail)[0],
-            'email' => $this->registerEmail,
-            'password' => Hash::make($this->registerPassword),
-        ]);
+            // Create user with a default name (email prefix)
+            $user = User::create([
+                'name' => explode('@', $this->registerEmail)[0],
+                'email' => $this->registerEmail,
+                'password' => Hash::make($this->registerPassword),
+            ]);
 
-        // Assign user role
-        if (!$user->hasAnyRole(['admin', 'user'])) {
-            $user->assignRole('user');
+            // Assign user role
+            if (!$user->hasAnyRole(['admin', 'user'])) {
+                $user->assignRole('user');
+            }
+
+            // Log the user in
+            Auth::login($user);
+            session()->regenerate();
+
+            // Notify native app if running in WebView
+            session()->flash('native_app_login', true);
+
+            return redirect()->intended('/dashboard');
+        } catch (ValidationException $e) {
+            // Get the first validation error message
+            $errors = $e->validator->errors()->all();
+            if (!empty($errors)) {
+                session()->flash('error', $errors[0]);
+            }
         }
-
-        // Log the user in
-        Auth::login($user);
-        session()->regenerate();
-
-        // Notify native app if running in WebView
-        session()->flash('native_app_login', true);
-
-        return redirect()->intended('/dashboard');
     }
 
     /**

@@ -92,7 +92,7 @@
                                 <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500">
                                 <span class="ml-2 text-gray-900 text-base">Keep me signed in</span>
                             </label>
-                            <a href="#" class="text-purple-600 text-base font-medium hover:text-purple-700">Forgot Password</a>
+                            <a href="{{ route('password.request') }}" class="text-purple-600 text-base font-medium hover:text-purple-700">Forgot Password</a>
                         </div>
 
                         <!-- Sign In Button -->

@@ -340,7 +340,7 @@ Tarjeta de contenido para pantallas de autenticación con título, descripción 
     <x-slot:footer>
         <p class="text-center text-gray-600 text-sm">
             Didn't receive the email?<br>
-            Contact us at <a href="mailto:help@freud.ai">help@freud.ai</a>
+            Contact us at <a href="mailto:hello@feelith.com">hello@feelith.com</a>
         </p>
     </x-slot:footer>
 </x-auth-card>
