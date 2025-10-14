@@ -10,7 +10,7 @@
         <!-- Welcome Section -->
         <div class="mb-6">
             <h2 class="text-2xl font-semibold text-gray-900">Welcome back, {{ $user->name }}!</h2>
-            <p class="text-gray-600">Here's your emotional wellness dashboard</p>
+            <p class="text-gray-600">Here's your emotional wellness dashboard 11</p>
         </div>
 
         <!-- Google Calendar Sync Status -->
