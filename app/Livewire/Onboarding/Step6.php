@@ -72,7 +72,7 @@ class Step6 extends Component
     public function render()
     {
         // Detect if mobile device or native app
-        $isNativeApp = request()->header('X-Native-App') === 'true');
+        $isNativeApp = request()->header('X-Native-App') === 'true';
         $isMobile = request()->has('mobile');
 
         if (!$isMobile && !$isNativeApp) {
