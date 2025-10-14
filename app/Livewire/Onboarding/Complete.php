@@ -16,7 +16,7 @@ class Complete extends Component
         \Log::info('[Complete] Starting - marking onboarding as complete');
 
         // Mark onboarding as complete
-        auth()->user()->update(['onboarding_completed_at' => now()]);
+        auth()->user()->update(['onboarding_completed' => true]);
 
         \Log::info('[Complete] Onboarding completed, redirecting to dashboard');
 
