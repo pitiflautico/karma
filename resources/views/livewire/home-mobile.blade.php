@@ -26,7 +26,7 @@
         <!-- Bottom Rounded White Section (Larger, reaches up to "Haz login") -->
         <div class="relative">
             <!-- Large rounded white section -->
-            <div class="bg-white rounded-t-[4rem] pt-20 pb-12 px-6 shadow-2xl">
+            <div class="bg-white rounded-t-[6rem] pt-20 pb-12 px-6 shadow-2xl">
                 <!-- Login prompt -->
                 <p class="text-center text-gray-700 text-lg mb-8 font-normal">
                     Haz login con:
