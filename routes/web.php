@@ -22,6 +22,9 @@ Route::get('/sign-in-mail', Home::class)->name('sign-in-mail');
 Route::get('/terms', \App\Livewire\Terms::class)->name('terms');
 Route::get('/privacy', \App\Livewire\Privacy::class)->name('privacy');
 
+// Test/Debug page (remove in production)
+Route::get('/test', \App\Livewire\TestScreen::class)->name('test');
+
 // Sharing invite acceptance (public route)
 Route::get('/accept-invite/{token}', AcceptInvite::class)->name('sharing.accept-invite');
 
