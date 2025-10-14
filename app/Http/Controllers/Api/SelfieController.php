@@ -26,21 +26,23 @@ class SelfieController extends Controller
         ]);
 
         try {
+            // TODO: Uncomment this validation in production
             // Check if user already has a selfie today
-            $todayStart = now()->startOfDay();
-            $todayEnd = now()->endOfDay();
+            // $todayStart = now()->startOfDay();
+            // $todayEnd = now()->endOfDay();
 
-            $existingToday = MoodEntry::where('user_id', auth()->id())
-                ->whereNotNull('selfie_photo_path')
-                ->whereBetween('selfie_taken_at', [$todayStart, $todayEnd])
-                ->exists();
+            // $existingToday = MoodEntry::where('user_id', auth()->id())
+            //     ->whereNotNull('selfie_photo_path')
+            //     ->whereBetween('selfie_taken_at', [$todayStart, $todayEnd])
+            //     ->exists();
 
-            if ($existingToday) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You can only upload one selfie per day. Try again tomorrow!'
-                ], 422);
-            }
+            // if ($existingToday) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'You can only upload one selfie per day. Try again tomorrow!'
+            //     ], 422);
+            // }
+
             // Decode base64 image
             $imageData = $request->input('photo');
 
