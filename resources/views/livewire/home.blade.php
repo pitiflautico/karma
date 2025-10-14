@@ -1,60 +1,200 @@
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <!-- Hero Section -->
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900">
-                <div class="text-center py-12">
-                    <h1 class="text-4xl font-bold text-gray-900 mb-4">
-                        Welcome to Karma
-                    </h1>
-                    <p class="text-xl text-gray-600 mb-8">
-                        Track your emotions, understand your patterns, and improve your well-being.
-                    </p>
+<div class="relative min-h-screen w-full overflow-hidden">
+    <!-- Background Video -->
+    <video
+        autoplay
+        loop
+        muted
+        playsinline
+        class="absolute inset-0 w-full h-full object-cover"
+    >
+        <source src="{{ asset('videos/background-login.mp4') }}" type="video/mp4">
+    </video>
 
-                    @guest
-                        <a href="{{ route('auth.google') }}" class="inline-flex items-center px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg shadow-md transition duration-150 ease-in-out">
-                            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                            </svg>
-                            Get Started with Google
-                        </a>
-                    @else
-                        <a href="{{ route('dashboard') }}" class="inline-flex items-center px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg shadow-md transition duration-150 ease-in-out">
-                            Go to Dashboard
-                        </a>
-                    @endguest
-                </div>
-            </div>
+    <!-- Overlay gradient for better readability -->
+    <div class="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-transparent to-white/40"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 flex flex-col items-center justify-between min-h-screen px-6 py-12">
+        <!-- Logo Section -->
+        <div class="flex-1 flex items-center justify-center">
+            <h1 class="text-5xl md:text-6xl font-serif text-white tracking-wide">
+                Kharma<sup class="text-2xl">®</sup>
+            </h1>
         </div>
 
-        <!-- Features Section -->
-        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <div class="text-center">
-                    <div class="text-4xl mb-4">📊</div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Track Your Mood</h3>
-                    <p class="text-gray-600">Log your emotional state throughout the day and see patterns emerge</p>
-                </div>
-            </div>
+        <!-- Login Section -->
+        <div class="w-full max-w-md mb-8">
+            <!-- Login prompt -->
+            <p class="text-center text-white text-lg mb-6 font-light">
+                Haz login con:
+            </p>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <div class="text-center">
-                    <div class="text-4xl mb-4">📅</div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Calendar Integration</h3>
-                    <p class="text-gray-600">Connect with Google Calendar to correlate events with your emotions</p>
-                </div>
-            </div>
+            <!-- Sign In with Google Button (Black) -->
+            <a href="{{ route('auth.google') }}"
+               class="flex items-center justify-center w-full bg-black hover:bg-gray-900 text-white font-medium py-4 px-6 rounded-full mb-4 transition-all duration-200 shadow-lg hover:shadow-xl">
+                <svg class="w-6 h-6 mr-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#EA4335" d="M5.26620003,9.76452941 C6.19878754,6.93863203 8.85444915,4.90909091 12,4.90909091 C13.6909091,4.90909091 15.2181818,5.50909091 16.4181818,6.49090909 L19.9090909,3 C17.7818182,1.14545455 15.0545455,0 12,0 C7.27006974,0 3.1977497,2.69829785 1.23999023,6.65002441 L5.26620003,9.76452941 Z"/>
+                    <path fill="#34A853" d="M16.0407269,18.0125889 C14.9509167,18.7163016 13.5660892,19.0909091 12,19.0909091 C8.86648613,19.0909091 6.21911939,17.076871 5.27698177,14.2678769 L1.23746264,17.3349879 C3.19279051,21.2936293 7.26500293,24 12,24 C14.9328362,24 17.7353462,22.9573905 19.834192,20.9995801 L16.0407269,18.0125889 Z"/>
+                    <path fill="#4A90E2" d="M19.834192,20.9995801 C22.0291676,18.9520994 23.4545455,15.903663 23.4545455,12 C23.4545455,11.2909091 23.3454545,10.5818182 23.1818182,9.90909091 L12,9.90909091 L12,14.4545455 L18.4363636,14.4545455 C18.1187732,16.013626 17.2662994,17.2212117 16.0407269,18.0125889 L19.834192,20.9995801 Z"/>
+                    <path fill="#FBBC05" d="M5.27698177,14.2678769 C5.03832634,13.556323 4.90909091,12.7937589 4.90909091,12 C4.90909091,11.2182781 5.03443647,10.4668121 5.26620003,9.76452941 L1.23999023,6.65002441 C0.43658717,8.26043162 0,10.0753848 0,12 C0,13.9195484 0.444780743,15.7301709 1.23746264,17.3349879 L5.27698177,14.2678769 Z"/>
+                </svg>
+                Sign In With Google
+            </a>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <div class="text-center">
-                    <div class="text-4xl mb-4">👥</div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Share with Groups</h3>
-                    <p class="text-gray-600">Join groups and optionally share your emotional journey with others</p>
-                </div>
+            <!-- Sign In with Email Button (Purple) -->
+            <button
+                wire:click="$dispatch('openEmailLoginModal')"
+                class="flex items-center justify-center w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-medium py-4 px-6 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl">
+                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                Sign In With Email
+            </button>
+        </div>
+
+        <!-- Bottom Rounded Section -->
+        <div class="w-full">
+            <div class="bg-white/95 backdrop-blur-sm rounded-t-[3rem] py-8 px-6 text-center shadow-2xl">
+                <p class="text-gray-700 text-sm">
+                    Don't have an account?
+                    <button
+                        wire:click="$dispatch('openSignUpModal')"
+                        class="text-cyan-500 hover:text-cyan-600 font-semibold underline transition-colors">
+                        Sign Up
+                    </button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Login Modal -->
+    <div x-data="{ showEmailLogin: false }"
+         x-on:open-email-login-modal.window="showEmailLogin = true"
+         x-show="showEmailLogin"
+         x-cloak
+         class="fixed inset-0 z-50 overflow-y-auto"
+         style="display: none;">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="showEmailLogin = false"></div>
+
+            <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+                <button @click="showEmailLogin = false" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Sign In</h2>
+
+                <form wire:submit="login">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input
+                            type="email"
+                            wire:model="email"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                            placeholder="tu@email.com"
+                            required>
+                        @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input
+                            type="password"
+                            wire:model="password"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                            placeholder="••••••••"
+                            required>
+                        @error('password') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    @if (session()->has('error'))
+                        <div class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    <button
+                        type="submit"
+                        class="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-medium py-3 rounded-lg transition-all duration-200">
+                        Sign In
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div x-data="{ showSignUp: false }"
+         x-on:open-sign-up-modal.window="showSignUp = true"
+         x-show="showSignUp"
+         x-cloak
+         class="fixed inset-0 z-50 overflow-y-auto"
+         style="display: none;">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="showSignUp = false"></div>
+
+            <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+                <button @click="showSignUp = false" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Create Account</h2>
+
+                <form wire:submit="register">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                        <input
+                            type="text"
+                            wire:model="name"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                            placeholder="Tu nombre"
+                            required>
+                        @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input
+                            type="email"
+                            wire:model="registerEmail"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                            placeholder="tu@email.com"
+                            required>
+                        @error('registerEmail') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input
+                            type="password"
+                            wire:model="registerPassword"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                            placeholder="••••••••"
+                            required>
+                        @error('registerPassword') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    @if (session()->has('success'))
+                        <div class="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg text-sm">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    <button
+                        type="submit"
+                        class="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-medium py-3 rounded-lg transition-all duration-200">
+                        Create Account
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    [x-cloak] { display: none !important; }
+</style>
