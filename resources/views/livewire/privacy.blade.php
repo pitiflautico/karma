@@ -72,6 +72,22 @@
                         <li><strong>Basic profile information</strong>: To create and authenticate your account</li>
                         <li><strong>Google Calendar</strong> (optional): To sync calendar events and correlate them with your mood entries</li>
                     </ul>
+
+                    <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">Calendar Access (Read-Only)</h3>
+                    <p class="text-gray-700 mb-4">
+                        When you enable Google Calendar integration, Feelith:
+                    </p>
+                    <ul class="list-disc ml-6 mb-4 text-gray-700">
+                        <li><strong>ONLY READS</strong> your calendar events (event names, dates, times)</li>
+                        <li><strong>NEVER modifies, creates, or deletes</strong> any calendar events</li>
+                        <li><strong>NEVER shares</strong> your calendar data with third parties</li>
+                        <li>Uses calendar data solely to correlate events with your mood patterns</li>
+                        <li>Stores event data locally only for synchronization purposes</li>
+                    </ul>
+                    <p class="text-gray-700 mb-4">
+                        Calendar integration is completely optional. You can disconnect it at any time from the Settings page, and we will immediately stop accessing your calendar and delete all stored calendar data.
+                    </p>
+
                     <p class="text-gray-700 mb-4">
                         We only access the specific data necessary to provide these features. You can revoke our access to your Google account at any time through your Google Account settings.
                     </p>
