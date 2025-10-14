@@ -38,6 +38,7 @@
                 <div class="bg-white rounded-t-[50%] pt-16 pb-8 px-6">
                     <div class="w-[50%] mx-auto">
                         @if(!$showSignUp)
+                        <div wire:key="login-form">
                         <!-- LOGIN FORM -->
                         <!-- Email Address -->
                         <div class="mb-6">
@@ -133,8 +134,10 @@
                                 Sign Up
                             </button>
                         </p>
+                        </div>
 
                         @else
+                        <div wire:key="signup-form">
                         <!-- SIGN UP FORM -->
                         <!-- Email Address -->
                         <div class="mb-6">
@@ -256,6 +259,7 @@
                                 an account.
                             </button>
                         </p>
+                        </div>
                         @endif
                     </div>
                 </div>

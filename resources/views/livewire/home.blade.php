@@ -99,7 +99,7 @@
                         @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
-                    <div class="mb-6">
+                    <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
                         <input
                             type="password"
@@ -108,6 +108,12 @@
                             placeholder="••••••••"
                             required>
                         @error('password') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-6 text-right">
+                        <a href="{{ route('password.request') }}" class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                            Forgot Password?
+                        </a>
                     </div>
 
                     @if (session()->has('error'))

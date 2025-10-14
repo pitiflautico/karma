@@ -17,7 +17,8 @@ use App\Livewire\Settings;
 use App\Livewire\Selfies;
 
 // Public pages
-Route::get('/', Home::class)->name('home');
+Route::get('/', \App\Livewire\Auth\AuthHome::class)->name('home');
+Route::get('/sign-in-mail', Home::class)->name('sign-in-mail');
 Route::get('/terms', \App\Livewire\Terms::class)->name('terms');
 Route::get('/privacy', \App\Livewire\Privacy::class)->name('privacy');
 

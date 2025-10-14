@@ -257,6 +257,167 @@ public function updatedRegisterPassword($value)
 
 ---
 
+### 8. Auth Mobile Container (`<x-auth-mobile-container>`)
+
+Contenedor para pantallas de autenticación mobile con gradiente de fondo y sección blanca redondeada.
+
+**Uso básico:**
+```blade
+<x-auth-mobile-container>
+    <x-auth-card
+        title="Forgot Password"
+        description="Please enter your email address to reset your password.">
+
+        <!-- Content here -->
+
+    </x-auth-card>
+</x-auth-mobile-container>
+```
+
+**Con botón de atrás:**
+```blade
+<x-auth-mobile-container :showBackButton="true" backUrl="{{ route('home') }}">
+    <x-auth-card title="Forgot Password" description="Enter your email...">
+        <!-- Content here -->
+    </x-auth-card>
+</x-auth-mobile-container>
+```
+
+**Con logo personalizado:**
+```blade
+<x-auth-mobile-container>
+    <x-slot:logo>
+        <h1 class="text-white text-5xl font-serif">Feelith</h1>
+    </x-slot:logo>
+
+    <x-auth-card>
+        <!-- Content -->
+    </x-auth-card>
+</x-auth-mobile-container>
+```
+
+**Props:**
+- `showBackButton`: Boolean para mostrar botón de atrás (default: false)
+- `backUrl`: URL para el botón de atrás (default: route('home'))
+- `logo` (slot): Slot opcional para personalizar el logo
+
+**Características:**
+- Gradiente de fondo: from-blue-400 via-purple-400 to-blue-600
+- Overlay radial gradient para efecto glow
+- Sección blanca redondeada en la parte inferior
+- Botón de atrás opcional
+- Logo Feelith por defecto
+
+**Ubicación:** `resources/views/components/auth-mobile-container.blade.php`
+
+---
+
+### 9. Auth Card (`<x-auth-card>`)
+
+Tarjeta de contenido para pantallas de autenticación con título, descripción y footer opcional.
+
+**Uso básico:**
+```blade
+<x-auth-card
+    title="Forgot Password"
+    description="Please enter your email address to reset your password.">
+
+    <!-- Form fields here -->
+    <input type="email" ...>
+    <button>Send</button>
+
+</x-auth-card>
+```
+
+**Con footer:**
+```blade
+<x-auth-card
+    title="Password Reset Sent"
+    description="Check your email for the recovery link.">
+
+    <button>Open My Email</button>
+
+    <x-slot:footer>
+        <p class="text-center text-gray-600 text-sm">
+            Didn't receive the email?<br>
+            Contact us at <a href="mailto:help@freud.ai">help@freud.ai</a>
+        </p>
+    </x-slot:footer>
+</x-auth-card>
+```
+
+**Props:**
+- `title`: Título de la tarjeta (opcional)
+- `description`: Descripción debajo del título (opcional)
+- `footer` (slot): Slot opcional para contenido en el footer
+
+**Características:**
+- Título centrado con text-2xl
+- Descripción centrada con text-sm
+- Contenido principal flexible
+- Footer opcional
+
+**Ubicación:** `resources/views/components/auth-card.blade.php`
+
+---
+
+### 10. Auth Home with Video (`AuthHome` Livewire Component)
+
+Pantalla de inicio de autenticación con video loop de fondo y botones de login.
+
+**Ubicación:**
+- Component: `app/Livewire/Auth/AuthHome.php`
+- View: `resources/views/livewire/auth/auth-home.blade.php`
+- Video: `public/videos/video_loop.mp4`
+
+**Uso en rutas:**
+```php
+Route::get('/', \App\Livewire\Auth\AuthHome::class)->name('home');
+```
+
+**Características:**
+- Video en loop de fondo (autoplay, muted, playsinline)
+- Logo "Feelith" centrado
+- Sección blanca redondeada en la parte inferior
+- Botón "Sign In With Google"
+- Botón "Sign In With Email" → redirige a `/sign-in-mail`
+- Link "Sign Up" → redirige a `/sign-in-mail`
+- Detecta mobile/desktop automáticamente
+- Redirige a dashboard si el usuario ya está logueado
+
+**Estructura de la vista:**
+```blade
+<div class="relative min-h-screen w-full overflow-hidden">
+    <!-- Background Video Loop -->
+    <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover">
+        <source src="{{ asset('videos/video_loop.mp4') }}" type="video/mp4">
+    </video>
+
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 flex flex-col min-h-screen">
+        <div class="flex-1 flex items-center justify-center">
+            <h1 class="text-white text-6xl font-serif">Feelith</h1>
+        </div>
+
+        <!-- Bottom Rounded White Section -->
+        <div class="relative overflow-hidden">
+            <div class="relative w-[200%] -left-[50%]">
+                <div class="bg-white rounded-t-[50%] pt-16 pb-8 px-6">
+                    <div class="w-[50%] mx-auto">
+                        <!-- Buttons here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+---
+
 ## Iconos Comunes
 
 Para mantener consistencia, aquí están los SVG de iconos más usados:
