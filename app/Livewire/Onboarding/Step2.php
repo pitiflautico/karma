@@ -20,6 +20,8 @@ class Step2 extends Component
 
     public function mount()
     {
+        \Log::info('[Step2] Mounting Step2 component');
+
         // Load from session if exists
         $this->helpReasons = session('onboarding.helpReasons', []);
     }
@@ -35,6 +37,11 @@ class Step2 extends Component
 
     public function saveAndContinue()
     {
+        \Log::info('[Step2] saveAndContinue called', [
+            'helpReasons' => $this->helpReasons,
+            'count' => count($this->helpReasons),
+        ]);
+
         // Validate
         $this->validate([
             'helpReasons' => 'required|array|min:1',
@@ -42,6 +49,8 @@ class Step2 extends Component
             'helpReasons.required' => 'Por favor selecciona al menos una opción.',
             'helpReasons.min' => 'Por favor selecciona al menos una opción.',
         ]);
+
+        \Log::info('[Step2] Validation passed, saving to session');
 
         // Save to session
         session(['onboarding.helpReasons' => $this->helpReasons]);
@@ -64,21 +73,24 @@ class Step2 extends Component
 
     public function render()
     {
-        // Detect if mobile device
-        $userAgent = request()->header('User-Agent');
-        $isMobile = false;
+        // Detect if mobile device or native app
+        $isNativeApp = request()->header('X-Native-App') === 'true';
+        $isMobile = request()->has('mobile');
 
-        if ($userAgent) {
-            $mobileKeywords = ['Mobile', 'Android', 'iPhone', 'iPad', 'iPod'];
-            foreach ($mobileKeywords as $keyword) {
-                if (stripos($userAgent, $keyword) !== false) {
-                    $isMobile = true;
-                    break;
+        if (!$isMobile && !$isNativeApp) {
+            $userAgent = request()->header('User-Agent');
+            if ($userAgent) {
+                $mobileKeywords = ['Mobile', 'Android', 'iPhone', 'iPad', 'iPod'];
+                foreach ($mobileKeywords as $keyword) {
+                    if (stripos($userAgent, $keyword) !== false) {
+                        $isMobile = true;
+                        break;
+                    }
                 }
             }
         }
 
-        if ($isMobile || request()->has('mobile')) {
+        if ($isMobile || $isNativeApp) {
             return view('livewire.onboarding.step2-mobile')->layout('layouts.app-mobile');
         }
 
