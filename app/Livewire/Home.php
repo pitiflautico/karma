@@ -106,17 +106,21 @@ class Home extends Component
     /**
      * Toggle to sign up view
      */
-    public function showSignUp()
+    public function toggleToSignUp()
     {
+        \Log::info('[Home] toggleToSignUp() called');
         $this->showSignUp = true;
+        \Log::info('[Home] showSignUp property is now: ' . ($this->showSignUp ? 'true' : 'false'));
     }
 
     /**
      * Toggle to login view
      */
-    public function showLogin()
+    public function toggleToLogin()
     {
+        \Log::info('[Home] toggleToLogin() called');
         $this->showSignUp = false;
+        \Log::info('[Home] showSignUp property is now: ' . ($this->showSignUp ? 'true' : 'false'));
     }
 
     /**

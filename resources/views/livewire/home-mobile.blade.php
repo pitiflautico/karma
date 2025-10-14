@@ -128,7 +128,7 @@
                             Don't have an account?
                             <button
                                 type="button"
-                                wire:click="showSignUp"
+                                wire:click="toggleToSignUp"
                                 class="text-purple-600 hover:text-purple-700 font-semibold">
                                 Sign Up
                             </button>
@@ -251,7 +251,7 @@
                             I already have
                             <button
                                 type="button"
-                                wire:click="showLogin"
+                                wire:click="toggleToLogin"
                                 class="text-purple-600 hover:text-purple-700 font-semibold">
                                 an account.
                             </button>
