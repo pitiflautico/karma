@@ -162,18 +162,149 @@
                                 </div>
 
                                 <!-- iOS-style Date Picker -->
-                                <div class="relative mb-8" x-data="datePicker()" x-init="init()">
+                                <div class="relative mb-8" x-data="{
+                                    months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                                    days: Array.from({ length: 31 }, (_, i) => i + 1),
+                                    years: Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i),
+                                    selectedMonth: 8,
+                                    selectedDay: 8,
+                                    selectedYear: 2001,
+                                    age: 23,
+                                    formattedDate: '',
+                                    monthScrollTimeout: null,
+                                    dayScrollTimeout: null,
+                                    yearScrollTimeout: null,
+                                    touchStartY: 0,
+                                    isScrolling: false,
+
+                                    init() {
+                                        setTimeout(() => {
+                                            this.scrollToMonth(this.selectedMonth, false);
+                                            this.scrollToDay(this.selectedDay - 1, false);
+                                            this.scrollToYear(this.years.indexOf(this.selectedYear), false);
+                                            this.calculateAge();
+                                            this.updateFormattedDate();
+                                        }, 100);
+                                    },
+
+                                    onTouchStart(event, type) {
+                                        this.touchStartY = event.touches[0].clientY;
+                                        this.isScrolling = true;
+                                    },
+
+                                    onTouchEnd(type) {
+                                        this.isScrolling = false;
+                                        setTimeout(() => {
+                                            if (type === 'month') this.updateMonth();
+                                            if (type === 'day') this.updateDay();
+                                            if (type === 'year') this.updateYear();
+                                        }, 50);
+                                    },
+
+                                    scrollToMonth(index, smooth = true) {
+                                        const scrollElement = this.$refs.monthScroll;
+                                        if (scrollElement) {
+                                            scrollElement.scrollTo({
+                                                top: index * 48,
+                                                behavior: smooth ? 'smooth' : 'auto'
+                                            });
+                                        }
+                                    },
+
+                                    scrollToDay(index, smooth = true) {
+                                        const scrollElement = this.$refs.dayScroll;
+                                        if (scrollElement) {
+                                            scrollElement.scrollTo({
+                                                top: index * 48,
+                                                behavior: smooth ? 'smooth' : 'auto'
+                                            });
+                                        }
+                                    },
+
+                                    scrollToYear(index, smooth = true) {
+                                        const scrollElement = this.$refs.yearScroll;
+                                        if (scrollElement) {
+                                            scrollElement.scrollTo({
+                                                top: index * 48,
+                                                behavior: smooth ? 'smooth' : 'auto'
+                                            });
+                                        }
+                                    },
+
+                                    updateMonth() {
+                                        clearTimeout(this.monthScrollTimeout);
+                                        this.monthScrollTimeout = setTimeout(() => {
+                                            const scrollElement = this.$refs.monthScroll;
+                                            const scrollTop = scrollElement.scrollTop;
+                                            const index = Math.round(scrollTop / 48);
+                                            this.selectedMonth = Math.max(0, Math.min(11, index));
+                                            this.scrollToMonth(index, true);
+                                            this.calculateAge();
+                                            this.updateFormattedDate();
+                                        }, 150);
+                                    },
+
+                                    updateDay() {
+                                        clearTimeout(this.dayScrollTimeout);
+                                        this.dayScrollTimeout = setTimeout(() => {
+                                            const scrollElement = this.$refs.dayScroll;
+                                            const scrollTop = scrollElement.scrollTop;
+                                            const index = Math.round(scrollTop / 48);
+                                            this.selectedDay = Math.max(1, Math.min(31, index + 1));
+                                            this.scrollToDay(index, true);
+                                            this.calculateAge();
+                                            this.updateFormattedDate();
+                                        }, 150);
+                                    },
+
+                                    updateYear() {
+                                        clearTimeout(this.yearScrollTimeout);
+                                        this.yearScrollTimeout = setTimeout(() => {
+                                            const scrollElement = this.$refs.yearScroll;
+                                            const scrollTop = scrollElement.scrollTop;
+                                            const index = Math.round(scrollTop / 48);
+                                            const clampedIndex = Math.max(0, Math.min(this.years.length - 1, index));
+                                            this.selectedYear = this.years[clampedIndex];
+                                            this.scrollToYear(clampedIndex, true);
+                                            this.calculateAge();
+                                            this.updateFormattedDate();
+                                        }, 150);
+                                    },
+
+                                    calculateAge() {
+                                        const today = new Date();
+                                        const birthDate = new Date(this.selectedYear, this.selectedMonth, this.selectedDay);
+                                        let age = today.getFullYear() - birthDate.getFullYear();
+                                        const monthDiff = today.getMonth() - birthDate.getMonth();
+                                        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                                            age--;
+                                        }
+                                        this.age = age;
+                                    },
+
+                                    updateFormattedDate() {
+                                        const month = String(this.selectedMonth + 1).padStart(2, '0');
+                                        const day = String(this.selectedDay).padStart(2, '0');
+                                        this.formattedDate = `${this.selectedYear}-${month}-${day}`;
+                                        // Update Livewire
+                                        if (this.$wire) {
+                                            this.$wire.set('birthDate', this.formattedDate);
+                                        }
+                                    }
+                                }" x-init="init()">
                                     <!-- Container with selection indicator -->
                                     <div class="relative w-full max-w-sm mx-auto">
                                         <!-- Selection indicator (green border oval) -->
                                         <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-12 mx-4 border-2 border-[#8BC34A] rounded-full pointer-events-none z-10"></div>
 
                                         <!-- 3 Column Pickers -->
-                                        <div class="flex justify-center items-center gap-2 py-4">
+                                        <div class="flex justify-center items-center gap-4 py-4">
                                             <!-- Month Picker -->
-                                            <div class="flex-1 h-60 overflow-y-auto scroll-smooth scrollbar-hide picker-column"
+                                            <div class="w-20 h-60 overflow-y-auto scrollbar-hide picker-column"
                                                  x-ref="monthScroll"
-                                                 @scroll.passive="updateMonth()">
+                                                 @scroll="updateMonth()"
+                                                 @touchstart="onTouchStart($event, 'month')"
+                                                 @touchend="onTouchEnd('month')">
                                                 <div style="height: 96px;"></div>
                                                 <template x-for="(month, index) in months" :key="index">
                                                     <div class="h-12 flex items-center justify-center text-base transition-all duration-200"
@@ -184,9 +315,11 @@
                                             </div>
 
                                             <!-- Day Picker -->
-                                            <div class="flex-1 h-60 overflow-y-auto scroll-smooth scrollbar-hide picker-column"
+                                            <div class="w-16 h-60 overflow-y-auto scrollbar-hide picker-column"
                                                  x-ref="dayScroll"
-                                                 @scroll.passive="updateDay()">
+                                                 @scroll="updateDay()"
+                                                 @touchstart="onTouchStart($event, 'day')"
+                                                 @touchend="onTouchEnd('day')">
                                                 <div style="height: 96px;"></div>
                                                 <template x-for="day in days" :key="day">
                                                     <div class="h-12 flex items-center justify-center text-base transition-all duration-200"
@@ -197,9 +330,11 @@
                                             </div>
 
                                             <!-- Year Picker -->
-                                            <div class="flex-1 h-60 overflow-y-auto scroll-smooth scrollbar-hide picker-column"
+                                            <div class="w-20 h-60 overflow-y-auto scrollbar-hide picker-column"
                                                  x-ref="yearScroll"
-                                                 @scroll.passive="updateYear()">
+                                                 @scroll="updateYear()"
+                                                 @touchstart="onTouchStart($event, 'year')"
+                                                 @touchend="onTouchEnd('year')">
                                                 <div style="height: 96px;"></div>
                                                 <template x-for="year in years" :key="year">
                                                     <div class="h-12 flex items-center justify-center text-base transition-all duration-200"
@@ -218,9 +353,6 @@
                                         </svg>
                                         <span x-text="'Tengo ' + age + ' años'"></span>
                                     </div>
-
-                                    <!-- Hidden input for Livewire -->
-                                    <input type="hidden" wire:model="birthDate" x-model="formattedDate">
                                 </div>
 
                             @elseif($currentStep === 4)
@@ -341,130 +473,12 @@
         .picker-column {
             -webkit-overflow-scrolling: touch;
             scroll-snap-type: y mandatory;
+            overscroll-behavior: contain;
+            touch-action: pan-y;
         }
 
-        .picker-column > div:not(:first-child):not(:last-child) {
+        .picker-column > div {
             scroll-snap-align: center;
-            scroll-snap-stop: always;
         }
     </style>
-
-    <script>
-        function datePicker() {
-            return {
-                months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-                days: Array.from({ length: 31 }, (_, i) => i + 1),
-                years: Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i),
-                selectedMonth: 8, // September (index 8)
-                selectedDay: 8,
-                selectedYear: 2001,
-                age: 23,
-                formattedDate: '',
-                monthScrollTimeout: null,
-                dayScrollTimeout: null,
-                yearScrollTimeout: null,
-
-                init() {
-                    setTimeout(() => {
-                        // Scroll to default values
-                        this.scrollToMonth(this.selectedMonth, false);
-                        this.scrollToDay(this.selectedDay - 1, false);
-                        this.scrollToYear(this.years.indexOf(this.selectedYear), false);
-                        this.calculateAge();
-                        this.updateFormattedDate();
-                    }, 100);
-                },
-
-                scrollToMonth(index, smooth = true) {
-                    const scrollElement = this.$refs.monthScroll;
-                    if (scrollElement) {
-                        scrollElement.scrollTo({
-                            top: index * 48,
-                            behavior: smooth ? 'smooth' : 'auto'
-                        });
-                    }
-                },
-
-                scrollToDay(index, smooth = true) {
-                    const scrollElement = this.$refs.dayScroll;
-                    if (scrollElement) {
-                        scrollElement.scrollTo({
-                            top: index * 48,
-                            behavior: smooth ? 'smooth' : 'auto'
-                        });
-                    }
-                },
-
-                scrollToYear(index, smooth = true) {
-                    const scrollElement = this.$refs.yearScroll;
-                    if (scrollElement) {
-                        scrollElement.scrollTo({
-                            top: index * 48,
-                            behavior: smooth ? 'smooth' : 'auto'
-                        });
-                    }
-                },
-
-                updateMonth() {
-                    clearTimeout(this.monthScrollTimeout);
-                    this.monthScrollTimeout = setTimeout(() => {
-                        const scrollElement = this.$refs.monthScroll;
-                        const scrollTop = scrollElement.scrollTop;
-                        const index = Math.round(scrollTop / 48);
-                        this.selectedMonth = Math.max(0, Math.min(11, index));
-                        this.scrollToMonth(index, true);
-                        this.calculateAge();
-                        this.updateFormattedDate();
-                    }, 150);
-                },
-
-                updateDay() {
-                    clearTimeout(this.dayScrollTimeout);
-                    this.dayScrollTimeout = setTimeout(() => {
-                        const scrollElement = this.$refs.dayScroll;
-                        const scrollTop = scrollElement.scrollTop;
-                        const index = Math.round(scrollTop / 48);
-                        this.selectedDay = Math.max(1, Math.min(31, index + 1));
-                        this.scrollToDay(index, true);
-                        this.calculateAge();
-                        this.updateFormattedDate();
-                    }, 150);
-                },
-
-                updateYear() {
-                    clearTimeout(this.yearScrollTimeout);
-                    this.yearScrollTimeout = setTimeout(() => {
-                        const scrollElement = this.$refs.yearScroll;
-                        const scrollTop = scrollElement.scrollTop;
-                        const index = Math.round(scrollTop / 48);
-                        const clampedIndex = Math.max(0, Math.min(this.years.length - 1, index));
-                        this.selectedYear = this.years[clampedIndex];
-                        this.scrollToYear(clampedIndex, true);
-                        this.calculateAge();
-                        this.updateFormattedDate();
-                    }, 150);
-                },
-
-                calculateAge() {
-                    const today = new Date();
-                    const birthDate = new Date(this.selectedYear, this.selectedMonth, this.selectedDay);
-                    let age = today.getFullYear() - birthDate.getFullYear();
-                    const monthDiff = today.getMonth() - birthDate.getMonth();
-
-                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                        age--;
-                    }
-
-                    this.age = age;
-                },
-
-                updateFormattedDate() {
-                    // Format: YYYY-MM-DD
-                    const month = String(this.selectedMonth + 1).padStart(2, '0');
-                    const day = String(this.selectedDay).padStart(2, '0');
-                    this.formattedDate = `${this.selectedYear}-${month}-${day}`;
-                }
-            }
-        }
-    </script>
 </div>

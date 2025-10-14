@@ -29,9 +29,11 @@
                             <!-- 3 Column Pickers -->
                             <div class="flex justify-center items-center gap-2 py-4">
                                 <!-- Month Picker -->
-                                <div class="flex-1 h-60 overflow-y-auto scroll-smooth scrollbar-hide picker-column"
+                                <div class="flex-1 h-60 overflow-y-auto scrollbar-hide picker-column"
                                      x-ref="monthScroll"
-                                     @scroll.passive="updateMonth()">
+                                     @scroll="updateMonth()"
+                                     @touchstart="onTouchStart($event, 'month')"
+                                     @touchend="onTouchEnd('month')">
                                     <div style="height: 96px;"></div>
                                     <template x-for="(month, index) in months" :key="index">
                                         <div class="h-12 flex items-center justify-center text-base transition-all duration-200"
@@ -42,9 +44,11 @@
                                 </div>
 
                                 <!-- Day Picker -->
-                                <div class="flex-1 h-60 overflow-y-auto scroll-smooth scrollbar-hide picker-column"
+                                <div class="flex-1 h-60 overflow-y-auto scrollbar-hide picker-column"
                                      x-ref="dayScroll"
-                                     @scroll.passive="updateDay()">
+                                     @scroll="updateDay()"
+                                     @touchstart="onTouchStart($event, 'day')"
+                                     @touchend="onTouchEnd('day')">
                                     <div style="height: 96px;"></div>
                                     <template x-for="day in days" :key="day">
                                         <div class="h-12 flex items-center justify-center text-base transition-all duration-200"
@@ -55,9 +59,11 @@
                                 </div>
 
                                 <!-- Year Picker -->
-                                <div class="flex-1 h-60 overflow-y-auto scroll-smooth scrollbar-hide picker-column"
+                                <div class="flex-1 h-60 overflow-y-auto scrollbar-hide picker-column"
                                      x-ref="yearScroll"
-                                     @scroll.passive="updateYear()">
+                                     @scroll="updateYear()"
+                                     @touchstart="onTouchStart($event, 'year')"
+                                     @touchend="onTouchEnd('year')">
                                     <div style="height: 96px;"></div>
                                     <template x-for="year in years" :key="year">
                                         <div class="h-12 flex items-center justify-center text-base transition-all duration-200"
@@ -108,17 +114,21 @@
         .picker-column {
             -webkit-overflow-scrolling: touch;
             scroll-snap-type: y mandatory;
+            overscroll-behavior: contain;
+            touch-action: pan-y;
         }
 
-        .picker-column > div:not(:first-child):not(:last-child) {
+        .picker-column > div {
             scroll-snap-align: center;
-            scroll-snap-stop: always;
         }
     </style>
 
+    @push('scripts')
     <script>
-        function datePicker() {
-            return {
+        document.addEventListener('alpine:init', () => {
+            console.log('Alpine initialized, registering datePicker component');
+
+            Alpine.data('datePicker', () => ({
                 months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
                 days: Array.from({ length: 31 }, (_, i) => i + 1),
                 years: Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i),
@@ -130,6 +140,8 @@
                 monthScrollTimeout: null,
                 dayScrollTimeout: null,
                 yearScrollTimeout: null,
+                touchStartY: 0,
+                isScrolling: false,
 
                 init() {
                     console.log('Date picker initialized');
@@ -147,6 +159,23 @@
                             year: this.selectedYear
                         });
                     }, 100);
+                },
+
+                onTouchStart(event, type) {
+                    this.touchStartY = event.touches[0].clientY;
+                    this.isScrolling = true;
+                    console.log(`Touch start on ${type}:`, this.touchStartY);
+                },
+
+                onTouchEnd(type) {
+                    console.log(`Touch end on ${type}`);
+                    this.isScrolling = false;
+                    // Trigger snap after touch ends with a short delay
+                    setTimeout(() => {
+                        if (type === 'month') this.updateMonth();
+                        if (type === 'day') this.updateDay();
+                        if (type === 'year') this.updateYear();
+                    }, 50);
                 },
 
                 scrollToMonth(index, smooth = true) {
@@ -245,7 +274,8 @@
                     this.formattedDate = `${this.selectedYear}-${month}-${day}`;
                     console.log('Formatted date:', this.formattedDate);
                 }
-            }
-        }
+            }));
+        });
     </script>
+    @endpush
 </div>

@@ -44,7 +44,7 @@ class Onboarding extends Component
     public $height = '';
 
     /**
-     * Initialize component and check if user already completed onboarding
+     * Initialize component and redirect to first step
      */
     public function mount()
     {
@@ -53,8 +53,8 @@ class Onboarding extends Component
             return $this->redirectRoute('dashboard');
         }
 
-        // Pre-fill name if available
-        $this->name = Auth::user()->name ?? '';
+        // Redirect to step 1 to start onboarding
+        return $this->redirectRoute('onboarding.step1');
     }
 
     /**

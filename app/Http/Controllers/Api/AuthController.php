@@ -166,8 +166,14 @@ class AuthController extends Controller
                 'email' => $user->email
             ]);
 
+            // Check if user has completed onboarding
+            if (!$user->onboarding_completed) {
+                \Log::info('[Auth] User needs onboarding, redirecting');
+                return redirect(url('/onboarding'));
+            }
+
             // Redirect to dashboard
-            return redirect('/dashboard');
+            return redirect(url('/dashboard'));
 
         } catch (\Exception $e) {
             \Log::error('[Auth] Error establishing session from token', [

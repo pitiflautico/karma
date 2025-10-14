@@ -18,8 +18,8 @@ class CheckOnboardingCompleted
         // Only check for authenticated users
         if ($request->user()) {
             // If user hasn't completed onboarding and not already on onboarding page
-            if (!$request->user()->onboarding_completed && !$request->is('onboarding')) {
-                return redirect()->route('onboarding');
+            if (!$request->user()->onboarding_completed && !$request->is('onboarding*')) {
+                return redirect()->route('onboarding.index');
             }
         }
 

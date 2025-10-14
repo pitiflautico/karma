@@ -42,9 +42,17 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-// Onboarding route (auth required but no onboarding check)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/onboarding', \App\Livewire\Onboarding::class)->name('onboarding');
+// Onboarding routes (auth required but no onboarding check)
+Route::middleware(['auth'])->prefix('onboarding')->name('onboarding.')->group(function () {
+    Route::get('/', \App\Livewire\Onboarding::class)->name('index');
+    Route::get('/step-1', \App\Livewire\Onboarding\Step1::class)->name('step1');
+    Route::get('/step-2', \App\Livewire\Onboarding\Step2::class)->name('step2');
+    Route::get('/step-3', \App\Livewire\Onboarding\Step3::class)->name('step3');
+    Route::get('/step-4', \App\Livewire\Onboarding\Step4::class)->name('step4');
+    Route::get('/step-5', \App\Livewire\Onboarding\Step5::class)->name('step5');
+    // Route::get('/step-6', \App\Livewire\Onboarding\Step6::class)->name('step6');
+    // Route::get('/step-7', \App\Livewire\Onboarding\Step7::class)->name('step7');
+    // Route::get('/complete', \App\Livewire\Onboarding\Complete::class)->name('complete');
 });
 
 // Protected user routes (require onboarding completion)
