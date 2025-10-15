@@ -48,14 +48,17 @@
                                     this.selectedDay = parseInt(parts[2]);
                                 }
 
+                                // Calculate age first
+                                this.calculateAge();
+
                                 // Sync initial value with Livewire
                                 this.updateFormattedDate();
 
+                                // Scroll to initial positions
                                 setTimeout(() => {
                                     this.scrollToMonth(this.selectedMonth, false);
                                     this.scrollToDay(this.selectedDay - 1, false);
                                     this.scrollToYear(this.years.indexOf(this.selectedYear), false);
-                                    this.calculateAge();
                                 }, 100);
                             },
 
@@ -93,14 +96,36 @@
                                 const scrollElement = this.$refs.monthScroll;
                                 const scrollTop = scrollElement.scrollTop;
                                 const index = Math.round(scrollTop / 36);
-                                this.selectedMonth = Math.max(0, Math.min(11, index));
+                                const clampedIndex = Math.max(0, Math.min(11, index));
+
+                                if (this.selectedMonth !== clampedIndex) {
+                                    this.selectedMonth = clampedIndex;
+                                    this.calculateAge();
+                                    this.updateFormattedDate();
+                                }
+
+                                // Snap to center after scroll stops
+                                setTimeout(() => {
+                                    this.scrollToMonth(this.selectedMonth, true);
+                                }, 150);
                             },
 
                             updateDay() {
                                 const scrollElement = this.$refs.dayScroll;
                                 const scrollTop = scrollElement.scrollTop;
                                 const index = Math.round(scrollTop / 36);
-                                this.selectedDay = Math.max(1, Math.min(31, index + 1));
+                                const clampedDay = Math.max(1, Math.min(31, index + 1));
+
+                                if (this.selectedDay !== clampedDay) {
+                                    this.selectedDay = clampedDay;
+                                    this.calculateAge();
+                                    this.updateFormattedDate();
+                                }
+
+                                // Snap to center after scroll stops
+                                setTimeout(() => {
+                                    this.scrollToDay(this.selectedDay - 1, true);
+                                }, 150);
                             },
 
                             updateYear() {
@@ -108,38 +133,17 @@
                                 const scrollTop = scrollElement.scrollTop;
                                 const index = Math.round(scrollTop / 36);
                                 const clampedIndex = Math.max(0, Math.min(this.years.length - 1, index));
-                                this.selectedYear = this.years[clampedIndex];
-                            },
 
-                            snapMonth() {
-                                const scrollElement = this.$refs.monthScroll;
-                                const scrollTop = scrollElement.scrollTop;
-                                const index = Math.round(scrollTop / 36);
-                                this.selectedMonth = Math.max(0, Math.min(11, index));
-                                this.scrollToMonth(index, true);
-                                this.calculateAge();
-                                this.updateFormattedDate();
-                            },
+                                if (this.selectedYear !== this.years[clampedIndex]) {
+                                    this.selectedYear = this.years[clampedIndex];
+                                    this.calculateAge();
+                                    this.updateFormattedDate();
+                                }
 
-                            snapDay() {
-                                const scrollElement = this.$refs.dayScroll;
-                                const scrollTop = scrollElement.scrollTop;
-                                const index = Math.round(scrollTop / 36);
-                                this.selectedDay = Math.max(1, Math.min(31, index + 1));
-                                this.scrollToDay(index, true);
-                                this.calculateAge();
-                                this.updateFormattedDate();
-                            },
-
-                            snapYear() {
-                                const scrollElement = this.$refs.yearScroll;
-                                const scrollTop = scrollElement.scrollTop;
-                                const index = Math.round(scrollTop / 36);
-                                const clampedIndex = Math.max(0, Math.min(this.years.length - 1, index));
-                                this.selectedYear = this.years[clampedIndex];
-                                this.scrollToYear(clampedIndex, true);
-                                this.calculateAge();
-                                this.updateFormattedDate();
+                                // Snap to center after scroll stops
+                                setTimeout(() => {
+                                    this.scrollToYear(this.years.indexOf(this.selectedYear), true);
+                                }, 150);
                             },
 
                             calculateAge() {
@@ -173,8 +177,8 @@
                                     <!-- Month Picker -->
                                     <div class="w-20 h-60 overflow-y-auto scrollbar-hide picker-column"
                                          x-ref="monthScroll"
-                                         @scroll.passive="updateMonth()"
-                                         @scrollend="snapMonth()">
+                                         @scroll.debounce.100ms="updateMonth()"
+                                         @touchend.debounce.250ms="updateMonth()">
                                         <div style="height: 108px;"></div>
                                         <template x-for="(month, index) in months" :key="index">
                                             <div class="h-9 flex items-center justify-center text-sm transition-all duration-150"
@@ -187,8 +191,8 @@
                                     <!-- Day Picker -->
                                     <div class="w-16 h-60 overflow-y-auto scrollbar-hide picker-column"
                                          x-ref="dayScroll"
-                                         @scroll.passive="updateDay()"
-                                         @scrollend="snapDay()">
+                                         @scroll.debounce.100ms="updateDay()"
+                                         @touchend.debounce.250ms="updateDay()">
                                         <div style="height: 108px;"></div>
                                         <template x-for="day in days" :key="day">
                                             <div class="h-9 flex items-center justify-center text-sm transition-all duration-150"
@@ -201,8 +205,8 @@
                                     <!-- Year Picker -->
                                     <div class="w-20 h-60 overflow-y-auto scrollbar-hide picker-column"
                                          x-ref="yearScroll"
-                                         @scroll.passive="updateYear()"
-                                         @scrollend="snapYear()">
+                                         @scroll.debounce.100ms="updateYear()"
+                                         @touchend.debounce.250ms="updateYear()">
                                         <div style="height: 108px;"></div>
                                         <template x-for="year in years" :key="year">
                                             <div class="h-9 flex items-center justify-center text-sm transition-all duration-150"
@@ -252,13 +256,18 @@
             scrollbar-width: none;
         }
 
-        /* Picker column improvements - iOS-like momentum scrolling */
+        /* Picker column improvements - faster scrolling */
         .picker-column {
             -webkit-overflow-scrolling: touch;
-            scroll-snap-type: none;
+            scroll-snap-type: y proximity;
             overscroll-behavior: contain;
             touch-action: pan-y;
             scroll-behavior: auto;
+        }
+
+        .picker-column > div {
+            scroll-snap-align: center;
+            scroll-snap-stop: normal;
         }
     </style>
 </div>
