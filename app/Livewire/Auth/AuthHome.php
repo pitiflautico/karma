@@ -56,7 +56,8 @@ class AuthHome extends Component
                 ->layout('layouts.app-mobile');
         }
 
-        // For desktop, redirect to sign-in-mail
-        return redirect()->route('sign-in-mail');
+        // For desktop, render the same view (it will show desktop layout)
+        return view('livewire.auth.auth-home')
+            ->layout('layouts.app');
     }
 }
