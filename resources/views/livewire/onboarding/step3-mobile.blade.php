@@ -94,12 +94,34 @@
                                 const scrollTop = scrollElement.scrollTop;
                                 const index = Math.round(scrollTop / 36);
                                 this.selectedMonth = Math.max(0, Math.min(11, index));
+                            },
+
+                            updateDay() {
+                                const scrollElement = this.$refs.dayScroll;
+                                const scrollTop = scrollElement.scrollTop;
+                                const index = Math.round(scrollTop / 36);
+                                this.selectedDay = Math.max(1, Math.min(31, index + 1));
+                            },
+
+                            updateYear() {
+                                const scrollElement = this.$refs.yearScroll;
+                                const scrollTop = scrollElement.scrollTop;
+                                const index = Math.round(scrollTop / 36);
+                                const clampedIndex = Math.max(0, Math.min(this.years.length - 1, index));
+                                this.selectedYear = this.years[clampedIndex];
+                            },
+
+                            snapMonth() {
+                                const scrollElement = this.$refs.monthScroll;
+                                const scrollTop = scrollElement.scrollTop;
+                                const index = Math.round(scrollTop / 36);
+                                this.selectedMonth = Math.max(0, Math.min(11, index));
                                 this.scrollToMonth(index, true);
                                 this.calculateAge();
                                 this.updateFormattedDate();
                             },
 
-                            updateDay() {
+                            snapDay() {
                                 const scrollElement = this.$refs.dayScroll;
                                 const scrollTop = scrollElement.scrollTop;
                                 const index = Math.round(scrollTop / 36);
@@ -109,7 +131,7 @@
                                 this.updateFormattedDate();
                             },
 
-                            updateYear() {
+                            snapYear() {
                                 const scrollElement = this.$refs.yearScroll;
                                 const scrollTop = scrollElement.scrollTop;
                                 const index = Math.round(scrollTop / 36);
@@ -151,8 +173,8 @@
                                     <!-- Month Picker -->
                                     <div class="w-20 h-60 overflow-y-auto scrollbar-hide picker-column"
                                          x-ref="monthScroll"
-                                         @scroll.debounce.50ms="updateMonth()"
-                                         @touchend="updateMonth()">
+                                         @scroll.passive="updateMonth()"
+                                         @scrollend="snapMonth()">
                                         <div style="height: 108px;"></div>
                                         <template x-for="(month, index) in months" :key="index">
                                             <div class="h-9 flex items-center justify-center text-sm transition-all duration-150"
@@ -165,8 +187,8 @@
                                     <!-- Day Picker -->
                                     <div class="w-16 h-60 overflow-y-auto scrollbar-hide picker-column"
                                          x-ref="dayScroll"
-                                         @scroll.debounce.50ms="updateDay()"
-                                         @touchend="updateDay()">
+                                         @scroll.passive="updateDay()"
+                                         @scrollend="snapDay()">
                                         <div style="height: 108px;"></div>
                                         <template x-for="day in days" :key="day">
                                             <div class="h-9 flex items-center justify-center text-sm transition-all duration-150"
@@ -179,8 +201,8 @@
                                     <!-- Year Picker -->
                                     <div class="w-20 h-60 overflow-y-auto scrollbar-hide picker-column"
                                          x-ref="yearScroll"
-                                         @scroll.debounce.50ms="updateYear()"
-                                         @touchend="updateYear()">
+                                         @scroll.passive="updateYear()"
+                                         @scrollend="snapYear()">
                                         <div style="height: 108px;"></div>
                                         <template x-for="year in years" :key="year">
                                             <div class="h-9 flex items-center justify-center text-sm transition-all duration-150"
@@ -230,18 +252,13 @@
             scrollbar-width: none;
         }
 
-        /* Picker column improvements - faster scrolling */
+        /* Picker column improvements - iOS-like momentum scrolling */
         .picker-column {
             -webkit-overflow-scrolling: touch;
-            scroll-snap-type: y proximity;
+            scroll-snap-type: none;
             overscroll-behavior: contain;
             touch-action: pan-y;
             scroll-behavior: auto;
-        }
-
-        .picker-column > div {
-            scroll-snap-align: center;
-            scroll-snap-stop: normal;
         }
     </style>
 </div>

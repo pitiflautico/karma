@@ -95,6 +95,14 @@
                                 const index = Math.round(scrollTop / 50);
                                 const clampedIndex = Math.max(0, Math.min(this.heights.length - 1, index));
                                 this.selectedHeight = this.heights[clampedIndex];
+                            },
+
+                            snapHeight() {
+                                const scrollElement = this.$refs.heightScroll;
+                                const scrollTop = scrollElement.scrollTop;
+                                const index = Math.round(scrollTop / 50);
+                                const clampedIndex = Math.max(0, Math.min(this.heights.length - 1, index));
+                                this.selectedHeight = this.heights[clampedIndex];
                                 this.scrollToHeight(clampedIndex, true);
                                 this.updateFormattedHeight();
                             },
@@ -133,8 +141,8 @@
                                 <!-- Height Picker -->
                                 <div class="w-full h-[400px] overflow-y-auto scrollbar-hide picker-column"
                                      x-ref="heightScroll"
-                                     @scroll.debounce.50ms="updateHeight()"
-                                     @touchend="updateHeight()">
+                                     @scroll.passive="updateHeight()"
+                                     @scrollend="snapHeight()">
                                     <div style="height: 175px;"></div>
                                     <template x-for="height in heights" :key="height">
                                         <div class="h-12 flex items-center justify-center text-4xl font-bold transition-all duration-150"
@@ -175,18 +183,13 @@
             scrollbar-width: none;
         }
 
-        /* Picker column improvements - faster scrolling */
+        /* Picker column improvements - iOS-like momentum scrolling */
         .picker-column {
             -webkit-overflow-scrolling: touch;
-            scroll-snap-type: y proximity;
+            scroll-snap-type: none;
             overscroll-behavior: contain;
             touch-action: pan-y;
             scroll-behavior: auto;
-        }
-
-        .picker-column > div {
-            scroll-snap-align: center;
-            scroll-snap-stop: normal;
         }
     </style>
 </div>
