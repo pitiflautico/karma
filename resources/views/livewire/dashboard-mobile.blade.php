@@ -297,3 +297,20 @@
     <!-- Include Mood Detail Modal -->
     @livewire('mood-detail-modal')
 </div>
+
+@push('scripts')
+<script>
+    // Auto-open mood entry modal if URL parameter is present
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('openMoodEntry') === '1') {
+            // Dispatch Livewire event to open mood entry modal
+            Livewire.dispatch('openMoodEntryModal');
+
+            // Remove the parameter from URL to clean it up
+            const cleanUrl = window.location.pathname + window.location.search.replace(/[?&]openMoodEntry=1/, '').replace(/^&/, '?');
+            window.history.replaceState({}, document.title, cleanUrl || window.location.pathname);
+        }
+    });
+</script>
+@endpush
