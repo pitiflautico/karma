@@ -63,7 +63,7 @@
                                 const scrollElement = this.$refs.monthScroll;
                                 if (scrollElement) {
                                     scrollElement.scrollTo({
-                                        top: index * 48,
+                                        top: index * 36,
                                         behavior: smooth ? 'smooth' : 'auto'
                                     });
                                 }
@@ -73,7 +73,7 @@
                                 const scrollElement = this.$refs.dayScroll;
                                 if (scrollElement) {
                                     scrollElement.scrollTo({
-                                        top: index * 48,
+                                        top: index * 36,
                                         behavior: smooth ? 'smooth' : 'auto'
                                     });
                                 }
@@ -83,7 +83,7 @@
                                 const scrollElement = this.$refs.yearScroll;
                                 if (scrollElement) {
                                     scrollElement.scrollTo({
-                                        top: index * 48,
+                                        top: index * 36,
                                         behavior: smooth ? 'smooth' : 'auto'
                                     });
                                 }
@@ -92,7 +92,7 @@
                             updateMonth() {
                                 const scrollElement = this.$refs.monthScroll;
                                 const scrollTop = scrollElement.scrollTop;
-                                const index = Math.round(scrollTop / 48);
+                                const index = Math.round(scrollTop / 36);
                                 this.selectedMonth = Math.max(0, Math.min(11, index));
                                 this.scrollToMonth(index, true);
                                 this.calculateAge();
@@ -102,7 +102,7 @@
                             updateDay() {
                                 const scrollElement = this.$refs.dayScroll;
                                 const scrollTop = scrollElement.scrollTop;
-                                const index = Math.round(scrollTop / 48);
+                                const index = Math.round(scrollTop / 36);
                                 this.selectedDay = Math.max(1, Math.min(31, index + 1));
                                 this.scrollToDay(index, true);
                                 this.calculateAge();
@@ -112,7 +112,7 @@
                             updateYear() {
                                 const scrollElement = this.$refs.yearScroll;
                                 const scrollTop = scrollElement.scrollTop;
-                                const index = Math.round(scrollTop / 48);
+                                const index = Math.round(scrollTop / 36);
                                 const clampedIndex = Math.max(0, Math.min(this.years.length - 1, index));
                                 this.selectedYear = this.years[clampedIndex];
                                 this.scrollToYear(clampedIndex, true);
@@ -144,50 +144,50 @@
                             <!-- Container with selection indicator -->
                             <div class="relative w-full max-w-sm mx-auto">
                                 <!-- Selection indicator (green border oval) -->
-                                <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-12 mx-4 border-2 border-[#8BC34A] rounded-full pointer-events-none z-10"></div>
+                                <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-9 mx-4 border-2 border-[#8BC34A] rounded-full pointer-events-none z-10"></div>
 
                                 <!-- 3 Column Pickers -->
                                 <div class="flex justify-center items-center gap-4 py-4">
                                     <!-- Month Picker -->
                                     <div class="w-20 h-60 overflow-y-auto scrollbar-hide picker-column"
                                          x-ref="monthScroll"
-                                         @scroll.debounce.150ms="updateMonth()"
+                                         @scroll.debounce.50ms="updateMonth()"
                                          @touchend="updateMonth()">
-                                        <div style="height: 96px;"></div>
+                                        <div style="height: 108px;"></div>
                                         <template x-for="(month, index) in months" :key="index">
-                                            <div class="h-12 flex items-center justify-center text-base transition-all duration-200"
-                                                 :class="selectedMonth === index ? 'text-[#8BC34A] font-semibold scale-110' : 'text-gray-400'"
+                                            <div class="h-9 flex items-center justify-center text-sm transition-all duration-150"
+                                                 :class="selectedMonth === index ? 'text-[#8BC34A] font-semibold scale-110' : 'text-gray-400 text-xs'"
                                                  x-text="month"></div>
                                         </template>
-                                        <div style="height: 96px;"></div>
+                                        <div style="height: 108px;"></div>
                                     </div>
 
                                     <!-- Day Picker -->
                                     <div class="w-16 h-60 overflow-y-auto scrollbar-hide picker-column"
                                          x-ref="dayScroll"
-                                         @scroll.debounce.150ms="updateDay()"
+                                         @scroll.debounce.50ms="updateDay()"
                                          @touchend="updateDay()">
-                                        <div style="height: 96px;"></div>
+                                        <div style="height: 108px;"></div>
                                         <template x-for="day in days" :key="day">
-                                            <div class="h-12 flex items-center justify-center text-base transition-all duration-200"
-                                                 :class="selectedDay === day ? 'text-[#8BC34A] font-semibold scale-110' : 'text-gray-400'"
+                                            <div class="h-9 flex items-center justify-center text-sm transition-all duration-150"
+                                                 :class="selectedDay === day ? 'text-[#8BC34A] font-semibold scale-110' : 'text-gray-400 text-xs'"
                                                  x-text="String(day).padStart(2, '0')"></div>
                                         </template>
-                                        <div style="height: 96px;"></div>
+                                        <div style="height: 108px;"></div>
                                     </div>
 
                                     <!-- Year Picker -->
                                     <div class="w-20 h-60 overflow-y-auto scrollbar-hide picker-column"
                                          x-ref="yearScroll"
-                                         @scroll.debounce.150ms="updateYear()"
+                                         @scroll.debounce.50ms="updateYear()"
                                          @touchend="updateYear()">
-                                        <div style="height: 96px;"></div>
+                                        <div style="height: 108px;"></div>
                                         <template x-for="year in years" :key="year">
-                                            <div class="h-12 flex items-center justify-center text-base transition-all duration-200"
-                                                 :class="selectedYear === year ? 'text-[#8BC34A] font-semibold scale-110' : 'text-gray-400'"
+                                            <div class="h-9 flex items-center justify-center text-sm transition-all duration-150"
+                                                 :class="selectedYear === year ? 'text-[#8BC34A] font-semibold scale-110' : 'text-gray-400 text-xs'"
                                                  x-text="year"></div>
                                         </template>
-                                        <div style="height: 96px;"></div>
+                                        <div style="height: 108px;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -230,16 +230,18 @@
             scrollbar-width: none;
         }
 
-        /* Picker column improvements */
+        /* Picker column improvements - faster scrolling */
         .picker-column {
             -webkit-overflow-scrolling: touch;
-            scroll-snap-type: y mandatory;
+            scroll-snap-type: y proximity;
             overscroll-behavior: contain;
             touch-action: pan-y;
+            scroll-behavior: auto;
         }
 
         .picker-column > div {
             scroll-snap-align: center;
+            scroll-snap-stop: normal;
         }
     </style>
 </div>
