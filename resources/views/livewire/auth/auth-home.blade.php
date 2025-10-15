@@ -1,30 +1,28 @@
 <div class="fixed inset-0 w-full h-full overflow-hidden">
-    <!-- Background Video Loop -->
-    <video
-        autoplay
-        loop
-        muted
-        playsinline
-        class="absolute inset-0 w-full h-full object-cover">
+    <!-- Video Background -->
+    <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover">
         <source src="{{ asset('videos/video_loop.mp4') }}" type="video/mp4">
     </video>
 
-    <!-- Gradient Overlay (optional, for better text visibility) -->
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30"></div>
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-black/20"></div>
 
     <!-- Content -->
     <div class="relative z-10 flex flex-col h-full">
         <!-- Logo/Title - Centered -->
         <div class="flex-1 flex items-center justify-center">
-            <h1 class="text-white text-6xl font-serif">Feelith</h1>
+            <h1 class="text-white text-5xl font-serif tracking-wide">Kharma<sup class="text-2xl">®</sup></h1>
         </div>
 
         <!-- Bottom Rounded White Section -->
         <div class="relative overflow-hidden">
-            <!-- Large rounded white section with wide circular curve -->
-            <div class="relative w-[200%] -left-[50%]">
-                <div class="bg-white rounded-t-[50%] pt-16 pb-8 px-6">
-                    <div class="w-[50%] mx-auto">
+            <!-- Curved white section -->
+            <div class="relative w-full overflow-hidden" style="height: 120px;">
+                <div class="absolute w-[300vw] left-1/2 -translate-x-1/2 bg-white rounded-full" style="height: 300vw; bottom: -290vw;"></div>
+            </div>
+            <!-- Content section -->
+            <div class="bg-white pb-12 px-6" style="padding-bottom: max(3rem, env(safe-area-inset-bottom, 0px) + 3rem);">
+                <div class="max-w-md mx-auto">
 
                         <!-- Title -->
                         <h2 class="text-center text-gray-900 text-xl font-medium mb-8">Haz login con:</h2>

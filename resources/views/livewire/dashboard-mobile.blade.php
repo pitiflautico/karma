@@ -124,7 +124,7 @@
 
         <!-- Curved Bottom with White Background -->
         <div class="absolute bottom-0 left-0 right-0 overflow-hidden h-12">
-            <div class="absolute w-[300vw] left-1/2 -translate-x-1/2 bg-[#F7F3EF] rounded-full h-[300vw]"></div>
+            <div class="absolute w-[300vw] left-1/2 -translate-x-1/2 bg-[#F7F3EF] rounded-full h-[300vw] allow-overflow"></div>
         </div>
     </div>
 
