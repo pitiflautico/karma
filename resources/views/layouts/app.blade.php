@@ -42,6 +42,26 @@
 
         <!-- Native App Bridge Script -->
         <script src="{{ asset('js/app/nativeApp.js') }}"></script>
+
+        <style>
+            /* Force no horizontal scroll globally */
+            * {
+                max-width: 100vw;
+            }
+
+            html, body {
+                overflow-x: hidden !important;
+                max-width: 100vw;
+            }
+
+            html {
+                overflow-x: hidden !important;
+            }
+
+            body {
+                overflow-x: hidden !important;
+            }
+        </style>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">

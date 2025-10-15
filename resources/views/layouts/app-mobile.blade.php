@@ -44,6 +44,11 @@
         <script src="{{ asset('js/app/nativeApp.js') }}"></script>
 
         <style>
+            /* Force no horizontal scroll globally */
+            * {
+                max-width: 100vw;
+            }
+
             /* Hide scrollbar but keep functionality */
             body::-webkit-scrollbar {
                 display: none;
@@ -53,7 +58,8 @@
                 scrollbar-width: none;
                 margin: 0;
                 padding: 0;
-                overflow-x: hidden;
+                overflow-x: hidden !important;
+                overflow-y: hidden;
             }
 
             /* iOS Safe Area Support - Extend background to edges */
@@ -67,14 +73,22 @@
             /* Full screen support for iOS */
             html, body {
                 width: 100%;
+                max-width: 100vw;
                 height: 100%;
                 position: fixed;
-                overflow: hidden;
+                overflow-x: hidden !important;
+                overflow-y: hidden;
+            }
+
+            html {
+                overflow-x: hidden !important;
             }
 
             main {
                 width: 100%;
+                max-width: 100vw;
                 height: 100%;
+                overflow-x: hidden !important;
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
             }
