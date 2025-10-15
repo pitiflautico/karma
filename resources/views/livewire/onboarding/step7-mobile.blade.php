@@ -40,13 +40,21 @@
                                 // Generate height array based on unit
                                 this.generateHeights();
 
+                                // Ensure selectedHeight is set to 160 if not already set
+                                if (!this.formattedHeight || this.formattedHeight === '') {
+                                    this.selectedHeight = 160;
+                                }
+
                                 // Sync initial value with Livewire
                                 this.updateFormattedHeight();
 
+                                // Scroll to selected height with longer delay to ensure DOM is ready
                                 setTimeout(() => {
                                     const index = this.heights.indexOf(this.selectedHeight);
-                                    this.scrollToHeight(index, false);
-                                }, 100);
+                                    if (index >= 0) {
+                                        this.scrollToHeight(index, false);
+                                    }
+                                }, 300);
                             },
 
                             generateHeights() {
