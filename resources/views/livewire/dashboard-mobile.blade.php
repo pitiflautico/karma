@@ -1,8 +1,11 @@
 <div class="min-h-screen bg-[#F7F3EF]">
     <!-- Top Section with Mood Info -->
     <div class="relative bg-white pb-16">
+        <!-- Safe Area Background Extension -->
+        <div class="absolute top-0 left-0 right-0 bg-white" style="height: env(safe-area-inset-top, 0px);"></div>
+
         <!-- Header -->
-        <div class="px-6 py-4 flex items-center justify-between">
+        <div class="px-6 py-4 flex items-center justify-between" style="padding-top: max(1rem, env(safe-area-inset-top, 0px) + 1rem);">
             <!-- Profile Picture -->
             <div class="w-10 h-10 rounded-full bg-gray-800 overflow-hidden flex-shrink-0">
                 @if($user->profile_photo_path)
@@ -137,7 +140,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="px-4 py-8 space-y-8">
+    <div class="px-4 py-8 space-y-8" style="padding-bottom: max(2rem, env(safe-area-inset-bottom, 0px) + 2rem);">
 
         <!-- Mood Insight (Streak) -->
         <div class="flex flex-col gap-3">
