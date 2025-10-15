@@ -215,7 +215,7 @@
             <div class="flex flex-col gap-3">
                 <div class="flex items-center justify-between h-5">
                     <h3 class="text-base font-bold text-gray-900">Mood Reminder</h3>
-                    <a href="{{ route('calendar') }}" class="text-sm font-medium text-gray-500">See All</a>
+                    <a href="{{ route('calendar.events') }}" class="text-sm font-medium text-gray-500">See All</a>
                 </div>
 
                 <div class="min-h-14 p-4 bg-white rounded-3xl flex items-center gap-4">

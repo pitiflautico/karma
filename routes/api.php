@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PushNotificationController;
 use App\Http\Controllers\Api\SelfieController;
 use App\Http\Controllers\Api\MoodApiController;
+use App\Http\Controllers\Api\UserProfileController;
 // use App\Http\Controllers\Api\UtilsController;
 
 // Public routes
@@ -36,6 +37,17 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/{id}', [MoodApiController::class, 'show']);
         Route::put('/{id}', [MoodApiController::class, 'update']);
         Route::delete('/{id}', [MoodApiController::class, 'destroy']);
+    });
+
+    // User Profile routes
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [UserProfileController::class, 'show']);
+        Route::put('/', [UserProfileController::class, 'update']);
+        Route::get('/calendar-status', [UserProfileController::class, 'calendarStatus']);
+        Route::post('/calendar/toggle', [UserProfileController::class, 'toggleCalendarSync']);
+        Route::post('/calendar/sync', [UserProfileController::class, 'syncCalendar']);
+        Route::post('/calendar/disconnect', [UserProfileController::class, 'disconnectCalendar']);
+        Route::put('/calendar/quiet-hours', [UserProfileController::class, 'updateQuietHours']);
     });
 
     // Utils routes

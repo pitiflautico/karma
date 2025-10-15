@@ -30,6 +30,7 @@ class User extends Authenticatable implements MustVerifyEmailContract, FilamentU
         'id',
         'name',
         'email',
+        'age',
         'password',
         'google_id',
         'google_calendar_token',
