@@ -75,4 +75,68 @@ class MoodEntry extends Model
             default => 'excellent',
         };
     }
+
+    /**
+     * Get the mood icon SVG path based on score (1-10).
+     */
+    public function getMoodIconAttribute(): string
+    {
+        return match (true) {
+            $this->mood_score <= 2 => 'depressed_icon.svg', // 1-2: Depressed
+            $this->mood_score <= 4 => 'Sad_icon.svg',       // 3-4: Sad
+            $this->mood_score <= 6 => 'Normal_icon.svg',    // 5-6: Normal
+            $this->mood_score <= 8 => 'Happy_icon.svg',     // 7-8: Happy
+            default => 'Great_icon.svg',                     // 9-10: Great
+        };
+    }
+
+    /**
+     * Get the mood name/label based on score.
+     */
+    public function getMoodNameAttribute(): string
+    {
+        return match (true) {
+            $this->mood_score <= 2 => 'Depressed',
+            $this->mood_score <= 4 => 'Sad',
+            $this->mood_score <= 6 => 'Neutral',
+            $this->mood_score <= 8 => 'Happy',
+            default => 'Overjoyed',
+        };
+    }
+
+    /**
+     * Get the mood background color (hex) based on score.
+     */
+    public function getMoodColorAttribute(): string
+    {
+        return match (true) {
+            $this->mood_score <= 2 => '#C084FC', // Depressed - Purple
+            $this->mood_score <= 4 => '#FB923C', // Sad - Orange
+            $this->mood_score <= 6 => '#B1865E', // Normal - Brown
+            $this->mood_score <= 8 => '#FBBF24', // Happy - Yellow
+            default => '#9BB167',                 // Great - Green
+        };
+    }
+
+    /**
+     * Get the mood Tailwind color class based on score.
+     */
+    public function getMoodColorClassAttribute(): string
+    {
+        return match (true) {
+            $this->mood_score <= 2 => 'bg-[#C084FC]', // Depressed - Purple
+            $this->mood_score <= 4 => 'bg-[#FB923C]', // Sad - Orange
+            $this->mood_score <= 6 => 'bg-[#B1865E]', // Normal - Brown
+            $this->mood_score <= 8 => 'bg-[#FBBF24]', // Happy - Yellow
+            default => 'bg-[#9BB167]',                 // Great - Green
+        };
+    }
+
+    /**
+     * Check if this mood needs doctor consultation (very low).
+     */
+    public function needsDoctorConsultation(): bool
+    {
+        return $this->mood_score <= 3;
+    }
 }

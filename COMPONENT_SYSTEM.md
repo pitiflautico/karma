@@ -556,4 +556,344 @@ Los componentes funcionan igual en ambas vistas.
 
 ---
 
-**Última actualización:** 2025-10-14
+### 11. App Container (`<x-app-container>`)
+
+Contenedor principal para vistas mobile con fondo consistente (#F7F3EF) y estructura común.
+
+**Uso básico:**
+```blade
+<x-app-container
+    title="Mood History"
+    subtitle="Browse your mood history here"
+    :showBackButton="true">
+
+    <!-- Content here -->
+
+</x-app-container>
+```
+
+**Con header personalizado:**
+```blade
+<x-app-container
+    title="Settings"
+    subtitle="Manage your preferences"
+    :showBackButton="true">
+
+    <x-slot:header>
+        <!-- Custom header content -->
+        <div class="mt-4">
+            <!-- Tabs, buttons, etc. -->
+        </div>
+    </x-slot:header>
+
+    <!-- Main content -->
+    <p>Settings content goes here...</p>
+</x-app-container>
+```
+
+**Props:**
+- `title` (opcional): Título de la página
+- `subtitle` (opcional): Subtítulo descriptivo
+- `showBackButton` (boolean, default: false): Mostrar botón de atrás
+- `backUrl` (opcional): URL personalizada para el botón (default: history.back())
+- `header` (slot opcional): Contenido adicional en el header
+
+**Características:**
+- Fondo beige claro (`#F7F3EF`)
+- Header blanco con padding consistente
+- Botón de atrás opcional
+- Slot para header personalizado
+- Padding inferior para navegación flotante
+
+**Ubicación:** `resources/views/components/app-container.blade.php`
+
+---
+
+### 12. Swipeable Card (`<x-swipeable-card>`)
+
+Tarjeta con funcionalidad de deslizar hacia la izquierda para revelar botón de borrar.
+
+**Uso:**
+```blade
+@foreach($items as $item)
+    <x-swipeable-card :deleteId="$item->id">
+        <!-- Card content -->
+        <div class="flex items-center justify-between">
+            <span>{{ $item->title }}</span>
+            <span>{{ $item->time }}</span>
+        </div>
+    </x-swipeable-card>
+@endforeach
+```
+
+**Props:**
+- `deleteId` (requerido): ID del elemento a borrar (se pasa a wire:click)
+
+**Características:**
+- Swipe solo hacia la izquierda (no permite swipe derecho)
+- Snap automático: si deslizas >50px, se abre; sino, se cierra
+- Distancia máxima: 100px
+- Botón de borrar rojo detrás de la tarjeta
+- Transición suave con Alpine.js
+- Touch gestures nativos
+
+**Funcionalidad:**
+- Al deslizar hacia la izquierda, aparece un botón de papelera rojo
+- Al soltar, si el deslizamiento fue >50px, la tarjeta queda abierta mostrando el botón
+- Hacer clic en la papelera ejecuta `confirmDelete(deleteId)`
+
+**Ubicación:** `resources/views/components/swipeable-card.blade.php`
+
+---
+
+### 13. Mood Card (`<x-mood-card>`)
+
+Tarjeta de contenido para mostrar un mood entry con icono, información y acciones.
+
+**Uso:**
+```blade
+<x-mood-card :mood="$moodEntry" />
+```
+
+**Props:**
+- `mood` (requerido): Objeto MoodEntry con sus relaciones
+
+**Muestra:**
+- Icono del mood (SVG) según el score
+- Nombre del mood (Depressed, Sad, Happy, etc.)
+- Nota del usuario o título del evento de calendario
+- Warning "Consult with your doctor" si el mood es ≤3
+- Hora del mood entry
+- Botón de arrow para editar
+
+**Características:**
+- Layout horizontal con icono a la izquierda
+- Truncate de texto para notas largas
+- Warning visual para moods bajos
+- Botón de edición con wire:click
+
+**Ubicación:** `resources/views/components/mood-card.blade.php`
+
+---
+
+### 14. Delete Confirmation Modal (`<x-delete-confirmation-modal>`)
+
+Modal de confirmación para operaciones de eliminación con ilustración personalizada y diseño bottom-sheet.
+
+**Uso básico:**
+```blade
+<x-delete-confirmation-modal
+    :show="$showDeleteConfirm"
+    title="Delete Mood Entry?"
+    message="This action cannot be undone."
+    confirmText="Yes ✓"
+    cancelText="Cancel"
+    onConfirm="deleteMood"
+    onCancel="cancelDelete"
+/>
+```
+
+**Con textos personalizados:**
+```blade
+<x-delete-confirmation-modal
+    :show="$showModal"
+    title="Remove from Calendar?"
+    message="Are you sure you want to remove this event from your calendar?"
+    confirmText="Remove ✓"
+    cancelText="Keep It"
+    onConfirm="removeEvent"
+    onCancel="closeModal"
+/>
+```
+
+**Props:**
+- `show` (boolean, requerido): Controla la visibilidad del modal
+- `title` (string, default: 'Delete Mood Entry?'): Título del modal
+- `message` (string, default: 'This action cannot be undone.'): Mensaje descriptivo
+- `confirmText` (string, default: 'Yes ✓'): Texto del botón de confirmación
+- `cancelText` (string, default: 'Cancel'): Texto del botón de cancelar
+- `onConfirm` (string, requerido): Método Livewire a ejecutar al confirmar
+- `onCancel` (string, requerido): Método Livewire a ejecutar al cancelar
+
+**Características:**
+- Diseño bottom-sheet (aparece desde abajo)
+- Backdrop negro semi-transparente con click para cerrar
+- Ilustración personalizada (`delete_popup_art.png`)
+- Botón de confirmación con gradiente rosa llamativo
+- Botón de cancelar blanco con borde y texto rojo
+- Animaciones suaves con Alpine.js (x-transition)
+- Responsive con max-width para pantallas grandes
+
+**Estructura visual:**
+1. Ilustración en la parte superior (mujer con bolsa de compras y gesto de espera)
+2. Título en negrita centrado
+3. Mensaje descriptivo centrado
+4. Dos botones apilados verticalmente:
+   - Confirmar (rosa con degradado)
+   - Cancelar (blanco con texto rojo)
+
+**Ubicación:** `resources/views/components/delete-confirmation-modal.blade.php`
+
+---
+
+## Iconos de Moods
+
+**Ubicación:** `public/images/moods/`
+
+Los iconos de moods son SVG personalizados con fondo circular de colores y expresiones faciales. Ya incluyen el color de fondo circular, **NO añadas círculos adicionales** al usarlos.
+
+### Archivos disponibles:
+
+| Archivo | Mood | Color | Rango Score | Hex Color |
+|---------|------|-------|-------------|-----------|
+| `depressed_icon.svg` | Depressed | Morado | 1-2 | `#C084FC` |
+| `Sad_icon.svg` | Sad | Naranja | 3-4 | `#FB923C` |
+| `Normal_icon.svg` | Normal/Neutral | Marrón | 5-6 | `#B1865E` |
+| `Happy_icon.svg` | Happy | Amarillo | 7-8 | `#FBBF24` |
+| `Great_icon.svg` | Overjoyed/Great | Verde | 9-10 | `#9BB167` |
+
+### Uso en Blade:
+
+```blade
+<!-- En List View -->
+<img src="{{ asset('images/moods/' . $mood->mood_icon) }}"
+     alt="{{ $mood->mood_name }}"
+     class="w-12 h-12">
+
+<!-- En Calendar View -->
+<img src="{{ asset('images/moods/' . $mood->mood_icon) }}"
+     alt="{{ $mood->mood_name }}"
+     class="w-10 h-10">
+```
+
+### Atributos del modelo MoodEntry:
+
+El modelo `MoodEntry` tiene atributos computados para obtener los iconos y colores:
+
+```php
+$mood->mood_icon          // Devuelve: 'depressed_icon.svg', 'Sad_icon.svg', etc.
+$mood->mood_name          // Devuelve: 'Depressed', 'Sad', 'Neutral', 'Happy', 'Overjoyed'
+$mood->mood_color         // Devuelve: '#C084FC', '#FB923C', etc. (hex color)
+$mood->mood_color_class   // Devuelve: 'bg-[#C084FC]', 'bg-[#FB923C]', etc.
+```
+
+### Mapeo Score → Icon:
+
+- **1-2**: `depressed_icon.svg` (Morado #C084FC)
+- **3-4**: `Sad_icon.svg` (Naranja #FB923C)
+- **5-6**: `Normal_icon.svg` (Marrón #B1865E)
+- **7-8**: `Happy_icon.svg` (Amarillo #FBBF24)
+- **9-10**: `Great_icon.svg` (Verde #9BB167)
+
+### Características de los SVG:
+
+- Tamaño: 104x104px (viewBox)
+- Incluyen drop shadow filter
+- Ya tienen fondo circular con color
+- No necesitan contenedor circular adicional
+- Son completamente vectoriales y escalables
+
+### ❌ NO hacer:
+
+```blade
+<!-- MAL: No añadas círculo de fondo -->
+<div class="w-12 h-12 rounded-full bg-purple-400">
+    <img src="{{ asset('images/moods/depressed_icon.svg') }}" class="w-10 h-10">
+</div>
+```
+
+### ✅ Hacer:
+
+```blade
+<!-- BIEN: El icono ya tiene su círculo de fondo -->
+<div class="w-12 h-12">
+    <img src="{{ asset('images/moods/depressed_icon.svg') }}" class="w-12 h-12">
+</div>
+```
+
+---
+
+### 15. Mood Detail Modal (`MoodDetailModal` Livewire Component)
+
+Modal bottom-sheet para ver el detalle completo de un mood entry en modo solo lectura, con opción de editar.
+
+**Ubicación:**
+- Component: `app/Livewire/MoodDetailModal.php`
+- View: `resources/views/livewire/mood-detail-modal.blade.php`
+
+**Uso en vista:**
+```blade
+<!-- Incluir el componente en la vista -->
+@livewire('mood-detail-modal')
+```
+
+**Abrir el modal desde otro componente:**
+```php
+// En un componente Livewire
+public function viewMood($moodId)
+{
+    $this->dispatch('openMoodDetailModal', moodId: $moodId);
+}
+```
+
+**Características:**
+- Modal bottom-sheet que aparece desde abajo
+- Muestra el icono del mood (SVG grande, 96x96px)
+- Título con el nombre del mood (Depressed, Happy, etc.)
+- Fecha y hora del mood entry
+- Información del evento de calendario asociado (si existe)
+- Nota completa del usuario
+- Warning para moods bajos que requieren consulta médica
+- Dos botones de acción:
+  - "Edit Mood Entry" (gradiente morado) → abre el modal de edición
+  - "Close" (blanco con borde)
+- Backdrop semi-transparente con click para cerrar
+- Animaciones suaves con Alpine.js
+
+**Eventos escuchados:**
+- `openMoodDetailModal` → Abre el modal con el mood especificado
+
+**Eventos emitidos:**
+- `openMoodEntryModal` → Abre el modal de edición al hacer clic en "Edit"
+
+**Métodos públicos:**
+```php
+openModal($moodId)     // Abre el modal y carga el mood
+closeModal()           // Cierra el modal y limpia los datos
+editMood()             // Cierra este modal y abre el de edición
+```
+
+**Estructura visual:**
+1. Botón X en la esquina superior derecha
+2. Icono del mood centrado (grande)
+3. Nombre del mood en negrita
+4. Fecha y hora
+5. Bloque azul del evento de calendario (si existe)
+6. Sección "Note" con la nota completa o "No notes added"
+7. Warning amarillo para moods bajos (si aplica)
+8. Botones de acción apilados
+
+**Ejemplo de flujo:**
+```blade
+<!-- En mood-history-mobile.blade.php -->
+<x-mood-card :mood="$mood" />
+
+<!-- mood-card.blade.php tiene un botón: -->
+<button wire:click="editMood('{{ $mood->id }}')">→</button>
+
+<!-- MoodHistory.php ejecuta: -->
+public function editMood($moodId) {
+    $this->dispatch('openMoodDetailModal', moodId: $moodId);
+}
+
+<!-- MoodDetailModal escucha el evento y abre el modal -->
+```
+
+**Integración:**
+- Se incluye en `mood-history-mobile.blade.php`
+- El componente `MoodCard` dispara el evento para abrirlo
+- Si el usuario hace clic en "Edit", se abre `MoodEntryForm` automáticamente
+
+---
+
+**Última actualización:** 2025-10-15

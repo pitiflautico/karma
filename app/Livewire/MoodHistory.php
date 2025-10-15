@@ -20,11 +20,47 @@ class MoodHistory extends Component
     public $showDeleteConfirm = false;
     public $moodToDelete = null;
 
+    // New: View mode (list or calendar)
+    public $activeView = 'list';
+
+    // Calendar navigation
+    public $calendarMonth;
+    public $calendarYear;
+
     public function mount()
     {
         // Set default date range to last 30 days
         $this->dateTo = Carbon::now()->format('Y-m-d');
         $this->dateFrom = Carbon::now()->subDays(30)->format('Y-m-d');
+
+        // Initialize calendar to current month
+        $this->calendarMonth = Carbon::now()->month;
+        $this->calendarYear = Carbon::now()->year;
+    }
+
+    public function switchView($view)
+    {
+        $this->activeView = $view;
+    }
+
+    public function previousMonth()
+    {
+        $date = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1)->subMonth();
+        $this->calendarMonth = $date->month;
+        $this->calendarYear = $date->year;
+    }
+
+    public function nextMonth()
+    {
+        $date = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1)->addMonth();
+        $this->calendarMonth = $date->month;
+        $this->calendarYear = $date->year;
+    }
+
+    public function goToToday()
+    {
+        $this->calendarMonth = Carbon::now()->month;
+        $this->calendarYear = Carbon::now()->year;
     }
 
     public function updatingSearch()
@@ -58,12 +94,19 @@ class MoodHistory extends Component
 
     public function editMood($moodId)
     {
-        $this->dispatch('openMoodEntryModal', moodEntryId: $moodId);
+        $this->dispatch('openMoodDetailModal', moodId: $moodId);
     }
 
-    public function confirmDelete($moodId)
+    #[On('view-mood')]
+    public function viewMood($id)
     {
-        $this->moodToDelete = $moodId;
+        $this->dispatch('openMoodDetailModal', moodId: $id);
+    }
+
+    #[On('confirm-delete')]
+    public function confirmDelete($id)
+    {
+        $this->moodToDelete = $id;
         $this->showDeleteConfirm = true;
     }
 
@@ -95,6 +138,122 @@ class MoodHistory extends Component
     public function refreshData()
     {
         // This will trigger a re-render
+    }
+
+    private function isMobileDevice()
+    {
+        // 1. Session variable
+        if (session()->has('is_mobile_app') || session()->has('native_app_login')) {
+            return true;
+        }
+
+        // 2. Query parameter ?mobile=1
+        if (request()->has('mobile') && request()->input('mobile') == '1') {
+            session()->put('is_mobile_app', true);
+            return true;
+        }
+
+        // 3. User-Agent
+        $userAgent = request()->header('User-Agent');
+        $mobileKeywords = ['Mobile', 'Android', 'iPhone', 'iPad', 'iPod', 'BlackBerry', 'Windows Phone'];
+        foreach ($mobileKeywords as $keyword) {
+            if (stripos($userAgent, $keyword) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function getCalendarData()
+    {
+        $startOfMonth = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1)->startOfMonth();
+        $endOfMonth = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1)->endOfMonth();
+
+        // Get all moods for this month
+        $moods = MoodEntry::where('user_id', Auth::id())
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy(function($mood) {
+                return $mood->created_at->format('Y-m-d');
+            });
+
+        // Build calendar grid starting on Monday
+        $calendar = [];
+        $startDayOfWeek = $startOfMonth->dayOfWeek; // 0 = Sunday, 1 = Monday, etc.
+
+        // Adjust for Monday start (0 = Monday, 6 = Sunday)
+        $adjustedStartDay = $startDayOfWeek === 0 ? 6 : $startDayOfWeek - 1;
+        $daysInMonth = $startOfMonth->daysInMonth;
+
+        // Add empty cells for days before month starts
+        for ($i = 0; $i < $adjustedStartDay; $i++) {
+            $calendar[] = null;
+        }
+
+        // Add days of month
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = $startOfMonth->copy()->addDays($day - 1);
+            $dateKey = $date->format('Y-m-d');
+
+            $dayData = [
+                'day' => $day,
+                'date' => $dateKey,
+                'isToday' => $date->isToday(),
+                'moods' => $moods->get($dateKey, collect()),
+            ];
+
+            $calendar[] = $dayData;
+        }
+
+        return $calendar;
+    }
+
+    private function getMoodsByDate()
+    {
+        // Get all moods grouped by date for list view
+        $query = MoodEntry::where('user_id', Auth::id())
+            ->with('calendarEvent');
+
+        // Search filter
+        if ($this->search) {
+            $query->where('note', 'like', '%' . $this->search . '%');
+        }
+
+        // Date range filter
+        if ($this->dateFrom) {
+            $query->whereDate('created_at', '>=', $this->dateFrom);
+        }
+
+        if ($this->dateTo) {
+            $query->whereDate('created_at', '<=', $this->dateTo);
+        }
+
+        // Mood level filter
+        if ($this->moodLevel) {
+            switch ($this->moodLevel) {
+                case 'low':
+                    $query->whereBetween('mood_score', [1, 3]);
+                    break;
+                case 'medium':
+                    $query->whereBetween('mood_score', [4, 6]);
+                    break;
+                case 'good':
+                    $query->whereBetween('mood_score', [7, 8]);
+                    break;
+                case 'excellent':
+                    $query->whereBetween('mood_score', [9, 10]);
+                    break;
+            }
+        }
+
+        return $query->orderBy('created_at', 'desc')->get()->groupBy(function($mood) {
+            if ($mood->created_at->isToday()) {
+                return 'Today';
+            }
+            return $mood->created_at->format('M d, Y');
+        });
     }
 
     public function render()
@@ -144,6 +303,20 @@ class MoodHistory extends Component
                 ->where('created_at', '>=', Carbon::now()->startOfWeek())
                 ->count(),
         ];
+
+        // Mobile view
+        if ($this->isMobileDevice()) {
+            $moodsByDate = $this->getMoodsByDate();
+            $calendarData = $this->getCalendarData();
+            $currentMonthName = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1)->format('F Y');
+
+            return view('livewire.mood-history-mobile', [
+                'moodsByDate' => $moodsByDate,
+                'calendarData' => $calendarData,
+                'currentMonthName' => $currentMonthName,
+                'stats' => $stats,
+            ])->layout('layouts.app-mobile');
+        }
 
         return view('livewire.mood-history', [
             'moodEntries' => $moodEntries,
