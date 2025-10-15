@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PushNotificationController;
 use App\Http\Controllers\Api\SelfieController;
+use App\Http\Controllers\Api\MoodApiController;
 // use App\Http\Controllers\Api\UtilsController;
 
 // Public routes
@@ -26,6 +27,16 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/upload', [SelfieController::class, 'upload']);
         Route::get('/', [SelfieController::class, 'index']);
         Route::delete('/{id}', [SelfieController::class, 'destroy']);
+    });
+
+    // Mood routes
+    Route::prefix('moods')->group(function () {
+        Route::get('/', [MoodApiController::class, 'index']);
+        Route::post('/', [MoodApiController::class, 'store']);
+        Route::get('/{id}', [MoodApiController::class, 'show']);
+        Route::put('/{id}', [MoodApiController::class, 'update']);
+        Route::delete('/{id}', [MoodApiController::class, 'destroy']);
+        Route::post('/upload-audio', [MoodApiController::class, 'uploadAudio']);
     });
 
     // Utils routes
