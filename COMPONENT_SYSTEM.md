@@ -6,6 +6,69 @@ Este documento describe el sistema de componentes reutilizables del proyecto y c
 
 **SIEMPRE** usa componentes reutilizables en lugar de repetir HTML. Los componentes están en `/resources/views/components/`.
 
+## Tipografía
+
+### Font Family: Urbanist
+
+El proyecto usa la fuente **Urbanist** de Google Fonts como tipografía principal para toda la aplicación (web y mobile).
+
+**Ubicación:** Google Fonts CDN
+**Pesos disponibles:** 300, 400, 500, 600, 700, 800, 900
+
+**Configuración:**
+- Se carga desde Google Fonts en ambos layouts (`app.blade.php` y `app-mobile.blade.php`)
+- Configurada como font-family por defecto en Tailwind CSS
+- Fallbacks: `system-ui`, `-apple-system`, `sans-serif`
+
+**Integración en layouts:**
+```html
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    sans: ['Urbanist', 'system-ui', '-apple-system', 'sans-serif'],
+                },
+            }
+        }
+    }
+</script>
+```
+
+**Uso en Blade:**
+```blade
+<!-- La font se aplica automáticamente con font-sans (default) -->
+<p class="text-base">This text uses Urbanist</p>
+
+<!-- Puedes especificar explícitamente -->
+<p class="font-sans">This also uses Urbanist</p>
+
+<!-- Diferentes pesos -->
+<h1 class="font-light">Light (300)</h1>
+<p class="font-normal">Normal (400)</p>
+<p class="font-medium">Medium (500)</p>
+<p class="font-semibold">Semibold (600)</p>
+<h2 class="font-bold">Bold (700)</h2>
+<h1 class="font-extrabold">Extrabold (800)</h1>
+<h1 class="font-black">Black (900)</h1>
+```
+
+**Ventajas:**
+- Carga rápida desde CDN de Google
+- Funciona en web y mobile WebView
+- No requiere assets locales
+- Soporte completo de pesos tipográficos
+- Fallback a fuentes del sistema si falla la carga
+
+---
+
 ## Componentes Disponibles
 
 ### 1. Label (`<x-label>`)
