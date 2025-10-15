@@ -52,8 +52,11 @@ class User extends Authenticatable implements MustVerifyEmailContract, FilamentU
         'birth_date',
         'gender',
         'weight',
+        'weight_unit',
         'height',
+        'height_unit',
         'help_reason',
+        'mood_level',
         'created_at',
         'updated_at',
     ];
