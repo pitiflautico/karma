@@ -83,7 +83,7 @@
                                 const scrollElement = this.$refs.heightScroll;
                                 if (scrollElement) {
                                     scrollElement.scrollTo({
-                                        top: index * 50,
+                                        top: index * 80,
                                         behavior: smooth ? 'smooth' : 'auto'
                                     });
                                 }
@@ -92,15 +92,7 @@
                             updateHeight() {
                                 const scrollElement = this.$refs.heightScroll;
                                 const scrollTop = scrollElement.scrollTop;
-                                const index = Math.round(scrollTop / 50);
-                                const clampedIndex = Math.max(0, Math.min(this.heights.length - 1, index));
-                                this.selectedHeight = this.heights[clampedIndex];
-                            },
-
-                            snapHeight() {
-                                const scrollElement = this.$refs.heightScroll;
-                                const scrollTop = scrollElement.scrollTop;
-                                const index = Math.round(scrollTop / 50);
+                                const index = Math.round(scrollTop / 80);
                                 const clampedIndex = Math.max(0, Math.min(this.heights.length - 1, index));
                                 this.selectedHeight = this.heights[clampedIndex];
                                 this.scrollToHeight(clampedIndex, true);
@@ -136,20 +128,20 @@
                             <!-- Container with selection indicator -->
                             <div class="relative w-full max-w-sm mx-auto">
                                 <!-- Selection indicator (green border oval) -->
-                                <div class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-48 h-12 border-2 border-[#8BC34A] rounded-full pointer-events-none z-10"></div>
+                                <div class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-64 h-20 border-2 border-[#8BC34A] rounded-full pointer-events-none z-10"></div>
 
                                 <!-- Height Picker -->
                                 <div class="w-full h-[400px] overflow-y-auto scrollbar-hide picker-column"
                                      x-ref="heightScroll"
-                                     @scroll.passive="updateHeight()"
-                                     @scrollend="snapHeight()">
-                                    <div style="height: 175px;"></div>
+                                     @scroll.debounce.150ms="updateHeight()"
+                                     @touchend="updateHeight()">
+                                    <div style="height: 160px;"></div>
                                     <template x-for="height in heights" :key="height">
-                                        <div class="h-12 flex items-center justify-center text-4xl font-bold transition-all duration-150"
-                                             :class="selectedHeight === height ? 'text-[#8BC34A] scale-110' : 'text-gray-400 scale-85 opacity-40 text-3xl'"
+                                        <div class="h-20 flex items-center justify-center text-6xl font-bold transition-all duration-200"
+                                             :class="selectedHeight === height ? 'text-[#8BC34A] scale-100' : 'text-gray-400 scale-75 opacity-50'"
                                              x-text="height"></div>
                                     </template>
-                                    <div style="height: 175px;"></div>
+                                    <div style="height: 160px;"></div>
                                 </div>
                             </div>
                         </div>
@@ -183,13 +175,16 @@
             scrollbar-width: none;
         }
 
-        /* Picker column improvements - iOS-like momentum scrolling */
+        /* Picker column improvements */
         .picker-column {
             -webkit-overflow-scrolling: touch;
-            scroll-snap-type: none;
+            scroll-snap-type: y mandatory;
             overscroll-behavior: contain;
             touch-action: pan-y;
-            scroll-behavior: auto;
+        }
+
+        .picker-column > div {
+            scroll-snap-align: center;
         }
     </style>
 </div>
