@@ -50,6 +50,9 @@
                 --safe-area-inset-right: env(safe-area-inset-right, 0px);
                 --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
                 --safe-area-inset-left: env(safe-area-inset-left, 0px);
+
+                /* Native app tab bar height - will be set by WebView */
+                --native-tab-bar-height: 0px;
             }
 
             /* Force no horizontal scroll globally */
@@ -99,6 +102,8 @@
                 overflow-x: hidden !important;
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
+                /* Reserve space for floating tab bar in native app */
+                padding-bottom: var(--native-tab-bar-height);
             }
         </style>
     </head>

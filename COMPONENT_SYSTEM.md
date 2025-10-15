@@ -959,4 +959,159 @@ public function editMood($moodId) {
 
 ---
 
+---
+
+## Layout y Espaciado en Mobile App
+
+### Regla del Menú Flotante
+
+**IMPORTANTE:** La aplicación móvil tiene un menú de navegación flotante en la parte inferior de la pantalla. **TODOS** los contenidos y modales deben dejar espacio para este menú.
+
+**Constantes de configuración** (en `/karma-mobile/src/config/config.js`):
+
+```javascript
+LAYOUT: {
+  // Altura a reservar en la parte inferior del WebView para el tab bar
+  TAB_BAR_HEIGHT: 100,
+
+  // Margen inferior para modales/popups que aparecen desde abajo
+  MODAL_BOTTOM_MARGIN: 90,
+}
+```
+
+### Aplicación en diferentes componentes:
+
+#### 1. WebView (pantallas web embebidas)
+
+El componente `WebViewScreen` ya tiene el padding configurado:
+
+```javascript
+// src/screens/WebViewScreen.js
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: config.COLORS.BACKGROUND,
+    paddingBottom: config.LAYOUT.TAB_BAR_HEIGHT,
+  },
+});
+```
+
+**Todas las pantallas que usan WebView automáticamente respetan este espacio:**
+- Home (index.js)
+- Calendar (calendar.js)
+- Profile (profile.js)
+
+#### 2. ScrollView y pantallas nativas
+
+Para pantallas con ScrollView u otros contenedores nativos, añade padding bottom:
+
+```javascript
+// Ejemplo: SettingsScreen.js
+const styles = StyleSheet.create({
+  content: {
+    padding: 20,
+    paddingBottom: config.LAYOUT.TAB_BAR_HEIGHT + 20, // + padding original
+  },
+});
+```
+
+#### 3. Modales tipo bottom-sheet
+
+Los modales que aparecen desde abajo necesitan:
+- **marginBottom** en el contenedor del modal
+- **Backdrop** que no cubra el área del menú
+- **Bottom spacer** con el color de fondo de la app
+
+```javascript
+// Ejemplo: new.js
+return (
+  <View style={styles.container}>
+    {/* Backdrop - no cubre el área del tab bar */}
+    <TouchableOpacity
+      style={styles.backdrop}
+      activeOpacity={1}
+      onPress={handleClose}
+    />
+
+    {/* Spacer con color de fondo de la app */}
+    <View style={styles.bottomSpacer} />
+
+    {/* Modal Content */}
+    <View style={styles.modalContainer}>
+      {/* ... */}
+    </View>
+  </View>
+);
+
+const styles = StyleSheet.create({
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: config.LAYOUT.MODAL_BOTTOM_MARGIN,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  bottomSpacer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: config.LAYOUT.MODAL_BOTTOM_MARGIN,
+    backgroundColor: config.COLORS.BACKGROUND,
+  },
+  modalContainer: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingBottom: 40,
+    marginBottom: config.LAYOUT.MODAL_BOTTOM_MARGIN,
+  },
+});
+```
+
+### ¿Por qué es necesario?
+
+El menú flotante está posicionado de forma absoluta sobre el contenido. Si no dejamos espacio:
+- Los botones y contenido quedan ocultos detrás del menú
+- Los usuarios no pueden hacer clic en elementos tapados
+- El diseño se ve mal con elementos cortados
+
+### ¿Dónde NO es necesario?
+
+El menú flotante **NO se muestra** en:
+- Pantalla de onboarding (cuando `isOnboarding === true`)
+- Cuando el usuario no está logueado (`isLoggedIn === false`)
+
+En estos casos, el espacio reservado no afecta porque el menú no existe.
+
+### Color del espacio reservado
+
+El espacio reservado debe tener el **mismo color de fondo que la app** (blanco por defecto).
+
+**❌ NO hacer:**
+```javascript
+// MAL: El backdrop oscuro cubre todo incluyendo el área del menú
+backdrop: {
+  bottom: 0, // Esto hace que el fondo oscuro tape el menú
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+}
+```
+
+**✅ Hacer:**
+```javascript
+// BIEN: El backdrop se detiene antes del menú, y un spacer blanco ocupa el espacio
+backdrop: {
+  bottom: config.LAYOUT.MODAL_BOTTOM_MARGIN, // Se detiene antes del menú
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+},
+bottomSpacer: {
+  bottom: 0,
+  height: config.LAYOUT.MODAL_BOTTOM_MARGIN,
+  backgroundColor: config.COLORS.BACKGROUND, // Blanco
+}
+```
+
+---
+
 **Última actualización:** 2025-10-15
