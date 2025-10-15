@@ -6,7 +6,7 @@ use Livewire\Component;
 
 class Step7 extends Component
 {
-    public $height = 170; // Default height in cm
+    public $height = 160; // Default height in cm
     public $unit = 'cm'; // 'cm' or 'inch'
 
     public function mount()

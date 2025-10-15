@@ -30,9 +30,9 @@
                         <!-- iOS-style Height Picker -->
                         <div class="relative mb-8" x-data="{
                             heights: [],
-                            selectedHeight: {{ $height ?? 170 }},
+                            selectedHeight: {{ $height ?? 160 }},
                             unit: '{{ $unit }}',
-                            minHeight: 160,
+                            minHeight: 100,
                             maxHeight: 250,
                             formattedHeight: '{{ $height }}',
 
@@ -51,11 +51,11 @@
 
                             generateHeights() {
                                 if (this.unit === 'cm') {
-                                    this.minHeight = 160;
+                                    this.minHeight = 100;
                                     this.maxHeight = 250;
                                     this.heights = Array.from({ length: this.maxHeight - this.minHeight + 1 }, (_, i) => this.minHeight + i);
                                 } else {
-                                    this.minHeight = 63;
+                                    this.minHeight = 39;
                                     this.maxHeight = 98;
                                     this.heights = Array.from({ length: this.maxHeight - this.minHeight + 1 }, (_, i) => this.minHeight + i);
                                 }
