@@ -32,7 +32,7 @@
                             heights: [],
                             selectedHeight: {{ $height ?? 170 }},
                             unit: '{{ $unit }}',
-                            minHeight: 100,
+                            minHeight: 160,
                             maxHeight: 250,
                             formattedHeight: '{{ $height }}',
 
@@ -51,11 +51,11 @@
 
                             generateHeights() {
                                 if (this.unit === 'cm') {
-                                    this.minHeight = 100;
+                                    this.minHeight = 160;
                                     this.maxHeight = 250;
                                     this.heights = Array.from({ length: this.maxHeight - this.minHeight + 1 }, (_, i) => this.minHeight + i);
                                 } else {
-                                    this.minHeight = 39;
+                                    this.minHeight = 63;
                                     this.maxHeight = 98;
                                     this.heights = Array.from({ length: this.maxHeight - this.minHeight + 1 }, (_, i) => this.minHeight + i);
                                 }
