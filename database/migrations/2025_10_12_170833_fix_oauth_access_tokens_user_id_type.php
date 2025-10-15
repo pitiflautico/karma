@@ -12,14 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         // Fix oauth_access_tokens.user_id to match users.id type (varchar/UUID)
-        Schema::table('oauth_access_tokens', function (Blueprint $table) {
-            $table->string('user_id')->nullable()->change();
-        });
+        if (Schema::hasTable('oauth_access_tokens')) {
+            Schema::table('oauth_access_tokens', function (Blueprint $table) {
+                $table->string('user_id')->nullable()->change();
+            });
+        }
 
         // Also fix oauth_auth_codes.user_id
-        Schema::table('oauth_auth_codes', function (Blueprint $table) {
-            $table->string('user_id')->nullable()->change();
-        });
+        if (Schema::hasTable('oauth_auth_codes')) {
+            Schema::table('oauth_auth_codes', function (Blueprint $table) {
+                $table->string('user_id')->nullable()->change();
+            });
+        }
     }
 
     /**

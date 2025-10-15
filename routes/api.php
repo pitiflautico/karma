@@ -36,7 +36,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/{id}', [MoodApiController::class, 'show']);
         Route::put('/{id}', [MoodApiController::class, 'update']);
         Route::delete('/{id}', [MoodApiController::class, 'destroy']);
-        Route::post('/upload-audio', [MoodApiController::class, 'uploadAudio']);
     });
 
     // Utils routes

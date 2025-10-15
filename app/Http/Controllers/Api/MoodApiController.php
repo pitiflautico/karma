@@ -22,7 +22,6 @@ class MoodApiController extends Controller
         $validator = Validator::make($request->all(), [
             'mood_score' => 'required|integer|min:1|max:10',
             'note' => 'nullable|string|max:500',
-            'audio_path' => 'nullable|string',
             'calendar_event_id' => 'nullable|exists:calendar_events,id',
         ]);
 
@@ -38,7 +37,6 @@ class MoodApiController extends Controller
             $moodEntry->user_id = auth()->id();
             $moodEntry->mood_score = $request->mood_score;
             $moodEntry->note = $request->note;
-            $moodEntry->audio_path = $request->audio_path;
             $moodEntry->calendar_event_id = $request->calendar_event_id;
             $moodEntry->save();
 
@@ -55,53 +53,6 @@ class MoodApiController extends Controller
 
             return response()->json([
                 'message' => 'Failed to create mood entry',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /**
-     * Upload audio file for mood entry
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function uploadAudio(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'audio' => 'required|file|mimes:m4a,mp3,wav|max:10240', // Max 10MB
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        try {
-            $file = $request->file('audio');
-            $userId = auth()->id();
-
-            // Generate unique filename
-            $filename = 'mood_audio_' . $userId . '_' . time() . '.' . $file->getClientOriginalExtension();
-
-            // Store in storage/app/public/mood_audios
-            $path = $file->storeAs('mood_audios', $filename, 'public');
-
-            // Return the public URL
-            $url = Storage::url($path);
-
-            return response()->json([
-                'message' => 'Audio uploaded successfully',
-                'audio_path' => $url,
-            ], 200);
-
-        } catch (\Exception $e) {
-            \Log::error('Error uploading audio: ' . $e->getMessage());
-
-            return response()->json([
-                'message' => 'Failed to upload audio',
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -172,7 +123,6 @@ class MoodApiController extends Controller
         $validator = Validator::make($request->all(), [
             'mood_score' => 'sometimes|integer|min:1|max:10',
             'note' => 'nullable|string|max:500',
-            'audio_path' => 'nullable|string',
             'calendar_event_id' => 'nullable|exists:calendar_events,id',
         ]);
 
@@ -194,10 +144,6 @@ class MoodApiController extends Controller
 
             if ($request->has('note')) {
                 $mood->note = $request->note;
-            }
-
-            if ($request->has('audio_path')) {
-                $mood->audio_path = $request->audio_path;
             }
 
             if ($request->has('calendar_event_id')) {
@@ -234,12 +180,6 @@ class MoodApiController extends Controller
             $mood = MoodEntry::where('id', $id)
                 ->where('user_id', auth()->id())
                 ->firstOrFail();
-
-            // Delete audio file if exists
-            if ($mood->audio_path) {
-                $path = str_replace('/storage/', '', $mood->audio_path);
-                Storage::disk('public')->delete($path);
-            }
 
             $mood->delete();
 

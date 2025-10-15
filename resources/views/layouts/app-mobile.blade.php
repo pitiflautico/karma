@@ -81,6 +81,7 @@
                 height: 100%;
                 position: fixed;
                 overflow-y: hidden;
+                background-color: #F7F3EF; /* Extend background to safe areas */
             }
 
             main {
@@ -89,6 +90,8 @@
                 overflow-x: hidden;
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+                background-color: #F7F3EF; /* Match app background */
             }
         </style>
     </head>
