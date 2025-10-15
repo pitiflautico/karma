@@ -40,21 +40,16 @@
                                 // Generate height array based on unit
                                 this.generateHeights();
 
-                                // Ensure selectedHeight is set to 160 if not already set
-                                if (!this.formattedHeight || this.formattedHeight === '') {
-                                    this.selectedHeight = 160;
-                                }
-
-                                // Sync initial value with Livewire
-                                this.updateFormattedHeight();
-
-                                // Scroll to selected height with longer delay to ensure DOM is ready
-                                setTimeout(() => {
-                                    const index = this.heights.indexOf(this.selectedHeight);
-                                    if (index >= 0) {
-                                        this.scrollToHeight(index, false);
-                                    }
-                                }, 300);
+                                // Use $nextTick and additional setTimeout to ensure DOM is fully ready
+                                this.$nextTick(() => {
+                                    setTimeout(() => {
+                                        const index = this.heights.indexOf(this.selectedHeight);
+                                        console.log('Scrolling to height:', this.selectedHeight, 'index:', index, 'scroll position:', index * 80);
+                                        if (index >= 0) {
+                                            this.scrollToHeight(index, false);
+                                        }
+                                    }, 500);
+                                });
                             },
 
                             generateHeights() {
@@ -83,8 +78,8 @@
                                     this.scrollToHeight(index, false);
                                 }, 50);
 
-                                $wire.set('unit', this.unit);
-                                $wire.set('height', this.selectedHeight);
+                                @this.set('unit', this.unit);
+                                @this.set('height', this.selectedHeight);
                             },
 
                             scrollToHeight(index, smooth = true) {
@@ -109,7 +104,7 @@
 
                             updateFormattedHeight() {
                                 this.formattedHeight = this.selectedHeight;
-                                $wire.set('height', this.selectedHeight);
+                                @this.set('height', this.selectedHeight);
                             }
                         }" x-init="init()">
 
