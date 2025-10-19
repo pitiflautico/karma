@@ -119,6 +119,9 @@
 
         <!-- Sync Button at Bottom -->
         <div class="mt-6 pb-6">
+            @if(auth()->user()->last_calendar_sync_at)
+                <p class="text-sm text-gray-500 text-center mb-3">Last synced: {{ auth()->user()->last_calendar_sync_at->diffForHumans() }}</p>
+            @endif
             <button
                 wire:click="syncEvents"
                 wire:loading.attr="disabled"

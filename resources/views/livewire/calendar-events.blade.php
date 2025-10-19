@@ -4,6 +4,9 @@
             <div>
                 <h2 class="text-2xl font-semibold text-gray-900">Google Calendar Events</h2>
                 <p class="text-gray-600">Your upcoming events</p>
+                @if(auth()->user()->last_calendar_sync_at)
+                    <p class="text-sm text-gray-500 mt-1">Last synced: {{ auth()->user()->last_calendar_sync_at->diffForHumans() }}</p>
+                @endif
             </div>
 
             @if(auth()->user()->calendar_sync_enabled)

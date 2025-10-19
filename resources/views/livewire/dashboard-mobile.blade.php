@@ -52,14 +52,14 @@
                         <span class="font-medium">Mood History</span>
                     </a>
 
-                    <!-- Calendar Link -->
+                    <!-- Calendar Events Link -->
                     <a
-                        href="{{ route('calendar') }}"
+                        href="{{ route('calendar.events') }}"
                         class="block px-4 py-3 hover:bg-gray-50 flex items-center gap-3 text-gray-700 transition-colors">
                         <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
-                        <span class="font-medium">Calendar</span>
+                        <span class="font-medium">Calendar Events</span>
                     </a>
 
                     <!-- Settings Link -->
