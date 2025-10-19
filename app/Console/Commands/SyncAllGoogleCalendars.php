@@ -80,6 +80,8 @@ class SyncAllGoogleCalendars extends Command
                     $synced++;
                 } catch (\Exception $e) {
                     $this->error("   ❌ Failed: " . $e->getMessage());
+                    $this->error("   Stack trace: " . $e->getTraceAsString());
+                    \Log::error('Calendar sync error', ['exception' => $e]);
                     $failed++;
                 }
 
@@ -109,7 +111,8 @@ class SyncAllGoogleCalendars extends Command
     {
         $events = $this->calendarService->syncEvents($user, $limit);
 
-        $this->line("   📅 Synced {count($events)} event(s)");
+        $count = count($events);
+        $this->line("   📅 Synced {$count} event(s)");
 
         if (!empty($events)) {
             $this->line("   ⏰ Last sync: " . $user->fresh()->last_calendar_sync_at);
