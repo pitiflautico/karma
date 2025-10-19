@@ -29,6 +29,9 @@ class CalendarEvent extends Model
         'is_all_day',
         'reminder_sent',
         'reminder_sent_at',
+        'mood_entry_id',
+        'mood_prompted',
+        'prompted_at',
     ];
 
     /**
@@ -42,6 +45,8 @@ class CalendarEvent extends Model
         'is_all_day' => 'boolean',
         'reminder_sent' => 'boolean',
         'reminder_sent_at' => 'datetime',
+        'mood_prompted' => 'boolean',
+        'prompted_at' => 'datetime',
     ];
 
     /**

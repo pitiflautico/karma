@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="px-6 pt-8 pb-6" style="padding-top: max(2rem, env(safe-area-inset-top, 0px) + 2rem);">
         @if($showBackButton)
-            <button onclick="window.history.back();" class="mb-4 text-gray-700 inline-block">
+            <button onclick="if (window.NativeAppBridge) { window.NativeAppBridge.goBack(); } else { window.history.back(); }" class="mb-4 text-gray-700 inline-block">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>

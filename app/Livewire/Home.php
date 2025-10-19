@@ -48,6 +48,11 @@ class Home extends Component
     public function login()
     {
         try {
+            \Log::info('[Home] login() called');
+            \Log::info('[Home] Email: ' . $this->email);
+            \Log::info('[Home] Password length: ' . strlen($this->password));
+            \Log::info('[Home] Password empty: ' . (empty($this->password) ? 'yes' : 'no'));
+
             $this->validate([
                 'email' => 'required|email',
                 'password' => 'required|min:6',
@@ -61,11 +66,19 @@ class Home extends Component
             if (Auth::attempt(['email' => $this->email, 'password' => $this->password])) {
                 session()->regenerate();
 
+                $user = Auth::user();
+
+                // Create API token for native app
+                $token = $user->createToken('mobile-app')->accessToken;
+
                 // Notify native app if running in WebView
                 session()->flash('native_app_login', true);
+                session()->flash('native_app_token', $token);
+
+                \Log::info('[Home] Login successful, API token created for native app');
 
                 // Redirect to onboarding if not completed, otherwise dashboard
-                if (!Auth::user()->onboarding_completed) {
+                if (!$user->onboarding_completed) {
                     return redirect()->route('onboarding');
                 }
 

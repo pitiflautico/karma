@@ -173,11 +173,21 @@ class User extends Authenticatable implements MustVerifyEmailContract, FilamentU
     }
 
     /**
-     * Get the user's subscription.
+     * Get all user's subscriptions.
      */
-    public function subscription(): HasMany
+    public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
+    }
+
+    /**
+     * Get the user's active subscription.
+     */
+    public function activeSubscription()
+    {
+        return $this->hasOne(Subscription::class)
+            ->whereIn('status', ['active', 'trial'])
+            ->latest('created_at');
     }
 
     /**

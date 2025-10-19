@@ -65,6 +65,64 @@ class MoodEntryResource extends Resource
                             ->helperText('Not triggered by a calendar event')
                             ->default(false),
                     ])->columns(2),
+
+                Forms\Components\Section::make('Facial Analysis')
+                    ->schema([
+                        Forms\Components\Select::make('face_expression')
+                            ->label('Expression')
+                            ->options([
+                                'happy' => 'Happy',
+                                'slight_smile' => 'Slight Smile',
+                                'neutral' => 'Neutral',
+                                'sad' => 'Sad',
+                                'tired' => 'Tired',
+                            ])
+                            ->disabled()
+                            ->dehydrated(false),
+                        Forms\Components\TextInput::make('face_expression_confidence')
+                            ->label('Expression Confidence')
+                            ->suffix('%')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->formatStateUsing(fn ($state) => $state ? round($state * 100, 1) : null),
+                        Forms\Components\Select::make('face_energy_level')
+                            ->label('Energy Level')
+                            ->options([
+                                'high' => 'High',
+                                'medium' => 'Medium',
+                                'low' => 'Low',
+                            ])
+                            ->disabled()
+                            ->dehydrated(false),
+                        Forms\Components\TextInput::make('face_eyes_openness')
+                            ->label('Eyes Openness')
+                            ->suffix('%')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->formatStateUsing(fn ($state) => $state ? round($state * 100, 1) : null),
+                        Forms\Components\Select::make('face_social_context')
+                            ->label('Social Context')
+                            ->options([
+                                'alone' => 'Alone',
+                                'with_one' => 'With One Person',
+                                'group' => 'Group',
+                            ])
+                            ->disabled()
+                            ->dehydrated(false),
+                        Forms\Components\TextInput::make('face_total_faces')
+                            ->label('Total Faces Detected')
+                            ->disabled()
+                            ->dehydrated(false),
+                        Forms\Components\TextInput::make('bpm')
+                            ->label('BPM')
+                            ->suffix('bpm')
+                            ->disabled()
+                            ->dehydrated(false),
+                        Forms\Components\TextInput::make('environment_brightness')
+                            ->label('Environment Brightness')
+                            ->disabled()
+                            ->dehydrated(false),
+                    ])->columns(4)->collapsed(),
             ]);
     }
 
@@ -99,6 +157,38 @@ class MoodEntryResource extends Resource
                     ->label('Manual')
                     ->boolean()
                     ->toggleable(),
+                Tables\Columns\TextColumn::make('face_expression')
+                    ->label('Expression')
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'happy', 'slight_smile' => 'success',
+                        'neutral' => 'info',
+                        'sad' => 'warning',
+                        'tired' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (?string $state): string => ucwords(str_replace('_', ' ', $state ?? '')))
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('face_energy_level')
+                    ->label('Energy')
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'high' => 'success',
+                        'medium' => 'info',
+                        'low' => 'warning',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (?string $state): string => ucfirst($state ?? ''))
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('face_social_context')
+                    ->label('Social')
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'alone' => '👤 Alone',
+                        'with_one' => '👥 With One',
+                        'group' => '👥👥 Group',
+                        default => '',
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

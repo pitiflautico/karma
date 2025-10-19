@@ -12,7 +12,12 @@
 
         <!-- Mood Info -->
         <div class="flex-1 min-w-0">
-            <h4 class="font-semibold text-gray-900 text-base">{{ $mood->mood_name }}</h4>
+            <div class="flex items-center gap-2">
+                <h4 class="font-semibold text-gray-900 text-base">{{ $mood->mood_name }}</h4>
+                @if($mood->entry_type === 'selfie')
+                    <span class="text-xs">📸</span>
+                @endif
+            </div>
 
             @if($mood->note)
                 <p class="text-sm text-gray-600 line-clamp-2">{{ Str::words($mood->note, 14, '...') }}</p>
@@ -20,6 +25,37 @@
                 <p class="text-sm text-gray-600 line-clamp-2">{{ Str::words($mood->calendarEvent->title, 14, '...') }}</p>
             @else
                 <p class="text-sm text-gray-400 italic">No notes</p>
+            @endif
+
+            <!-- Selfie Metadata (Energy + Environment) -->
+            @if($mood->entry_type === 'selfie')
+                <div class="flex items-center gap-3 mt-1">
+                    @if($mood->face_energy_level)
+                        <span class="text-xs text-gray-500">
+                            @if($mood->face_energy_level === 'high')
+                                ⚡ High energy
+                            @elseif($mood->face_energy_level === 'medium')
+                                🔋 Medium energy
+                            @else
+                                🪫 Low energy
+                            @endif
+                        </span>
+                    @endif
+
+                    @if($mood->environment_brightness)
+                        <span class="text-xs text-gray-500">
+                            @if($mood->environment_brightness === 'pleasant')
+                                ☀️ Pleasant
+                            @elseif($mood->environment_brightness === 'neutral')
+                                🌤️ Neutral
+                            @elseif($mood->environment_brightness === 'dim')
+                                🌙 Dim
+                            @else
+                                🌑 Dark
+                            @endif
+                        </span>
+                    @endif
+                </div>
             @endif
 
             <!-- Doctor Warning for low moods -->

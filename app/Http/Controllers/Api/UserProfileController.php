@@ -195,4 +195,56 @@ class UserProfileController extends Controller
             'message' => 'Google Calendar disconnected successfully',
         ]);
     }
+
+    /**
+     * Get upcoming calendar events for notifications
+     * Returns events that will end in the next 24 hours
+     */
+    public function upcomingEvents()
+    {
+        $user = Auth::user();
+
+        if (!$user->calendar_sync_enabled) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'events' => [],
+                    'last_sync' => null,
+                ],
+            ]);
+        }
+
+        // Get events ending in the next 24 hours
+        $now = now();
+        $next24Hours = now()->addHours(24);
+
+        $events = \App\Models\CalendarEvent::where('user_id', $user->id)
+            ->where('end_time', '>', $now)
+            ->where('end_time', '<=', $next24Hours)
+            ->whereNull('mood_entry_id') // Only events without mood entry
+            ->orderBy('end_time', 'asc')
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'google_event_id' => $event->google_event_id,
+                    'title' => $event->title,
+                    'description' => $event->description,
+                    'location' => $event->location,
+                    'start_time' => $event->start_time->toIso8601String(),
+                    'end_time' => $event->end_time->toIso8601String(),
+                    'is_all_day' => $event->is_all_day,
+                    'reminder_sent' => $event->reminder_sent,
+                    'has_mood' => !is_null($event->mood_entry_id),
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'events' => $events,
+                'last_sync' => $user->last_calendar_sync_at,
+            ],
+        ]);
+    }
 }

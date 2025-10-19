@@ -125,6 +125,29 @@ class UserResource extends Resource
                     ->label('Mood Entries')
                     ->sortable()
                     ->toggleable(),
+                Tables\Columns\TextColumn::make('activeSubscription.plan_name')
+                    ->label('Plan')
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'free' => 'gray',
+                        'premium' => 'success',
+                        'enterprise' => 'warning',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (?string $state): string => ucfirst($state ?? 'Free'))
+                    ->sortable()
+                    ->default('Free'),
+                Tables\Columns\TextColumn::make('activeSubscription.status')
+                    ->label('Subscription')
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'active' => 'success',
+                        'trial' => 'info',
+                        'canceled' => 'warning',
+                        'expired' => 'danger',
+                        default => 'gray',
+                    })
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('groups_count')
                     ->counts('groups')
                     ->label('Groups')
@@ -144,6 +167,37 @@ class UserResource extends Resource
                 Tables\Filters\SelectFilter::make('role')
                     ->relationship('roles', 'name')
                     ->label('Role'),
+                Tables\Filters\SelectFilter::make('subscription_plan')
+                    ->label('Plan')
+                    ->options([
+                        'free' => 'Free',
+                        'premium' => 'Premium',
+                        'enterprise' => 'Enterprise',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (filled($data['value'])) {
+                            return $query->whereHas('activeSubscription', function ($q) use ($data) {
+                                $q->where('plan_name', $data['value']);
+                            });
+                        }
+                        return $query;
+                    }),
+                Tables\Filters\SelectFilter::make('subscription_status')
+                    ->label('Subscription Status')
+                    ->options([
+                        'active' => 'Active',
+                        'trial' => 'Trial',
+                        'canceled' => 'Canceled',
+                        'expired' => 'Expired',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (filled($data['value'])) {
+                            return $query->whereHas('activeSubscription', function ($q) use ($data) {
+                                $q->where('status', $data['value']);
+                            });
+                        }
+                        return $query;
+                    }),
                 Tables\Filters\TernaryFilter::make('email_verified_at')
                     ->label('Verified')
                     ->nullable(),

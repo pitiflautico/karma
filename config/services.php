@@ -53,4 +53,12 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'revenuecat' => [
+        'api_key' => env('REVENUECAT_API_KEY'),
+        'webhook_secret' => env('REVENUECAT_WEBHOOK_SECRET'),
+        'public_app_key' => env('REVENUECAT_PUBLIC_APP_KEY'),
+        'ios_bundle_id' => env('IOS_BUNDLE_ID', 'com.yourcompany.karma'),
+        'android_package' => env('ANDROID_PACKAGE', 'com.yourcompany.karma'),
+    ],
+
 ];

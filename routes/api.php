@@ -6,11 +6,16 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PushNotificationController;
 use App\Http\Controllers\Api\SelfieController;
 use App\Http\Controllers\Api\MoodApiController;
+use App\Http\Controllers\Api\TagApiController;
 use App\Http\Controllers\Api\UserProfileController;
+use App\Http\Controllers\Api\RevenueCatWebhookController;
 // use App\Http\Controllers\Api\UtilsController;
 
 // Public routes
 Route::post('/auth/login', [AuthController::class, 'login']);
+
+// RevenueCat webhook (public route, signature verification happens in controller)
+Route::post('/webhooks/revenuecat', [RevenueCatWebhookController::class, 'handle']);
 
 // Protected routes
 Route::middleware('auth:api')->group(function () {
@@ -39,6 +44,12 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{id}', [MoodApiController::class, 'destroy']);
     });
 
+    // Tag routes
+    Route::prefix('tags')->group(function () {
+        Route::get('/', [TagApiController::class, 'index']);
+        Route::post('/', [TagApiController::class, 'store']);
+    });
+
     // User Profile routes
     Route::prefix('profile')->group(function () {
         Route::get('/', [UserProfileController::class, 'show']);
@@ -48,6 +59,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/calendar/sync', [UserProfileController::class, 'syncCalendar']);
         Route::post('/calendar/disconnect', [UserProfileController::class, 'disconnectCalendar']);
         Route::put('/calendar/quiet-hours', [UserProfileController::class, 'updateQuietHours']);
+        Route::get('/calendar/upcoming-events', [UserProfileController::class, 'upcomingEvents']);
     });
 
     // Utils routes

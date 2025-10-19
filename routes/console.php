@@ -28,3 +28,9 @@ Schedule::call(function () {
 
 // Generate mood prompts every 30 minutes
 Schedule::job(new GenerateMoodPrompts)->everyThirtyMinutes()->name('generate-mood-prompts');
+
+// Send push notifications for events that just ended
+// Runs every 5 minutes to check for events that ended in the last 15 minutes
+Schedule::command('notifications:send-event-ended --minutes=15')
+    ->everyFiveMinutes()
+    ->name('send-event-ended-notifications');

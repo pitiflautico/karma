@@ -90,7 +90,8 @@
                 overflow-x: hidden;
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
-                padding-bottom: env(safe-area-inset-bottom, 0px);
+                /* Add padding for floating tab bar + safe area */
+                padding-bottom: calc(var(--native-tab-bar-height) + env(safe-area-inset-bottom, 0px));
                 background-color: #F7F3EF; /* Match app background */
             }
         </style>

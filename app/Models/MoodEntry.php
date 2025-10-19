@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class MoodEntry extends Model
 {
@@ -26,6 +27,16 @@ class MoodEntry extends Model
         'selfie_photo_path',
         'selfie_heatmap_path',
         'selfie_taken_at',
+        // Face analysis fields
+        'face_expression',
+        'face_expression_confidence',
+        'face_energy_level',
+        'face_eyes_openness',
+        'face_social_context',
+        'face_total_faces',
+        'bpm',
+        'environment_brightness',
+        'face_analysis_raw',
     ];
 
     /**
@@ -37,6 +48,11 @@ class MoodEntry extends Model
         'mood_score' => 'integer',
         'is_manual' => 'boolean',
         'selfie_taken_at' => 'datetime',
+        'face_expression_confidence' => 'decimal:4',
+        'face_eyes_openness' => 'decimal:4',
+        'face_total_faces' => 'integer',
+        'bpm' => 'integer',
+        'face_analysis_raw' => 'array',
     ];
 
     /**
@@ -138,5 +154,13 @@ class MoodEntry extends Model
     public function needsDoctorConsultation(): bool
     {
         return $this->mood_score <= 3;
+    }
+
+    /**
+     * The tags associated with this mood entry.
+     */
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'mood_entry_tag');
     }
 }

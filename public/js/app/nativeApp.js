@@ -85,6 +85,26 @@
     }
 
     /**
+     * Requests the native app to navigate back
+     * If running in a WebView, sends a goBack message to the native app.
+     * Otherwise, falls back to window.history.back()
+     * @returns {boolean} True if message was sent successfully
+     */
+    function goBack() {
+        console.log('[NativeApp] Requesting native app to go back');
+
+        if (isRunningInNativeApp()) {
+            return sendMessageToNativeApp({
+                action: 'goBack'
+            });
+        } else {
+            // Fallback to browser history for web browsers
+            window.history.back();
+            return true;
+        }
+    }
+
+    /**
      * Auto-detects authentication state from page data and notifies native app
      * This function looks for authentication data in common places (meta tags, data attributes, etc.)
      */
@@ -112,6 +132,7 @@
         isRunningInNativeApp: isRunningInNativeApp,
         notifyLoginSuccess: notifyLoginSuccess,
         notifyLogout: notifyLogout,
+        goBack: goBack,
         autoDetectAndNotify: autoDetectAndNotify
     };
 
