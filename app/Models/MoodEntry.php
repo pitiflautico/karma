@@ -24,6 +24,7 @@ class MoodEntry extends Model
         'mood_score',
         'note',
         'is_manual',
+        'entry_type',
         'selfie_photo_path',
         'selfie_heatmap_path',
         'selfie_taken_at',
