@@ -23,6 +23,12 @@ class CalendarEvent extends Model
         'title',
         'description',
         'location',
+        'attendees',
+        'organizer_email',
+        'organizer_name',
+        'event_link',
+        'conference_link',
+        'status',
         'start_time',
         'end_time',
         'event_type',
@@ -47,6 +53,7 @@ class CalendarEvent extends Model
         'reminder_sent_at' => 'datetime',
         'mood_prompted' => 'boolean',
         'prompted_at' => 'datetime',
+        'attendees' => 'array',
     ];
 
     /**

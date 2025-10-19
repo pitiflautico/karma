@@ -58,6 +58,33 @@ class GoogleCalendarService
 
                 $googleEventIds[] = $event->getId();
 
+                // Extract attendees
+                $attendees = [];
+                if ($event->getAttendees()) {
+                    foreach ($event->getAttendees() as $attendee) {
+                        $attendees[] = [
+                            'email' => $attendee->getEmail(),
+                            'name' => $attendee->getDisplayName(),
+                            'response_status' => $attendee->getResponseStatus(),
+                            'optional' => $attendee->getOptional() ?? false,
+                        ];
+                    }
+                }
+
+                // Extract organizer
+                $organizer = $event->getOrganizer();
+
+                // Extract conference data (Google Meet, Zoom, etc)
+                $conferenceLink = null;
+                if ($event->getConferenceData() && $event->getConferenceData()->getEntryPoints()) {
+                    foreach ($event->getConferenceData()->getEntryPoints() as $entryPoint) {
+                        if ($entryPoint->getEntryPointType() === 'video') {
+                            $conferenceLink = $entryPoint->getUri();
+                            break;
+                        }
+                    }
+                }
+
                 $calendarEvent = CalendarEvent::updateOrCreate(
                     [
                         'user_id' => $user->id,
@@ -69,6 +96,12 @@ class GoogleCalendarService
                         'start_time' => Carbon::parse($start),
                         'end_time' => Carbon::parse($end),
                         'location' => $event->getLocation(),
+                        'attendees' => $attendees,
+                        'organizer_email' => $organizer ? $organizer->getEmail() : null,
+                        'organizer_name' => $organizer ? $organizer->getDisplayName() : null,
+                        'event_link' => $event->getHtmlLink(),
+                        'conference_link' => $conferenceLink,
+                        'status' => $event->getStatus(),
                     ]
                 );
 

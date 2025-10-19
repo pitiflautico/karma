@@ -35,7 +35,7 @@
             @if(count($events) > 0)
                 <div class="divide-y divide-gray-200">
                     @foreach($events as $event)
-                        <div class="p-6 hover:bg-gray-50 transition">
+                        <div class="p-6 hover:bg-gray-50 transition cursor-pointer" wire:click="$dispatch('viewEventDetails', { eventId: '{{ $event->id }}' })">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
                                     <h3 class="text-lg font-semibold text-gray-900">{{ $event->title }}</h3>
@@ -88,4 +88,7 @@
             @endif
         </div>
     </div>
+
+    <!-- Event Detail Modal -->
+    @livewire('calendar-event-detail-modal')
 </div>

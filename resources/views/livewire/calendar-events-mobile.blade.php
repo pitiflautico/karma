@@ -36,7 +36,7 @@
                 <!-- Event Cards -->
                 <div class="space-y-3">
                     @foreach($events as $event)
-                        <div class="bg-white rounded-2xl p-4 shadow-sm">
+                        <div class="bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow-md transition" wire:click="$dispatch('viewEventDetails', { eventId: '{{ $event->id }}' })">
                             <!-- Event Title -->
                             <h4 class="font-semibold text-gray-900 mb-2">{{ $event->title }}</h4>
 
@@ -136,4 +136,7 @@
             </button>
         </div>
     @endif
+
+    <!-- Event Detail Modal -->
+    @livewire('calendar-event-detail-modal')
 </x-app-container>
