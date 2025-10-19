@@ -1,4 +1,4 @@
-<!-- Event Detail Modal -->
+<div>
 @if($showModal && $event)
 <div class="fixed inset-0 z-50 overflow-y-auto" style="z-index: 9999;">
     <!-- Backdrop -->
@@ -184,3 +184,4 @@
     </div>
 </div>
 @endif
+</div>
