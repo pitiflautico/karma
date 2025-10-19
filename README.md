@@ -160,6 +160,16 @@ Endpoints:
 - `GET /api/tags` - Get all tags (system + custom)
 - `POST /api/tags` - Create custom tag
 
+### Calendar Events API
+See [CALENDAR_EVENTS_DOCUMENTATION.md](./CALENDAR_EVENTS_DOCUMENTATION.md)
+
+Endpoints:
+- `POST /api/user/calendar/sync` - Sync calendar events
+- `GET /api/user/calendar/upcoming-events` - Get upcoming events
+- `GET /api/user/calendar-status` - Get calendar sync status
+- `POST /api/user/calendar/toggle` - Toggle calendar sync
+- `POST /api/user/calendar/disconnect` - Disconnect calendar
+
 ### User Profile API
 
 Endpoints:
@@ -199,7 +209,7 @@ php artisan schedule:work
 ### Mood & Calendar
 
 ```bash
-# Manually sync Google Calendar
+# Manually sync Google Calendar (with full event details)
 php artisan calendar:sync-all
 
 # Sync specific user
@@ -207,6 +217,9 @@ php artisan calendar:sync-all --user=uuid-here
 
 # Sync with custom event limit
 php artisan calendar:sync-all --limit=100
+
+# Clear all calendar events
+php artisan calendar:clear
 ```
 
 ### Notifications
@@ -242,10 +255,10 @@ php artisan migrate:fresh --seed
 ### Key Tables
 
 - **users** - User accounts with Google OAuth and push tokens
-- **mood_entries** - Mood logs with optional selfie analysis
+- **mood_entries** - Mood logs with optional selfie analysis and entry_type
 - **tags** - System and custom tags
 - **mood_entry_tag** - Pivot table for mood-tag relationships
-- **calendar_events** - Synced Google Calendar events
+- **calendar_events** - Synced Google Calendar events with attendees, organizer, and conference links
 - **subscriptions** - RevenueCat subscription data
 
 ### Migrations
@@ -257,6 +270,8 @@ Run in order:
 4. `2025_10_17_152353_add_revenuecat_fields_to_subscriptions_table.php`
 5. `2025_10_19_092858_create_tags_table.php`
 6. `2025_10_19_092911_create_mood_entry_tag_table.php`
+7. `2025_10_19_174210_add_entry_type_to_mood_entries_table.php`
+8. `2025_10_19_174912_add_event_details_to_calendar_events_table.php`
 
 ---
 
@@ -326,11 +341,20 @@ Run in order:
 
 ### Google Calendar Integration
 
+See [CALENDAR_EVENTS_DOCUMENTATION.md](./CALENDAR_EVENTS_DOCUMENTATION.md) for complete details.
+
 1. User connects Google account
 2. Events sync automatically every 15 minutes
-3. When event ends, push notification sent
-4. User taps notification → logs mood for that event
-5. Analytics show mood patterns by event type
+3. Full event details synced: attendees, organizer, conference links
+4. Click event to view detailed modal with:
+   - Complete attendee list with RSVP status (Going/Declined/Maybe/Pending)
+   - Organizer information
+   - Conference/video meeting links (Google Meet, Zoom, etc.)
+   - Event description and location
+   - Link to view in Google Calendar
+5. When event ends, push notification sent
+6. User taps notification → logs mood for that event
+7. Analytics show mood patterns by event type
 
 ### Push Notifications
 
@@ -455,8 +479,11 @@ tail -f storage/logs/laravel.log | grep -i calendar
 
 - [Mood Entry API](./MOOD_API_DOCUMENTATION.md)
 - [Tags API](./TAGS_API_DOCUMENTATION.md)
+- [Calendar Events](./CALENDAR_EVENTS_DOCUMENTATION.md)
 - [RevenueCat Webhook](./REVENUECAT_WEBHOOK_DOCUMENTATION.md)
 - [Event Notifications Setup](./EVENT_NOTIFICATIONS_SETUP.md)
+- [Native App Integration](./NATIVE_APP_INTEGRATION.md)
+- [Onboarding System](./ONBOARDING_SYSTEM.md)
 
 ---
 
