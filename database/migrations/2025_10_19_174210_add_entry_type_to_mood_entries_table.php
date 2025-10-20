@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('mood_entries', function (Blueprint $table) {
-            $table->string('entry_type')->nullable()->after('is_manual');
+            // Solo agregar si no existe
+            if (!Schema::hasColumn('mood_entries', 'entry_type')) {
+                $table->string('entry_type')->nullable()->after('is_manual');
+            }
         });
     }
 
@@ -22,7 +25,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('mood_entries', function (Blueprint $table) {
-            $table->dropColumn('entry_type');
+            if (Schema::hasColumn('mood_entries', 'entry_type')) {
+                $table->dropColumn('entry_type');
+            }
         });
     }
 };
