@@ -28,6 +28,9 @@ class MoodApiController extends Controller
             // Tags
             'tag_ids' => 'nullable|array',
             'tag_ids.*' => 'exists:tags,id',
+            // Groups to share with
+            'group_ids' => 'nullable|array',
+            'group_ids.*' => 'exists:groups,id',
             // Face analysis fields (all optional)
             'face_expression' => 'nullable|string|max:50',
             'face_expression_confidence' => 'nullable|numeric|min:0|max:1',
@@ -95,6 +98,29 @@ class MoodApiController extends Controller
                 $moodEntry->tags()->sync($request->tag_ids);
             }
 
+            // Share mood with groups if provided
+            if ($request->has('group_ids') && is_array($request->group_ids)) {
+                $user = auth()->user();
+
+                // Verify user belongs to all specified groups
+                $userGroupIds = $user->groups()->pluck('groups.id')->toArray();
+                $validGroupIds = array_intersect($request->group_ids, $userGroupIds);
+
+                if (count($validGroupIds) > 0) {
+                    // Create a mood entry copy for each group
+                    foreach ($validGroupIds as $groupId) {
+                        $groupMood = $moodEntry->replicate();
+                        $groupMood->group_id = $groupId;
+                        $groupMood->save();
+
+                        // Also sync tags for group mood
+                        if ($request->has('tag_ids') && is_array($request->tag_ids)) {
+                            $groupMood->tags()->sync($request->tag_ids);
+                        }
+                    }
+                }
+            }
+
             // Update calendar event with mood_entry_id (bidirectional relationship)
             if ($request->calendar_event_id) {
                 $calendarEvent = \App\Models\CalendarEvent::find($request->calendar_event_id);
@@ -110,6 +136,7 @@ class MoodApiController extends Controller
             return response()->json([
                 'message' => 'Mood entry created successfully',
                 'mood' => $moodEntry,
+                'shared_with_groups' => $request->has('group_ids') ? count($validGroupIds ?? []) : 0,
             ], 201);
 
         } catch (\Exception $e) {

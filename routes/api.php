@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\MoodApiController;
 use App\Http\Controllers\Api\TagApiController;
 use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\Api\RevenueCatWebhookController;
+use App\Http\Controllers\Api\GroupController;
+use App\Http\Controllers\Api\SharingController;
 // use App\Http\Controllers\Api\UtilsController;
 
 // Public routes
@@ -60,6 +62,34 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/calendar/disconnect', [UserProfileController::class, 'disconnectCalendar']);
         Route::put('/calendar/quiet-hours', [UserProfileController::class, 'updateQuietHours']);
         Route::get('/calendar/upcoming-events', [UserProfileController::class, 'upcomingEvents']);
+    });
+
+    // Groups routes (Anonymous group mood tracking)
+    Route::prefix('groups')->group(function () {
+        Route::post('/join', [GroupController::class, 'joinGroup']);
+        Route::post('/{groupId}/leave', [GroupController::class, 'leaveGroup']);
+        Route::get('/my-groups', [GroupController::class, 'myGroups']);
+        Route::get('/{groupId}', [GroupController::class, 'show']);
+        Route::get('/{groupId}/stats', [GroupController::class, 'stats']);
+    });
+
+    // Sharing routes (Personal sharing with permissions)
+    Route::prefix('sharing')->group(function () {
+        // Invitations
+        Route::post('/invite', [SharingController::class, 'sendInvite']);
+        Route::get('/my-invites', [SharingController::class, 'myInvites']);
+        Route::get('/invites-received', [SharingController::class, 'invitesReceived']);
+        Route::post('/accept/{token}', [SharingController::class, 'acceptInvite']);
+        Route::post('/reject/{token}', [SharingController::class, 'rejectInvite']);
+
+        // Access management
+        Route::get('/sharing-with', [SharingController::class, 'sharingWith']);
+        Route::get('/shared-with-me', [SharingController::class, 'sharedWithMe']);
+        Route::delete('/revoke/{shareId}', [SharingController::class, 'revokeAccess']);
+        Route::put('/{shareId}/permissions', [SharingController::class, 'updatePermissions']);
+
+        // View shared data
+        Route::get('/moods/{ownerId}', [SharingController::class, 'getMoodsFromUser']);
     });
 
     // Utils routes

@@ -10,6 +10,8 @@ A comprehensive mood and wellness tracking platform with Google Calendar integra
 - **Tags System**: Categorize mood entries with system and custom tags
 - **Subscription Management**: RevenueCat integration for in-app purchases
 - **Analytics & Stats**: Visualize mood patterns over time
+- **Anonymous Groups**: Share mood data anonymously with groups (families, teams, schools)
+- **Personal Sharing**: Share mood data with individuals with granular permissions
 - **Mobile-Optimized**: Responsive views for mobile and desktop
 
 ---
@@ -173,9 +175,39 @@ Endpoints:
 ### User Profile API
 
 Endpoints:
-- `GET /api/user/profile` - Get user profile
-- `PUT /api/user/profile` - Update user profile
-- `POST /api/user/push-token` - Register push notification token
+- `GET /api/profile` - Get user profile
+- `PUT /api/profile` - Update user profile
+- `GET /api/profile/calendar-status` - Get calendar sync status
+- `POST /api/profile/calendar/toggle` - Toggle calendar sync
+- `POST /api/profile/calendar/sync` - Sync calendar events
+- `POST /api/profile/calendar/disconnect` - Disconnect calendar
+- `PUT /api/profile/calendar/quiet-hours` - Update quiet hours
+- `GET /api/profile/calendar/upcoming-events` - Get upcoming events
+
+### Groups API
+See [GROUPS_API_DOCUMENTATION.md](./GROUPS_API_DOCUMENTATION.md)
+
+Endpoints:
+- `POST /api/groups/join` - Join group with invite code
+- `POST /api/groups/{groupId}/leave` - Leave group
+- `GET /api/groups/my-groups` - List my groups
+- `GET /api/groups/{groupId}` - Get group details
+- `GET /api/groups/{groupId}/stats` - Get group statistics
+
+### Sharing API
+See [SHARING_API_DOCUMENTATION.md](./SHARING_API_DOCUMENTATION.md)
+
+Endpoints:
+- `POST /api/sharing/invite` - Send sharing invitation
+- `GET /api/sharing/my-invites` - Get sent invitations
+- `GET /api/sharing/invites-received` - Get received invitations
+- `POST /api/sharing/accept/{token}` - Accept invitation
+- `POST /api/sharing/reject/{token}` - Reject invitation
+- `GET /api/sharing/sharing-with` - List people I'm sharing with
+- `GET /api/sharing/shared-with-me` - List people sharing with me
+- `DELETE /api/sharing/revoke/{shareId}` - Revoke access
+- `PUT /api/sharing/{shareId}/permissions` - Update permissions
+- `GET /api/sharing/moods/{ownerId}` - View someone's moods
 
 ---
 
@@ -480,10 +512,15 @@ tail -f storage/logs/laravel.log | grep -i calendar
 - [Mood Entry API](./MOOD_API_DOCUMENTATION.md)
 - [Tags API](./TAGS_API_DOCUMENTATION.md)
 - [Calendar Events](./CALENDAR_EVENTS_DOCUMENTATION.md)
+- [Groups API](./GROUPS_API_DOCUMENTATION.md)
+- [Sharing API](./SHARING_API_DOCUMENTATION.md)
 - [RevenueCat Webhook](./REVENUECAT_WEBHOOK_DOCUMENTATION.md)
 - [Event Notifications Setup](./EVENT_NOTIFICATIONS_SETUP.md)
 - [Native App Integration](./NATIVE_APP_INTEGRATION.md)
 - [Onboarding System](./ONBOARDING_SYSTEM.md)
+- [Groups & Sharing Status](./GROUP_SHARING_STATUS.md)
+- [Personal Sharing Status](./PERSONAL_SHARING_STATUS.md)
+- [Screens Needed Summary](./SCREENS_NEEDED_SUMMARY.md)
 
 ---
 
@@ -501,5 +538,5 @@ For issues, bugs, or questions:
 
 ---
 
-**Last Updated**: October 19, 2025
-**Version**: 1.1.0
+**Last Updated**: October 20, 2025
+**Version**: 1.2.0
