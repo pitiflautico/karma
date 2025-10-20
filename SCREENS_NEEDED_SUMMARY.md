@@ -3,11 +3,13 @@
 ## ✅ BACKEND COMPLETADO
 - [x] GroupController con 5 endpoints (join, leave, myGroups, show, stats)
 - [x] Modelos: Group, SharedAccess, SharingInvite
-- [x] Base de datos completa
+- [x] Base de datos completa para groups, group_members, group_events, group_event_moods
+- [ ] PENDIENTE: Modelos GroupEvent y GroupEventMood
+- [ ] PENDIENTE: Controllers para eventos y valoraciones
 
 ## 🎨 PANTALLAS QUE NECESITAS MAQUETAR
 
-### **SISTEMA DE GRUPOS ANÓNIMOS** (4 pantallas)
+### **SISTEMA DE GRUPOS ANÓNIMOS** (7 pantallas - 3 nuevas ✨)
 
 #### 1️⃣ Groups List Screen ⭐ PRIORITARIA
 **Archivo:** `screens/GroupsListScreen.js`
@@ -36,11 +38,34 @@
 - Modal de confirmación simple
 - Título, mensaje, botones Cancel/Leave
 
+#### 5️⃣ Group Events Screen ⭐⭐ MUY IMPORTANTE ✨ NUEVO
+**Archivo:** `screens/GroupEventsScreen.js`
+- Lista de eventos del grupo (pasados y futuros)
+- Cada evento muestra: título, fecha, mood promedio, # valoraciones
+- Badge "Rate this!" si no has valorado
+- Botón "Create Event"
+- Filtros: Todos/Próximos/Pasados
+
+#### 6️⃣ Create Group Event Screen ⭐ PRIORITARIA ✨ NUEVO
+**Archivo:** `screens/CreateGroupEventScreen.js`
+- Form para crear evento manual
+- Input: Título (requerido)
+- Input: Descripción (opcional)
+- DateTimePicker: Fecha y hora
+- Botón "Create Event"
+
+#### 7️⃣ Rate Group Event Screen ⭐⭐ MUY IMPORTANTE ✨ NUEVO
+**Archivo:** `screens/RateGroupEventScreen.js`
+- Ver detalles del evento
+- Sección "Mi Valoración": mood selector (1-10) + nota
+- Sección "Mood del Grupo": promedio, distribución, stats
+- Botón "Submit Rating" o "Update Rating"
+
 ---
 
 ### **SISTEMA DE SHARING PERSONAL** (5 pantallas)
 
-#### 5️⃣ Sharing Settings Screen ⭐ PRIORITARIA
+#### 8️⃣ Sharing Settings Screen ⭐ PRIORITARIA
 **Archivo:** `screens/SharingSettingsScreen.js`
 
 **3 Secciones:**
@@ -48,27 +73,27 @@
 2. **Invite Someone** - Form (email + checkboxes permisos)
 3. **Pending Invitations** - Lista de invitaciones enviadas
 
-#### 6️⃣ Shared With Me Screen ⭐⭐ MUY IMPORTANTE
+#### 9️⃣ Shared With Me Screen ⭐⭐ MUY IMPORTANTE
 **Archivo:** `screens/SharedWithMeScreen.js`
 - Lista de personas que comparten contigo
 - Para cada persona: avatar, último mood, permisos
 - Tap para ver detalles
 - Empty state
 
-#### 7️⃣ Shared Person Detail Screen
+#### 🔟 Shared Person Detail Screen
 **Archivo:** `screens/SharedPersonDetailScreen.js`
 - Timeline de moods de la persona
 - Filtros por fecha
 - Mostrar solo datos permitidos (moods/notas/selfies)
 - Botón "Stop receiving"
 
-#### 8️⃣ Received Invitations Screen
+#### 1️⃣1️⃣ Received Invitations Screen
 **Archivo:** `screens/ReceivedInvitationsScreen.js`
 - Lista de invitaciones pendientes
 - Muestra permisos que otorgará
 - Botones Accept/Decline por cada invitación
 
-#### 9️⃣ Edit Permissions Modal
+#### 1️⃣2️⃣ Edit Permissions Modal
 **Archivo:** `components/EditPermissionsModal.js`
 - Checkboxes: Can view moods/notes/selfies
 - Botones Save/Cancel
@@ -77,33 +102,44 @@
 
 ## 📊 RESUMEN TOTAL
 
-### Pantallas a Maquetar: **9 pantallas**
+### Pantallas a Maquetar: **12 pantallas** (3 nuevas ✨)
 
-#### Prioridad Alta (hacer primero): **4 pantallas**
+#### Prioridad Alta (hacer primero): **7 pantallas**
 1. Groups List Screen
 2. Join Group Screen
-3. Sharing Settings Screen
-4. Shared With Me Screen
+3. ✨ **Create Group Event Screen** (NUEVO)
+4. Sharing Settings Screen
+5. Shared With Me Screen
 
-#### Prioridad Media: **3 pantallas**
-5. Group Dashboard Screen (compleja, gráficos)
-6. Shared Person Detail Screen
-7. Received Invitations Screen
+#### Prioridad Media: **5 pantallas**
+6. Group Dashboard Screen (compleja, gráficos)
+7. ✨ **Group Events Screen** (NUEVO - lista de eventos)
+8. ✨ **Rate Group Event Screen** (NUEVO - valorar eventos)
+9. Shared Person Detail Screen
+10. Received Invitations Screen
 
 #### Componentes/Modales: **2 componentes**
-8. Leave Group Modal
-9. Edit Permissions Modal
+11. Leave Group Modal
+12. Edit Permissions Modal
 
 ---
 
 ## 🎯 API ENDPOINTS YA LISTOS
 
-### Groups API
+### Groups API (Grupos Básicos)
 - ✅ `POST /api/groups/join` - Unirse con código
 - ✅ `POST /api/groups/{id}/leave` - Salir del grupo
 - ✅ `GET /api/groups/my-groups` - Mis grupos
 - ✅ `GET /api/groups/{id}` - Dashboard del grupo
 - ✅ `GET /api/groups/{id}/stats?period=7d` - Estadísticas
+
+### Group Events API (NUEVOS - POR HACER ✨)
+- ⏳ `GET /api/groups/{groupId}/events` - Listar eventos del grupo
+- ⏳ `POST /api/groups/{groupId}/events` - Crear evento manual
+- ⏳ `GET /api/groups/events/{eventId}` - Ver detalles del evento
+- ⏳ `POST /api/groups/events/{eventId}/rate` - Valorar evento con mood
+- ⏳ `PUT /api/groups/events/{eventId}/rate` - Actualizar valoración
+- ⏳ `GET /api/groups/events/{eventId}/moods` - Ver stats agregadas del evento
 
 ### Sharing API (POR HACER - backend necesario)
 - ⏳ `POST /api/sharing/invite`

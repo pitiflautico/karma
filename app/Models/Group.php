@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
@@ -23,6 +24,9 @@ class Group extends Model
         'slug',
         'invite_code',
         'description',
+        'avatar',
+        'color',
+        'created_by',
         'is_active',
     ];
 
@@ -50,11 +54,20 @@ class Group extends Model
     }
 
     /**
-     * Get the users that belong to this group.
+     * Get the user who created this group.
+     */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the users that belong to this group (members).
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'group_user')
+        return $this->belongsToMany(User::class, 'group_members')
+            ->withPivot(['role', 'joined_at'])
             ->withTimestamps();
     }
 
@@ -64,6 +77,14 @@ class Group extends Model
     public function moodEntries(): HasMany
     {
         return $this->hasMany(MoodEntry::class);
+    }
+
+    /**
+     * Get the events for this group.
+     */
+    public function events(): HasMany
+    {
+        return $this->hasMany(GroupEvent::class);
     }
 
     /**

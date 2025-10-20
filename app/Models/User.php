@@ -148,8 +148,25 @@ class User extends Authenticatable implements MustVerifyEmailContract, FilamentU
      */
     public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, 'group_user')
+        return $this->belongsToMany(Group::class, 'group_members')
+            ->withPivot(['role', 'joined_at'])
             ->withTimestamps();
+    }
+
+    /**
+     * Get the events created by this user.
+     */
+    public function createdGroupEvents(): HasMany
+    {
+        return $this->hasMany(GroupEvent::class, 'created_by');
+    }
+
+    /**
+     * Get all mood ratings this user has made on group events.
+     */
+    public function groupEventMoods(): HasMany
+    {
+        return $this->hasMany(GroupEventMood::class);
     }
 
     /**

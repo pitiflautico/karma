@@ -17,6 +17,12 @@ use App\Livewire\AIInsights;
 use App\Livewire\Settings;
 use App\Livewire\Selfies;
 use App\Livewire\Stats;
+use App\Livewire\GroupsList;
+use App\Livewire\JoinGroup;
+use App\Livewire\GroupDashboard;
+use App\Livewire\GroupEvents;
+use App\Livewire\CreateGroupEvent;
+use App\Livewire\RateGroupEvent;
 
 // Public pages
 Route::get('/', \App\Livewire\Auth\AuthHome::class)->name('home');
@@ -74,6 +80,17 @@ Route::middleware(['auth', 'onboarding.completed'])->group(function () {
     Route::get('/selfies', Selfies::class)->name('selfies');
     Route::get('/stats', Stats::class)->name('stats');
     Route::get('/settings', Settings::class)->name('settings');
+
+    // Groups routes
+    Route::prefix('groups')->name('groups.')->group(function () {
+        Route::get('/', GroupsList::class)->name('list');
+        Route::get('/join', JoinGroup::class)->name('join');
+        Route::get('/{groupId}', GroupDashboard::class)->name('dashboard');
+        Route::get('/{groupId}/events', GroupEvents::class)->name('events');
+        Route::get('/{groupId}/events/create', CreateGroupEvent::class)->name('events.create');
+        Route::get('/events/{eventId}/rate', RateGroupEvent::class)->name('events.rate');
+    });
+
     Route::post('/logout', [GoogleAuthController::class, 'logout'])->name('logout');
 });
 
