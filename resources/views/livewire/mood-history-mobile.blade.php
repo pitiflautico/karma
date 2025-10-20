@@ -5,17 +5,17 @@
 
     <x-slot:header>
         <!-- Tabs -->
-        <div class="mt-4">
-            <div class="bg-gray-200 rounded-full p-1 flex">
+        <div class="mt-6">
+            <div class="bg-[#e7e5e4] rounded-full p-1 flex gap-1">
                 <button
                     wire:click="switchView('list')"
-                    class="flex-1 py-3 px-4 rounded-full text-sm font-medium transition-all {{ $activeView === 'list' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600' }}"
+                    class="flex-1 py-3 px-6 rounded-full text-base font-semibold transition-all {{ $activeView === 'list' ? 'bg-white text-[#292524] shadow-md' : 'text-[#78716c]' }}"
                 >
                     List View
                 </button>
                 <button
                     wire:click="switchView('calendar')"
-                    class="flex-1 py-3 px-4 rounded-full text-sm font-medium transition-all {{ $activeView === 'calendar' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600' }}"
+                    class="flex-1 py-3 px-6 rounded-full text-base font-semibold transition-all {{ $activeView === 'calendar' ? 'bg-white text-[#292524] shadow-md' : 'text-[#78716c]' }}"
                 >
                     Calendar View
                 </button>
@@ -30,7 +30,7 @@
                 @forelse($moodsByDate as $date => $moods)
                     <!-- Date Header -->
                     <div class="pt-4">
-                        <h3 class="text-base font-semibold text-gray-900 mb-4">{{ $date }}</h3>
+                        <h3 class="text-[18px] font-bold text-[#292524] mb-4">{{ $date }}</h3>
 
                         <!-- Mood Cards -->
                         <div class="space-y-3">
@@ -48,6 +48,17 @@
                         <p class="text-sm text-gray-500">Start tracking your moods to see them here!</p>
                     </div>
                 @endforelse
+
+                <!-- See More Button -->
+                @if($hasMoreDays)
+                    <div class="pt-6 pb-2">
+                        <button
+                            wire:click="loadMore"
+                            class="w-full py-3 bg-white text-[#926247] font-semibold text-base rounded-2xl shadow-sm border border-[#e7e5e4] hover:bg-[#f7f3ef] transition-colors">
+                            See More
+                        </button>
+                    </div>
+                @endif
             </div>
 
         @else
@@ -92,19 +103,22 @@
                             <!-- Empty cell -->
                             <div class="aspect-square"></div>
                         @else
-                            <div class="aspect-square flex items-center justify-center">
+                            <div class="aspect-square flex items-center justify-center p-1">
                                 @if($day['moods']->count() > 0)
                                     @php
                                         // Get the representative mood for the day (first one)
                                         $representativeMood = $day['moods']->first();
                                     @endphp
 
-                                    <div class="w-10 h-10 flex items-center justify-center {{ $day['isToday'] ? 'ring-2 ring-purple-600 ring-offset-2 rounded-full' : '' }}">
-                                        <img src="{{ asset('images/moods/' . $representativeMood->mood_icon) }}" alt="{{ $representativeMood->mood_name }}" class="w-10 h-10">
+                                    <!-- Just the mood icon, no background circle -->
+                                    <div class="w-10 h-10 flex items-center justify-center {{ $day['isToday'] ? 'ring-2 ring-[#9BB167] ring-offset-1 rounded-full' : '' }}">
+                                        <img src="{{ asset('images/moods/' . $representativeMood->mood_icon) }}"
+                                             alt="{{ $representativeMood->mood_name }}"
+                                             class="w-10 h-10">
                                     </div>
                                 @else
-                                    <!-- No mood for this day -->
-                                    <div class="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-xs text-gray-400 {{ $day['isToday'] ? 'ring-2 ring-purple-600 ring-offset-2' : '' }}">
+                                    <!-- No mood for this day (empty circle with day number) -->
+                                    <div class="w-10 h-10 rounded-full border-2 border-[#d6d3d1] flex items-center justify-center text-xs font-normal text-[#a8a29e] {{ $day['isToday'] ? 'ring-2 ring-[#9BB167] ring-offset-1' : '' }}">
                                         {{ $day['day'] }}
                                     </div>
                                 @endif
@@ -114,31 +128,27 @@
                 </div>
 
                 <!-- Legend -->
-                <div class="mt-6 pt-6 border-t border-gray-100">
-                    <div class="grid grid-cols-3 gap-3 text-xs text-gray-600">
-                        <div class="flex items-center space-x-1.5">
-                            <div class="w-4 h-4 rounded-full border-2 border-gray-200"></div>
-                            <span>Skipped</span>
+                <div class="mt-6 pt-6 border-t border-[#e7e5e4]">
+                    <div class="grid grid-cols-4 gap-4">
+                        <!-- Skipped -->
+                        <div class="flex items-center gap-2">
+                            <div class="w-5 h-5 rounded-full border-2 border-[#d6d3d1]"></div>
+                            <span class="text-sm font-normal text-[#57534e]">Skipped</span>
                         </div>
-                        <div class="flex items-center space-x-1.5">
-                            <div class="w-4 h-4 rounded-full" style="background-color: #C084FC"></div>
-                            <span>Depressed</span>
+                        <!-- Neutral -->
+                        <div class="flex items-center gap-2">
+                            <div class="w-5 h-5 rounded-full" style="background-color: #78716C"></div>
+                            <span class="text-sm font-normal text-[#57534e]">Neutral</span>
                         </div>
-                        <div class="flex items-center space-x-1.5">
-                            <div class="w-4 h-4 rounded-full" style="background-color: #FB923C"></div>
-                            <span>Sad</span>
+                        <!-- Positive -->
+                        <div class="flex items-center gap-2">
+                            <div class="w-5 h-5 rounded-full" style="background-color: #9BB167"></div>
+                            <span class="text-sm font-normal text-[#57534e]">Positive</span>
                         </div>
-                        <div class="flex items-center space-x-1.5">
-                            <div class="w-4 h-4 rounded-full" style="background-color: #B1865E"></div>
-                            <span>Neutral</span>
-                        </div>
-                        <div class="flex items-center space-x-1.5">
-                            <div class="w-4 h-4 rounded-full" style="background-color: #FBBF24"></div>
-                            <span>Happy</span>
-                        </div>
-                        <div class="flex items-center space-x-1.5">
-                            <div class="w-4 h-4 rounded-full" style="background-color: #9BB167"></div>
-                            <span>Overjoyed</span>
+                        <!-- Negative -->
+                        <div class="flex items-center gap-2">
+                            <div class="w-5 h-5 rounded-full" style="background-color: #FB7185"></div>
+                            <span class="text-sm font-normal text-[#57534e]">Negative</span>
                         </div>
                     </div>
                 </div>

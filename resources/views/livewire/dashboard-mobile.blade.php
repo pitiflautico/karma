@@ -18,7 +18,7 @@
             </div>
 
             <!-- Title -->
-            <h1 class="text-lg font-semibold text-gray-900">My Mood</h1>
+            <h1 class="text-base font-semibold text-[#292524]">My Mood</h1>
 
             <!-- Hamburger Menu -->
             <div x-data="{ open: false }" class="relative">
@@ -101,17 +101,17 @@
                      class="w-24 h-24 mb-3">
 
                 <!-- Mood Name -->
-                <h2 class="text-2xl font-bold text-gray-900 mb-1">{{ $moodData['name'] }}</h2>
+                <h2 class="text-[36px] leading-tight font-bold text-[#533630] mb-1">{{ $moodData['name'] }}</h2>
 
                 <!-- Logged Time -->
                 @if($moodData['logged_time'])
-                    <p class="text-sm text-gray-500 mb-1">Logged today at {{ $moodData['logged_time'] }}</p>
+                    <p class="text-[20px] font-medium text-[#57534e] mb-1">Logged today at {{ $moodData['logged_time'] }}</p>
                 @else
-                    <p class="text-sm text-gray-500 mb-1">Based on last 7 days</p>
+                    <p class="text-[20px] font-medium text-[#57534e] mb-1">Based on last 7 days</p>
                 @endif
 
                 <!-- Context Message -->
-                <p class="text-sm text-gray-600">{{ $moodData['message'] }}</p>
+                <p class="text-base font-normal text-[#57534e]">{{ $moodData['message'] }}</p>
             </div>
         @else
             <!-- Empty State -->
@@ -132,7 +132,7 @@
     <div class="relative -mt-7 flex justify-center z-10">
         <button
             wire:click="openMoodEntryModal"
-            class="w-14 h-14 p-4 bg-gradient-to-br from-amber-700 to-amber-800 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
+            class="w-14 h-14 p-4 bg-[#926247] hover:bg-[#7d5239] rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
             <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
@@ -145,14 +145,14 @@
         <!-- Mood Insight (Streak) -->
         <div class="flex flex-col gap-3">
             <div class="flex items-center justify-between h-5">
-                <h3 class="text-base font-bold text-gray-900">Mood Insight</h3>
-                <a href="{{ route('mood.history') }}" class="text-sm font-medium text-gray-500">See All</a>
+                <h3 class="text-base font-bold text-[#292524]">Mood Insight</h3>
+                <a href="{{ route('mood.history') }}" class="text-sm font-medium text-[#926247]">See All</a>
             </div>
-            <div class="bg-white rounded-3xl p-4 flex gap-4 overflow-hidden">
+            <div class="bg-[#f5f5f4] rounded-3xl p-4 flex gap-4 overflow-hidden">
                 <div class="flex-1 flex flex-col gap-2">
-                    <h2 class="text-2xl font-bold text-gray-900">{{ $moodStreak }} days</h2>
-                    <p class="text-base font-medium text-gray-600">Mood Streak</p>
-                    <p class="text-sm font-normal text-gray-600">You've checked in your mood for {{ $moodStreak }} day{{ $moodStreak !== 1 ? 's' : '' }} straight!</p>
+                    <h2 class="text-2xl font-bold text-[#292524]">{{ $moodStreak }} days</h2>
+                    <p class="text-base font-medium text-[#57534e]">Mood Streak</p>
+                    <p class="text-sm font-normal text-[#57534e]">You've checked in your mood for {{ $moodStreak }} day{{ $moodStreak !== 1 ? 's' : '' }} straight!</p>
                 </div>
                 <div class="w-24 relative">
                     <img src="{{ asset('images/mood_home_art.png') }}" alt="Mood tracking" class="w-full h-auto">
@@ -163,8 +163,8 @@
         <!-- Mood History -->
         <div class="flex flex-col gap-3">
             <div class="flex items-center justify-between h-5">
-                <h3 class="text-base font-bold text-gray-900">Mood History</h3>
-                <a href="{{ route('mood.history') }}" class="text-sm font-medium text-gray-500">See All</a>
+                <h3 class="text-base font-bold text-[#292524]">Mood History</h3>
+                <a href="{{ route('mood.history') }}" class="text-sm font-medium text-[#926247]">See All</a>
             </div>
 
             @if($recentMoods->count() > 0)
@@ -174,23 +174,23 @@
                             <div class="flex-1 flex items-center gap-3">
                                 <img src="{{ asset('images/moods/' . $mood->mood_icon) }}"
                                      alt="{{ $mood->mood_name }}"
-                                     class="w-6 h-6">
+                                     class="w-12 h-12">
 
                                 <div class="flex-1 flex flex-col gap-2">
                                     <div class="flex flex-col gap-1">
-                                        <h4 class="text-base font-bold text-gray-900">{{ $mood->mood_name }}</h4>
+                                        <h4 class="text-base font-semibold text-[#292524]">{{ $mood->mood_name }}</h4>
                                         @if($mood->note)
-                                            <p class="text-sm font-medium text-gray-600 truncate">{{ Str::words($mood->note, 7, '...') }}</p>
+                                            <p class="text-sm font-normal text-[#57534e] truncate">{{ Str::words($mood->note, 7, '...') }}</p>
                                         @elseif($mood->calendarEvent)
-                                            <p class="text-sm font-medium text-gray-600 truncate">{{ $mood->calendarEvent->title }}</p>
+                                            <p class="text-sm font-normal text-[#57534e] truncate">{{ $mood->calendarEvent->title }}</p>
                                         @else
-                                            <p class="text-sm font-medium text-gray-400 italic">No notes</p>
+                                            <p class="text-sm font-normal text-[#a8a29e] italic">No notes</p>
                                         @endif
                                     </div>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="text-sm font-normal text-gray-600">{{ $mood->created_at->format('g:i A') }}</span>
+                                <span class="text-sm font-normal text-[#57534e]">{{ $mood->created_at->format('g:i A') }}</span>
                                 <button
                                     type="button"
                                     @click.prevent.stop="Livewire.dispatch('view-mood', { id: '{{ $mood->id }}' })"
@@ -214,8 +214,8 @@
         @if($nextReminder)
             <div class="flex flex-col gap-3">
                 <div class="flex items-center justify-between h-5">
-                    <h3 class="text-base font-bold text-gray-900">Mood Reminder</h3>
-                    <a href="{{ route('calendar.events') }}" class="text-sm font-medium text-gray-500">See All</a>
+                    <h3 class="text-base font-bold text-[#292524]">Mood Reminder</h3>
+                    <a href="{{ route('calendar.events') }}" class="text-sm font-medium text-[#926247]">See All</a>
                 </div>
 
                 <div class="min-h-14 p-4 bg-white rounded-3xl flex items-center gap-4">
@@ -242,18 +242,18 @@
         <!-- Mood Goal -->
         <div class="flex flex-col gap-3">
             <div class="flex items-center justify-between h-5">
-                <h3 class="text-base font-bold text-gray-900">Mood Goal</h3>
-                <a href="{{ route('mood.history') }}" class="text-sm font-medium text-gray-500">See All</a>
+                <h3 class="text-base font-bold text-[#292524]">Mood Goal</h3>
+                <a href="{{ route('mood.history') }}" class="text-sm font-medium text-[#926247]">See All</a>
             </div>
 
             <div class="p-4 bg-white rounded-3xl flex flex-col gap-4 overflow-hidden">
                 <div class="flex flex-col gap-2">
                     @if($moodGoalData['happyStreak'] > 0)
-                        <h4 class="text-2xl font-bold text-gray-900">Happy</h4>
-                        <p class="text-base font-normal text-gray-600">for {{ $moodGoalData['happyStreak'] }} day{{ $moodGoalData['happyStreak'] !== 1 ? 's' : '' }} straight</p>
+                        <h4 class="text-2xl font-bold text-[#292524]">Happy</h4>
+                        <p class="text-base font-normal text-[#57534e]">for {{ $moodGoalData['happyStreak'] }} day{{ $moodGoalData['happyStreak'] !== 1 ? 's' : '' }} straight</p>
                     @else
-                        <h4 class="text-2xl font-bold text-gray-900">Track Your Moods</h4>
-                        <p class="text-base font-normal text-gray-600">Start building a happy streak!</p>
+                        <h4 class="text-2xl font-bold text-[#292524]">Track Your Moods</h4>
+                        <p class="text-base font-normal text-[#57534e]">Start building a happy streak!</p>
                     @endif
                 </div>
 

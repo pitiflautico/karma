@@ -12,9 +12,7 @@ use Livewire\Component;
 class SharingSettings extends Component
 {
     public $recipientEmail = '';
-    public $canViewMoods = true;
-    public $canViewNotes = false;
-    public $canViewSelfies = false;
+    public $permissionLevel = 'basico'; // basico, intermedio, avanzado
 
     // For editing permissions
     public $editingAccessId = null;
@@ -72,15 +70,18 @@ class SharingSettings extends Component
             return;
         }
 
+        // Map permission levels to specific permissions
+        $permissions = $this->getPermissionsForLevel($this->permissionLevel);
+
         // Create new invitation
         $invite = SharingInvite::create([
             'sender_id' => $user->id,
             'recipient_email' => $this->recipientEmail,
             'token' => SharingInvite::generateToken(),
             'status' => 'pending',
-            'can_view_moods' => $this->canViewMoods,
-            'can_view_notes' => $this->canViewNotes,
-            'can_view_selfies' => $this->canViewSelfies,
+            'can_view_moods' => $permissions['can_view_moods'],
+            'can_view_notes' => $permissions['can_view_notes'],
+            'can_view_selfies' => $permissions['can_view_selfies'],
             'expires_at' => now()->addDays(7),
         ]);
 
@@ -99,7 +100,34 @@ class SharingSettings extends Component
         }
 
         // Reset form
-        $this->reset(['recipientEmail', 'canViewMoods', 'canViewNotes', 'canViewSelfies']);
+        $this->reset(['recipientEmail', 'permissionLevel']);
+        $this->permissionLevel = 'basico';
+    }
+
+    private function getPermissionsForLevel($level)
+    {
+        return match($level) {
+            'basico' => [
+                'can_view_moods' => true,
+                'can_view_notes' => false,
+                'can_view_selfies' => false,
+            ],
+            'intermedio' => [
+                'can_view_moods' => true,
+                'can_view_notes' => true,
+                'can_view_selfies' => false,
+            ],
+            'avanzado' => [
+                'can_view_moods' => true,
+                'can_view_notes' => false,
+                'can_view_selfies' => true,
+            ],
+            default => [
+                'can_view_moods' => true,
+                'can_view_notes' => false,
+                'can_view_selfies' => false,
+            ],
+        };
     }
 
     public function editPermissions($accessId)
@@ -165,6 +193,36 @@ class SharingSettings extends Component
         }
     }
 
+    /**
+     * Detect if the request is from a mobile device or native app
+     */
+    private function isMobileDevice()
+    {
+        // Check if there's a session variable indicating mobile/native app
+        if (session()->has('is_mobile_app') || session()->has('native_app_login')) {
+            return true;
+        }
+
+        // Check for mobile query parameter (can be set by native app on first load)
+        if (request()->has('mobile') && request()->input('mobile') == '1') {
+            session()->put('is_mobile_app', true);
+            return true;
+        }
+
+        // Check user agent for mobile devices
+        $userAgent = request()->header('User-Agent');
+        if ($userAgent) {
+            $mobileKeywords = ['Mobile', 'Android', 'iPhone', 'iPad', 'iPod', 'BlackBerry', 'Windows Phone'];
+            foreach ($mobileKeywords as $keyword) {
+                if (stripos($userAgent, $keyword) !== false) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function render()
     {
         $user = Auth::user();
@@ -181,6 +239,14 @@ class SharingSettings extends Component
             ->where('expires_at', '>', now())
             ->orderBy('created_at', 'desc')
             ->get();
+
+        // Detect if mobile device and render appropriate layout
+        if ($this->isMobileDevice()) {
+            return view('livewire.sharing-settings', [
+                'sharedAccesses' => $sharedAccesses,
+                'pendingInvites' => $pendingInvites,
+            ])->layout('layouts.app-mobile');
+        }
 
         return view('livewire.sharing-settings', [
             'sharedAccesses' => $sharedAccesses,

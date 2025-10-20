@@ -11,6 +11,7 @@ use App\Livewire\MoodPrompts;
 use App\Livewire\Reports;
 use App\Livewire\SharingSettings;
 use App\Livewire\SharedWithMe;
+use App\Livewire\InvitationsList;
 use App\Livewire\AcceptInvite;
 use App\Livewire\AIInsights;
 use App\Livewire\Settings;
@@ -68,6 +69,7 @@ Route::middleware(['auth', 'onboarding.completed'])->group(function () {
     Route::get('/reports', Reports::class)->name('reports');
     Route::get('/ai-insights', AIInsights::class)->name('ai.insights');
     Route::get('/sharing-settings', SharingSettings::class)->name('sharing.settings');
+    Route::get('/invitations', InvitationsList::class)->name('invitations.list');
     Route::get('/shared-with-me', SharedWithMe::class)->name('shared.with.me');
     Route::get('/selfies', Selfies::class)->name('selfies');
     Route::get('/stats', Stats::class)->name('stats');

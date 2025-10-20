@@ -107,6 +107,18 @@ karma-mobile/
 
 ## Vistas Mobile vs Desktop
 
+### 🚨 REGLA CRÍTICA: SIEMPRE usar layouts correctos
+
+**TODOS los componentes Livewire DEBEN:**
+1. Incluir el método `isMobileDevice()`
+2. Usar `->layout('layouts.app-mobile')` para mobile
+3. Usar `->layout('layouts.app')` para desktop
+
+**Por qué es importante:**
+- `layouts.app` incluye header/footer de navegación desktop
+- `layouts.app-mobile` NO incluye header/footer (la app nativa ya tiene su navegación)
+- Si usas el layout incorrecto, verás doble header/footer en mobile ❌
+
 ### Detección de Mobile
 Los componentes Livewire detectan si es mobile con el método:
 
@@ -137,22 +149,61 @@ private function isMobileDevice()
 }
 ```
 
-### Renderizado Condicional
+### Renderizado Condicional - PATRÓN OBLIGATORIO
 
 ```php
 public function render()
 {
+    // ... preparar datos ...
+
+    // Detectar mobile y usar layout correcto
     if ($this->isMobileDevice()) {
-        return view('livewire.dashboard-mobile', [...])
-            ->layout('layouts.app-mobile');
+        return view('livewire.dashboard', [...])
+            ->layout('layouts.app-mobile');  // ✅ SIN header/footer
     }
 
     return view('livewire.dashboard', [...])
-        ->layout('layouts.app');
+        ->layout('layouts.app');  // ✅ CON header/footer
 }
 ```
 
-**Regla:** Cada vista importante debe tener versión desktop y mobile.
+**Ejemplos de componentes que lo hacen correctamente:**
+- `app/Livewire/Auth/AuthHome.php:54-62`
+- `app/Livewire/SharingSettings.php:196-255`
+
+**⚠️ NO HACER:**
+```php
+// ❌ MAL - siempre usa el mismo layout
+return view('livewire.dashboard')->layout('layouts.app');
+```
+
+**✅ HACER:**
+```php
+// ✅ BIEN - detecta mobile y usa layout correcto
+if ($this->isMobileDevice()) {
+    return view('livewire.dashboard')->layout('layouts.app-mobile');
+}
+return view('livewire.dashboard')->layout('layouts.app');
+```
+
+### Diferencias entre layouts
+
+| Feature | `layouts.app` | `layouts.app-mobile` |
+|---------|---------------|----------------------|
+| Header de navegación | ✅ Sí | ❌ No |
+| Footer | ✅ Sí | ❌ No |
+| Safe area support | Parcial | ✅ Completo |
+| Scroll container | Página | `<main>` con -webkit-overflow-scrolling |
+| Uso | Desktop/Web | Mobile app (WebView) |
+
+### Probar en mobile durante desarrollo
+
+Para probar cómo se ve en mobile desde un navegador desktop:
+```
+http://localhost:8000/sharing-settings?mobile=1
+```
+
+El parámetro `?mobile=1` fuerza la detección de mobile y guarda en sesión.
 
 ---
 

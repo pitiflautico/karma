@@ -190,11 +190,11 @@ class Stats extends Component
      */
     private function getMoodIcon($score)
     {
-        if ($score >= 9) return 'great';
-        if ($score >= 7) return 'happy';
-        if ($score >= 5) return 'neutral';
-        if ($score >= 3) return 'sad';
-        return 'depressed';
+        if ($score >= 9) return 'Great_icon.svg';  // Overjoyed
+        if ($score >= 7) return 'Happy_icon.svg';  // Happy
+        if ($score >= 5) return 'Normal_icon.svg'; // Neutral
+        if ($score >= 3) return 'Sad_icon.svg';    // Sad
+        return 'depressed_icon.svg';               // Depressed
     }
 
     /**
@@ -202,11 +202,40 @@ class Stats extends Component
      */
     private function getMoodColor($score)
     {
-        if ($score >= 9) return '#10B981'; // Green
-        if ($score >= 7) return '#FBBF24'; // Yellow
-        if ($score >= 5) return '#F59E0B'; // Amber
-        if ($score >= 3) return '#F97316'; // Orange
-        return '#EF4444'; // Red
+        if ($score >= 9) return '#9BB167'; // Overjoyed (green from design system)
+        if ($score >= 7) return '#FBBF24'; // Happy (yellow)
+        if ($score >= 5) return '#B1865E'; // Neutral (brown)
+        if ($score >= 3) return '#FB923C'; // Sad (orange)
+        return '#C084FC'; // Depressed (purple)
+    }
+
+    /**
+     * Check if the current request is from a mobile device
+     */
+    private function isMobileDevice()
+    {
+        // Check session flags
+        if (session()->has('is_mobile_app') || session()->has('native_app_login')) {
+            return true;
+        }
+
+        // Check mobile query parameter
+        if (request()->has('mobile') && request()->input('mobile') == '1') {
+            session()->put('is_mobile_app', true);
+            return true;
+        }
+
+        // Check user agent
+        $userAgent = request()->header('User-Agent');
+        $mobileKeywords = ['Mobile', 'Android', 'iPhone', 'iPad', 'iPod', 'BlackBerry', 'Windows Phone'];
+
+        foreach ($mobileKeywords as $keyword) {
+            if (stripos($userAgent, $keyword) !== false) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function render()
@@ -222,7 +251,7 @@ class Stats extends Component
         // Get the most logged tag
         $topTag = $mostLoggedTags->first();
 
-        return view('livewire.stats', [
+        $viewData = [
             'totalEntries' => $totalEntries,
             'mostLoggedMoods' => $mostLoggedMoods,
             'moodOverTime' => $moodOverTime,
@@ -231,6 +260,13 @@ class Stats extends Component
             'topMood' => $topMood,
             'topTag' => $topTag,
             'monthName' => Carbon::createFromDate($this->selectedYear, $this->selectedMonth, 1)->format('F Y'),
-        ])->layout('layouts.app-mobile');
+        ];
+
+        // Use mobile layout if mobile device detected
+        if ($this->isMobileDevice()) {
+            return view('livewire.stats', $viewData)->layout('layouts.app-mobile');
+        }
+
+        return view('livewire.stats', $viewData)->layout('layouts.app');
     }
 }

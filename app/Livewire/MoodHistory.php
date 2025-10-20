@@ -27,6 +27,9 @@ class MoodHistory extends Component
     public $calendarMonth;
     public $calendarYear;
 
+    // Pagination for list view (show 3 days initially)
+    public $showAllDays = false;
+
     public function mount()
     {
         // Set default date range to last 30 days
@@ -41,6 +44,13 @@ class MoodHistory extends Component
     public function switchView($view)
     {
         $this->activeView = $view;
+        // Reset "show all" when switching views
+        $this->showAllDays = false;
+    }
+
+    public function loadMore()
+    {
+        $this->showAllDays = true;
     }
 
     public function previousMonth()
@@ -306,7 +316,17 @@ class MoodHistory extends Component
 
         // Mobile view
         if ($this->isMobileDevice()) {
-            $moodsByDate = $this->getMoodsByDate();
+            $allMoodsByDate = $this->getMoodsByDate();
+
+            // Limit to 3 days if not showing all
+            $moodsByDate = $allMoodsByDate;
+            $hasMoreDays = false;
+
+            if (!$this->showAllDays && $allMoodsByDate->count() > 3) {
+                $moodsByDate = $allMoodsByDate->take(3);
+                $hasMoreDays = true;
+            }
+
             $calendarData = $this->getCalendarData();
             $currentMonthName = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1)->format('F Y');
 
@@ -315,6 +335,7 @@ class MoodHistory extends Component
                 'calendarData' => $calendarData,
                 'currentMonthName' => $currentMonthName,
                 'stats' => $stats,
+                'hasMoreDays' => $hasMoreDays,
             ])->layout('layouts.app-mobile');
         }
 

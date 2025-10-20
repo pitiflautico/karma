@@ -12,11 +12,11 @@
         @endif
 
         @if($title)
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ $title }}</h1>
+            <h1 class="text-[30px] leading-tight font-bold text-[#533630] mb-2">{{ $title }}</h1>
         @endif
 
         @if($subtitle)
-            <p class="text-gray-600 text-sm">{{ $subtitle }}</p>
+            <p class="text-[#57534e] text-base font-normal">{{ $subtitle }}</p>
         @endif
 
         {{ $header ?? '' }}
