@@ -42,6 +42,14 @@ class GroupEventMood extends Model
     }
 
     /**
+     * Alias for groupEvent() for easier access.
+     */
+    public function event(): BelongsTo
+    {
+        return $this->groupEvent();
+    }
+
+    /**
      * Get the user who made this rating.
      */
     public function user(): BelongsTo

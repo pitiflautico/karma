@@ -91,7 +91,7 @@ class SharedWithMe extends Component
         return view('livewire.shared-with-me', [
             'sharedAccesses' => $sharedAccesses,
             'moodEntries' => $moodEntries,
-        ])->layout('layouts.app');
+        ])->layout('layouts.app-mobile');
     }
 
     /**

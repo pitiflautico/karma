@@ -1,47 +1,38 @@
 <div class="min-h-screen bg-[#F7F3EF]">
     <!-- Header -->
-    <div class="bg-white">
-        <div class="px-6 py-4 flex items-center justify-between" style="padding-top: max(1rem, env(safe-area-inset-top, 0px) + 1rem);">
-            <x-back-button />
-            <h1 class="text-base font-semibold text-[#292524]">Group Events</h1>
-            <div class="w-7"></div>
-        </div>
-    </div>
+    <x-interior-header title="Group Events" />
 
-    <!-- Filters -->
-    <div class="bg-white border-b border-gray-100">
-        <div class="px-6 py-3 flex gap-2 overflow-x-auto">
+    <!-- Content -->
+    <div class="px-6 py-6" style="padding-bottom: max(8rem, env(safe-area-inset-bottom, 0px) + 8rem);">
+        <!-- Filters -->
+        <div class="bg-[#e7e5e4] rounded-full p-1 flex gap-1 overflow-x-auto mb-6">
             <button wire:click="setFilter('all')"
-                    class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all
-                        {{ $filter === 'all' ? 'bg-[#8B5CF6] text-white' : 'bg-gray-100 text-[#57534e]' }}">
+                    class="flex-1 py-2.5 px-4 rounded-full text-sm font-semibold whitespace-nowrap transition-all
+                        {{ $filter === 'all' ? 'bg-white text-[#292524] shadow-md' : 'text-[#78716c]' }}">
                 All
             </button>
             <button wire:click="setFilter('upcoming')"
-                    class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all
-                        {{ $filter === 'upcoming' ? 'bg-[#8B5CF6] text-white' : 'bg-gray-100 text-[#57534e]' }}">
+                    class="flex-1 py-2.5 px-4 rounded-full text-sm font-semibold whitespace-nowrap transition-all
+                        {{ $filter === 'upcoming' ? 'bg-white text-[#292524] shadow-md' : 'text-[#78716c]' }}">
                 Upcoming
             </button>
             <button wire:click="setFilter('past')"
-                    class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all
-                        {{ $filter === 'past' ? 'bg-[#8B5CF6] text-white' : 'bg-gray-100 text-[#57534e]' }}">
+                    class="flex-1 py-2.5 px-4 rounded-full text-sm font-semibold whitespace-nowrap transition-all
+                        {{ $filter === 'past' ? 'bg-white text-[#292524] shadow-md' : 'text-[#78716c]' }}">
                 Past
             </button>
             <button wire:click="setFilter('rated')"
-                    class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all
-                        {{ $filter === 'rated' ? 'bg-[#8B5CF6] text-white' : 'bg-gray-100 text-[#57534e]' }}">
-                My Ratings
+                    class="flex-1 py-2.5 px-4 rounded-full text-sm font-semibold whitespace-nowrap transition-all
+                        {{ $filter === 'rated' ? 'bg-white text-[#292524] shadow-md' : 'text-[#78716c]' }}">
+                Rated
             </button>
         </div>
-    </div>
-
-    <!-- Content -->
-    <div class="px-6 py-6">
         @if($events && count($events) > 0)
             <!-- Events List -->
-            <div class="space-y-4">
+            <div class="space-y-4 mb-6">
                 @foreach($events as $event)
                     <a href="{{ route('groups.events.rate', $event['id']) }}"
-                       class="block bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                       class="block bg-white rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-start gap-4">
                             <!-- Event Icon -->
                             <div class="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center
@@ -127,7 +118,7 @@
             </div>
         @else
             <!-- Empty State -->
-            <div class="flex flex-col items-center justify-center py-16 px-6">
+            <div class="flex flex-col items-center justify-center py-16 px-6 mb-6">
                 <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
                     <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -137,15 +128,14 @@
                 <p class="text-[#57534e] text-center mb-8">Create an event for your group to rate</p>
             </div>
         @endif
-    </div>
 
-    <!-- Floating Create Button -->
-    <div class="fixed bottom-8 right-6" style="padding-bottom: env(safe-area-inset-bottom, 0px);">
+        <!-- Create Event Button -->
         <a href="{{ route('groups.events.create', $groupId) }}"
-           class="flex items-center justify-center w-16 h-16 bg-[#8B5CF6] text-white rounded-full shadow-lg hover:bg-[#7C3AED] transition-colors">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+           class="flex items-center justify-center gap-2 w-full py-3.5 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold rounded-full shadow-sm transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
+            <span>Create Event</span>
         </a>
     </div>
 </div>

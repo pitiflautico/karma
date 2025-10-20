@@ -1,29 +1,29 @@
 <div class="min-h-screen bg-[#F7F3EF]">
     <!-- Header -->
-    <x-interior-header title="Create Event" />
+    <x-interior-header title="Create Group" />
 
     <!-- Content -->
     <div class="px-6 py-6">
         <!-- Form -->
-        <form wire:submit.prevent="createEvent" class="space-y-5">
-            <!-- Event Title -->
+        <form wire:submit.prevent="createGroup" class="space-y-5">
+            <!-- Group Name -->
             <div>
-                <label for="title" class="block text-sm font-semibold text-[#292524] mb-2">
-                    Event Title <span class="text-red-500">*</span>
+                <label for="name" class="block text-sm font-semibold text-[#292524] mb-2">
+                    Group Name <span class="text-red-500">*</span>
                 </label>
                 <input
                     type="text"
-                    id="title"
-                    wire:model="title"
-                    placeholder="e.g., Family Dinner, Team Meeting"
+                    id="name"
+                    wire:model="name"
+                    placeholder="e.g., Family, Work Team, Friends"
                     class="w-full px-4 py-3.5 bg-white border border-[#e7e5e4] rounded-2xl text-[#292524] placeholder-[#a8a29e] focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
                 >
-                @error('title')
+                @error('name')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
-            <!-- Event Description -->
+            <!-- Group Description -->
             <div>
                 <label for="description" class="block text-sm font-semibold text-[#292524] mb-2">
                     Description <span class="text-[#78716c] text-sm font-normal">(optional)</span>
@@ -32,7 +32,7 @@
                     id="description"
                     wire:model="description"
                     rows="3"
-                    placeholder="Add more details about the event..."
+                    placeholder="Add more details about the group..."
                     class="w-full px-4 py-3.5 bg-white border border-[#e7e5e4] rounded-2xl text-[#292524] placeholder-[#a8a29e] focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all resize-none"
                 ></textarea>
                 @error('description')
@@ -40,37 +40,29 @@
                 @enderror
             </div>
 
-            <!-- Event Date -->
+            <!-- Group Color -->
             <div>
-                <label for="event_date" class="block text-sm font-semibold text-[#292524] mb-2">
-                    Date <span class="text-red-500">*</span>
+                <label for="color" class="block text-sm font-semibold text-[#292524] mb-2">
+                    Group Color <span class="text-[#78716c] text-sm font-normal">(optional)</span>
                 </label>
-                <input
-                    type="date"
-                    id="event_date"
-                    wire:model="eventDate"
-                    min="{{ date('Y-m-d') }}"
-                    class="w-full px-4 py-3.5 bg-white border border-[#e7e5e4] rounded-2xl text-[#292524] focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
-                >
-                @error('eventDate')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
+                <div class="flex items-center gap-3">
+                    <!-- Color Preview -->
+                    <div class="w-14 h-14 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xl font-bold shadow-sm"
+                         style="background-color: {{ $color }}">
+                        {{ substr($name ?: 'G', 0, 1) }}
+                    </div>
 
-            <!-- Event Time -->
-            <div>
-                <label for="event_time" class="block text-sm font-semibold text-[#292524] mb-2">
-                    Time <span class="text-red-500">*</span>
-                </label>
-                <input
-                    type="time"
-                    id="event_time"
-                    wire:model="eventTime"
-                    class="w-full px-4 py-3.5 bg-white border border-[#e7e5e4] rounded-2xl text-[#292524] focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
-                >
-                @error('eventTime')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                    <!-- Color Picker -->
+                    <div class="flex-1">
+                        <input
+                            type="color"
+                            id="color"
+                            wire:model.live="color"
+                            class="w-full h-12 cursor-pointer rounded-2xl border border-[#e7e5e4] bg-white"
+                        >
+                    </div>
+                </div>
+                <p class="text-xs text-[#78716c] mt-2">This color will be used for the group avatar</p>
             </div>
 
             <!-- Info Box -->
@@ -80,8 +72,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     <div>
-                        <p class="text-sm font-semibold text-[#292524]">Custom Event</p>
-                        <p class="text-sm text-[#57534e] mt-1">All group members will be able to rate this event with their mood.</p>
+                        <p class="text-sm font-semibold text-[#292524]">New Group</p>
+                        <p class="text-sm text-[#57534e] mt-1">You will be the admin and can invite members using the invite code that will be generated.</p>
                     </div>
                 </div>
             </div>
@@ -92,7 +84,7 @@
                     type="submit"
                     wire:loading.attr="disabled"
                     class="w-full bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold py-4 rounded-full shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span wire:loading.remove>Create Event</span>
+                    <span wire:loading.remove>Create Group</span>
                     <span wire:loading class="flex items-center justify-center gap-2">
                         <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -106,14 +98,14 @@
     </div>
 
     <!-- Success Message -->
-    @if (session()->has('message'))
+    @if (session()->has('success'))
         <div class="fixed top-20 left-4 right-4 z-50">
             <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl shadow-lg">
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                     </svg>
-                    <span class="font-medium">{{ session('message') }}</span>
+                    <span class="font-medium">{{ session('success') }}</span>
                 </div>
             </div>
         </div>

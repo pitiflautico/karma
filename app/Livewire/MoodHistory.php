@@ -144,6 +144,11 @@ class MoodHistory extends Component
         $this->moodToDelete = null;
     }
 
+    public function redirectTo($url)
+    {
+        return redirect($url);
+    }
+
     #[On('moodEntrySaved')]
     public function refreshData()
     {

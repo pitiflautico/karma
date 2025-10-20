@@ -19,6 +19,7 @@ use App\Livewire\Selfies;
 use App\Livewire\Stats;
 use App\Livewire\GroupsList;
 use App\Livewire\JoinGroup;
+use App\Livewire\CreateGroup;
 use App\Livewire\GroupDashboard;
 use App\Livewire\GroupEvents;
 use App\Livewire\CreateGroupEvent;
@@ -85,6 +86,7 @@ Route::middleware(['auth', 'onboarding.completed'])->group(function () {
     Route::prefix('groups')->name('groups.')->group(function () {
         Route::get('/', GroupsList::class)->name('list');
         Route::get('/join', JoinGroup::class)->name('join');
+        Route::get('/create', CreateGroup::class)->name('create');
         Route::get('/{groupId}', GroupDashboard::class)->name('dashboard');
         Route::get('/{groupId}/events', GroupEvents::class)->name('events');
         Route::get('/{groupId}/events/create', CreateGroupEvent::class)->name('events.create');
